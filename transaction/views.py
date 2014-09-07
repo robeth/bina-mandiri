@@ -170,21 +170,7 @@ def vendor_edit(request, vendor_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
 def pembelian(request):
-	res = q_pembelian()
-	if request.method == "GET":
-		if 'inputDate' in request.GET and 'inputEnd' in request.GET and is_valid_date(request.GET['inputDate']) and is_valid_date(request.GET['inputEnd'] ):
-			mini = parse_date(request.GET['inputDate'])
-			maxi = parse_date(request.GET['inputEnd'])
-			print "enter selection"
-			res = {k: v for k, v in res.iteritems() if v['tanggal'] <= maxi and v['tanggal'] >= mini}
-			
-	context = { 'pembelian': res, 'user': request.user}
-	return render(request, 'transaction/pembelian.html', context)
-
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@login_required()
-def pembelian_hula(request):
-	pembelian_entries = Pembelian.objects.all()
+	pembelian_entries = Pembelian.objects.all().order_by('-tanggal')
 	pager = Paginator(pembelian_entries, 100)
 	selected_page = request.GET.get('page')
 
@@ -196,7 +182,7 @@ def pembelian_hula(request):
 		pembelian_entries = pager.page(pager.num_pages)
 
 	context = { 'pembelian': pembelian_entries, 'user': request.user}
-	return render(request, 'transaction/pembelian_hula.html', context)
+	return render(request, 'transaction/pembelian.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
@@ -266,7 +252,18 @@ def pembelian_del(request, pembelian_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
 def penjualan(request):
-	context = { 'penjualan': q_penjualan, 'user': request.user}
+	penjualan_entries = Penjualan.objects.all().order_by('-tanggal')
+	pager = Paginator(penjualan_entries, 100)
+	selected_page = request.GET.get('page')
+
+	try:
+		penjualan_entries = pager.page(selected_page)
+	except PageNotAnInteger:
+		penjualan_entries = pager.page(1)
+	except EmptyPage:
+		penjualan_entries = pager.page(pager.num_pages)
+
+	context = { 'penjualan': penjualan_entries, 'user': request.user}
 	return render(request, 'transaction/penjualan.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
