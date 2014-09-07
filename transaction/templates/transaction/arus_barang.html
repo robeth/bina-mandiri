@@ -1,0 +1,76 @@
+{% extends "transaction/base-ui.html" %}
+{% block nav_report %}active{% endblock nav_report%}
+{% load staticfiles %}
+{% load humanize %}
+{% block content %}
+{% load transaction_util %}
+<div class="container">
+
+	<form action="{% url 'arus_barang'%}" method="post">
+	{% csrf_token %}
+	Bulan  {{bulan}}
+		<select name="month">
+			{% for i in 12|get_range %}
+			<option value="{{ i }}" {% if bulan == i %}selected="selected"{% endif %}>{{ i }}</option>
+			{% endfor%}
+		</select>
+	Tahun
+		<select name="year">
+			{% for i in year_range %}
+			<option value="{{ i }}" {% if tahun == i %}selected="selected"{% endif%}>{{ i }}</option>
+			{% endfor %}
+		</select>
+		<button class="btn btn-primary" type="submit">Pilih</button>
+	</form>
+	
+	<div id="content" class="row">
+		<div class="span12">
+			<table id="table-arusbarang" class="table table-hover table-condensed table-bordered display">
+				<thead>
+					<tr class="center-head">
+						<th>#</th>
+						<th class="center">Kode</th>
+						<th class="center">Nama</th>
+						<th class="center">Pembelian Indiv</th>
+						<th class="center">Pembelian Kolektif</th>
+						<th class="center">Hasil Konversi</th>
+						<th class="center">Penjualan</th>
+						<th class="center">Input Konversi</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for k,v in arus.items %}
+					<tr>
+						<td class="center">{{forloop.counter}}</td>
+						<td class="center">{{k}}</td>
+						<td class="center">{{v.nama}}</td>
+						<td class="center">{{v.pembelian_individu|floatformat:2 }}</td>
+						<td class="center">{{v.pembelian_kolektif|floatformat:2 }}</td>
+						<td class="center">{{v.out_konversi|floatformat:2 }}</td>
+						<td class="center">{{v.penjualan|floatformat:2 }}</td>
+						<td class="center">{{v.in_konversi|floatformat:2 }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#table-arusbarang').dataTable( {
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+</script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/other.js" %}"></script>
+{% endblock js_extra %}

@@ -1,0 +1,93 @@
+{% extends "transaction/base-ui.html" %}
+{% block nav_activity %}active{% endblock nav_activity %}
+{% load staticfiles %}
+{% load humanize %}
+{% block content %}
+{% load transaction_util %}
+<div class="container">
+	{% if form.errors %}
+	<div class="row">
+		<div class="col-md-12">
+			<div class="alert fade in">
+				<button type="button" class="close" data-dismiss="alert">×</button>
+				<strong>Error:</strong> {{ form.errors }}
+			</div>
+		</div>
+	</div>
+	{% endif %}
+
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<form class="navbar-search pull-left form-inline">
+						
+						<button id="adv-button" class="btn btn-small" type="button"><i class="icon-wrench"></i>Advanced</button>
+					</form>
+
+					<a class="btn btn-primary pull-right" href="{% url 'pembelian_add' %}" data-toggle="modal"><i class="icon-plus icon-white"></i>Pembelian</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% include "transaction/advanced_window.html" %}
+
+	<div id="content" class="row">
+		<div class="col-md-12">
+			<table id="table-pembelian" class="table table-hover table-condensed table-bordered display">
+				<thead>
+					<tr class="center-head">
+						<th>#</th>
+						<th>Kode</th>
+						<th>Nota</th>
+						<th>Nasabah</th>
+						<th>Tanggal</th>
+						<th>Total Transaksi</th>
+						<th>Barang</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for pkey, p in pembelian.items %}
+					<tr>
+						<td class="center">{{forloop.counter}}</td>
+						<td class="center">{% pembelian_url p.id %}</td>
+						<td class="center">{% if p.nota %}{{p.nota}}{% endif %}</td>
+						<td>{{p.vnama}}</td>
+						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
+						<td class="right">{{ p.sum}}</td>
+						<td>
+							{% for kkey, k in p.kategori.items %}
+							<a href="#" data-toggle="tooltip" title="{{k.nama}}-{{k.nilai|floatformat:2|intcomma}}">{{kkey}}</a>
+							{% endfor %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#table-pembelian').dataTable( {
+			"aoColumnDefs": [ {
+				"aTargets": [ 4 ],
+				"sType" : "numeric",
+			}],
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+</script>
+{% include "transaction/advanced_window_script.html" %}
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+{% endblock js_extra %}

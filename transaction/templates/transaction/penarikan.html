@@ -1,0 +1,92 @@
+{% extends "transaction/base.html" %}
+{% load humanize %}
+{% load transaction_util %}
+{% load staticfiles %}
+{% block nav_activity %}active{% endblock nav_activity %}
+{% block content %}
+<div class="container">
+	
+	<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="myModalLabel">Hapus Penarikan ID </h3>
+		</div>
+		<div class="modal-body">
+			<p>Apakah anda yakin?</p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
+			<button id="gotobutton" class="btn btn-danger">Ya</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="span12">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<a class="btn btn-primary pull-right" href="{% url 'penarikan_add' %}" data-toggle="modal"><i class="icon-plus icon-white"></i>Penarikan</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="content" class="row">
+		<div class="span12">
+			<table id="table-penarikan" class="table table-hover table-condensed table-bordered">
+				<thead class="center">
+					<tr>
+						<th>#</th>
+						<th>Kode</th>
+						<th>Nota</th>
+						<th>Tanggal</th>
+						<th>KodeN</th>
+						<th>Nama</th>
+						<th>Total</th>
+						<th>Menu</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for p in penarikan  %}
+					<tr>
+						<td class="center">{{ forloop.counter }}</td>
+						<td class="center">{% penarikan_url p.id%}</td>
+						<td class="center">{% if p.nota %}{{p.nota}} {% endif%}</td>
+						<td class="center">{{ p.tanggal|date:"Y-m-d" }}</td>
+						<td class="center">{% nasabah_url p.nasabah.id %}</td>
+						<td>{{ p.nasabah.nama }}</td>
+						<td class="right">{{ p.total|floatformat:2 }}</td>
+						<td><button class="btn btn-mini btn-danger" onclick="popout({{ p.id }})"><i class="icon-remove icon-white"></i></button></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#table-penarikan').dataTable( {
+			"aoColumnDefs": [ {
+				"aTargets": [ 5 ],
+				"sType" : "numeric",
+			}],
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+	var url_delete = "{% url 'penarikan_del' 0%}";
+	url_delete = url_delete.replace('0/','');
+	function popout(nodata){
+		$('#myModal').modal();
+		$('#myModalLabel').html("Penarikan Id "+ nodata);
+		$('#gotobutton').click(function(){
+			location.href = url_delete+nodata;
+		});
+	}
+</script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+{% endblock js_extra %}

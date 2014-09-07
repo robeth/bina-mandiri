@@ -1,0 +1,89 @@
+{% extends "transaction/base-ui.html" %}
+{% block nav_activity %}active{% endblock nav_activity %}
+{% load staticfiles %}
+{% load humanize %}
+{% load transaction_util %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="span12">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <form class="navbar-search pull-left form-inline">
+
+            <button id="adv-button" class="btn btn-small" type="button"><i class="icon-wrench"></i>Advanced</button>
+          </form>
+
+          <a class="btn btn-primary pull-right" href="{% url 'konversi_add' %}" data-toggle="modal"><i class="icon-plus icon-white"></i>Konversi</a>
+          <form action="{% url 'konversi'%}" method="post" >
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include "transaction/advanced_window.html" %}
+  <div id="content" class="row">
+    <div class="span12">
+      <table id="table-konversi" class="table table-hover table-condensed table-bordered">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Kode</th>
+            <th>Nota</th>
+            <th>Tanggal</th>
+            <th>Total Transaksi</th>
+            <th>Barang In</th>
+            <th>Barang Out</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for kkey, k in konversi.items %}
+          <tr>
+            <td class="center">{{forloop.counter}}</td>
+            <td class="center">{% konversi_url k.id %}</td>
+            <td class="center">{% if k.kodenota %}{{k.kodenota}}{% endif %}</td>
+            <td class="center">{{k.tanggal|date:"Y-m-d"}}</td>
+            <td class="right">{{k.total_in|floatformat:2}}</td>
+            <td>
+              {% for inkey,i in k.in.items %}
+              <a href="#" data-toggle="tooltip" title="{{i.nama}} ({{i.jumlah2}} from {{i.jumlah}})">{{i.kode}}</a>
+              {% endfor %}
+            </td>
+            <td>
+              {% for outkey,o in k.out.items %}
+              <a href="#" data-toggle="tooltip" title="{{o.nama}} ({{o.jumlah}})">{{o.kode}}</a>
+              {% endfor %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+
+{% include "transaction/advanced_window_script.html" %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#table-konversi').dataTable( {
+      "aoColumnDefs": [ {
+        "aTargets": [ 3 ],
+        "sType" : "numeric",
+      }],
+      "bPaginate": false,
+      "bLengthChange": false,
+      "bFilter": true,
+      "bSort": true,
+      "bInfo": false,
+      "bAutoWidth": false,
+    } );
+  } );
+</script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/other.js" %}"></script>
+{% endblock js_extra %}

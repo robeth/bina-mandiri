@@ -1,0 +1,91 @@
+{% extends "transaction/base-ui.html" %}
+{% block nav_report %}active{% endblock nav_report%}
+{% load staticfiles %}
+{% load humanize %}
+{% block content %}
+{% load transaction_util %}
+<div class="container">
+	{% if form.errors %}
+	<div class="row">
+		<div class="span12">
+			<div class="alert fade in">
+				<button type="button" class="close" data-dismiss="alert">×</button>
+				<strong>Error:</strong> {{ form.errors }}
+			</div>
+		</div>
+	</div>
+	{% endif %}
+
+	<form action="{% url 'laba_rugi'%}" method="post">
+	{% csrf_token %}
+	Bulan 
+		<select name="month">
+			{% for i in 12|get_range %}
+			<option value="{{ i }}" {% if bulan == i %}selected="selected"{% endif %}>{{ i }}</option>
+			{% endfor%}
+		</select>
+	Tahun
+		<select name="year">
+			{% for i in year_range %}
+			<option value="{{ i }}" {% if tahun == i %}selected="selected"{% endif%}>{{ i }}</option>
+			{% endfor %}
+		</select>
+		<button class="btn btn-primary" type="submit">Pilih</button>
+	</form>
+	
+	<div id="content" class="row">
+		<div class="span12">
+			<table id="table-labarugi" class="table table-hover table-condensed table-bordered display">
+				<thead>
+					<tr class="center-head">
+						<th>#</th>
+						<th class="center">Penjualan</th>
+						<th class="center">Tanggal</th>
+						<th class="center">Bruto</th>
+						<th class="center">HPP</th>
+						<th class="center">Netto</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for p in penjualan %}
+					<tr>
+						<td class="center">{{forloop.counter}}</td>
+						<td class="center">{{ p.tanggal|date:"Y-m-d" }}</td>
+						<td class="center">{% penjualan_url p.id %}</td>
+						<td class="right">{{ p.bruto|floatformat:2 }}</td>
+						<td class="right">{{ p.hpp|floatformat:2 }}</td>
+						<td class="right">{{ p.netto|floatformat:2 }}</td>
+					</tr>
+					{% endfor %}
+					<tr>
+						<td colspan="3"></td>
+						<td class="right">{{ total_bruto|floatformat:2}}</td>
+						<td class="right">{{ total_hpp|floatformat:2}}</td>
+						<td class="right">{{ total_netto|floatformat:2}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#table-labarugi').dataTable( {
+			"aoColumnDefs": [ {
+				"aTargets": [ 4 ],
+				"sType" : "numeric",
+			}],
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+</script>
+
+{% endblock js_extra %}

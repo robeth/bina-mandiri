@@ -1,0 +1,319 @@
+{% extends "transaction/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load transaction_util %}
+{% block nav_home %}active{% endblock nav_home %}
+{% block extra_css %}
+<link href="{% static "css/morris.css" %}" rel="stylesheet">
+{% endblock extra_css %}
+{% block content %}
+<div class="container">
+	
+	<div class="row">
+		<div class="col-md-8">
+			<div class="well">
+				<h2>Penjualan</h2>
+				<div class="btn-group" data-toggle="buttons">
+					<button id="penjualan-btn-hari" data-toggle="button" class="btn btn-primary" onclick="setPenjualan(penjualan_day)">Hari</button>
+					<button id="penjualan-btn-minggu" data-toggle="button" class="btn btn-primary" onclick="setPenjualan(penjualan_week)">Minggu</button>
+					<button id="penjualan-btn-bulan" data-toggle="button" class="btn btn-primary" onclick="setPenjualan(penjualan_month)">Bulan</button>
+				</div>
+				<div id="penjualan-chart" style="height:200px"></div>
+			</div>
+			<div class="well">
+				<h2>Pembelian</h2>
+				<div class="btn-group" data-toggle="buttons">
+					<button id="pembelian-btn-hari" data-toggle="button" class="btn btn-primary" onclick="setPembelian(pembelian_day)">Hari</button>
+					<button id="pembelian-btn-minggu" data-toggle="button" class="btn btn-primary" onclick="setPembelian(pembelian_week)">Minggu</button>
+					<button id="pembelian-btn-bulan" data-toggle="button" class="btn btn-primary" onclick="setPembelian(pembelian_month)">Bulan</button>
+				</div>
+				<div id="pembelian-chart" style="height:200px"></div>
+			</div>
+			<div class="well">
+				<h2>Arus Stok</h2>
+				<div class="btn-group" data-toggle="buttons">
+					<button id="arus-btn-hari" data-toggle="button" class="btn btn-primary" onclick="setTableStok(stok_day)">Hari</button>
+					<button id="arus-btn-minggu" data-toggle="button" class="btn btn-primary" onclick="setTableStok(stok_week)">Minggu</button>
+					<button id="arus-btn-bulan" data-toggle="button" class="btn btn-primary" onclick="setTableStok(stok_all)">Bulan</button>
+				</div>
+				<div id="stok-table"></div>
+			</div>
+		</div>
+		
+		<div class="col-md-4">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="well">
+						<h2>Keuangan</h2>
+						<table>
+							<tr><td><code>Pembelian</code> </td>
+								<td><input readonly class="form-control input-sm" style="text-align:right" type="text" value="{{ data.saldo.0.In|floatformat:2|intcomma }}" /></td>
+							</tr>
+							<tr><td><code>Penarikan</code> </td>
+								<td><input readonly class="form-control input-sm" style="text-align:right" type="text" value="{{ data.saldo.0.Out|floatformat:2|intcomma }}" /></td>
+							</tr>
+							<tr><td><code>Saldo</code> </td>
+								<td><input readonly class="form-control input-sm" style="text-align:right" type="text" value="{{ data.saldo.0.saldo|floatformat:2|intcomma }}" /></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="well">
+						<h2>Terakhir</h2>
+						<ul class="nav nav-tabs" id="aktivitasTab">
+							<li><a href="#pembelianTab" data-toggle="tab">Pembelian</a></li>
+							<li><a href="#penjualanTab" data-toggle="tab">Penjualan</a></li>
+							<li><a href="#penarikanTab" data-toggle="tab">Penarikan</a></li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane" id="pembelianTab">
+								{#<h3>Pembelian</h3> #}
+								{# <div id="pembelian"></div> #}
+								<div>
+									<table class="table">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th>Tanggal</th>
+												<th>Nilai</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for pkey, p in data.10_pembelian.items %}
+											<tr>
+												<td>{% pembelian_url pkey%}</td>
+												<td>{{ p.tanggal|date:"Y-m-d"}}</td>
+												<td class="right">{{ p.sum|floatformat:2 }}</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="tab-pane active" id="penjualanTab">
+								{# <h3>Penjualan</h3> #}
+								<div id="penjualan"></div>
+								<div>
+									<table class="table">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th>Tanggal</th>
+												<th>Nilai</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for pkey,p in data.10_penjualan.items %}
+											<tr>
+												<td>{% penjualan_url pkey %}</td>
+												<td>{{ p.tanggal|date:"Y-m-d"}}</td>
+												<td class="right">{{ p.bruto|floatformat:2 }}</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+							<div class="tab-pane" id="penarikanTab">
+								{# <h3>Penarikan</h3> #}
+								<div id="penarikan"></div>
+								<div>
+									<table class="table">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th>Tanggal</th>
+												<th>Nilai</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for it in data.10_penarikan %}
+											<tr>
+												<td>{% penarikan_url it.id%}</td>
+												<td>{{ it.tanggal|date:"Y-m-d"}}</td>
+												<td class="right">{{ it.total|floatformat:2 }}</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>	
+						</div>
+
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="well">
+						<h2>Gudang</h2>
+						<div class="row">
+							<div class="col-md-4"><code>Nilai</code></div>
+							<div class="col-md-8">
+								<input readonly class="form-control" type="text" value="{{ data.aset_total|floatformat:2 }}" />
+							</div>
+						</div>
+						<ul class="nav nav-tabs" id="gudangTab">
+							<li class="active"><a href="#aset" data-toggle="tab">Grafik</a></li>
+							<li><a href="#tabelGudang" data-toggle="tab">Tabel</a></li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane active" id="aset"></div>
+							<div class="tab-pane" id="tabelGudang">
+								<table class="table">
+									<thead>
+										<tr>
+											<th>Kategori</th>
+											<th>Sisa</th>
+											<th>Potensi</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for it in  data.aset %}
+										<tr>
+											<td>{{ it.kode }}</td>
+											<td class="right">{{ it.sisa|floatformat:2 }}</td>
+											<td class="right">{{ it.stabil|floatformat:2 }}</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>	
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}
+{% block js_extra %}
+<script src="{% static "js/raphael-min.js" %}"></script>
+<script src="{% static "js/morris.js" %}"></script>
+<script>
+	var penjualan_day = [
+	{% for it in data.penjualan_day %}
+	{y: '{{ it.tanggal|date:"Y-m-d"}}', a: {{ it.gross}}, b:{{ it.netto }} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+	var penjualan_all = [
+	{% for it in data.penjualan_pertanggal %}
+	{y: '{{ it.tanggal|date:"Y-m-d"}}', a: {{ it.gross}}, b:{{ it.netto }} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+	var penjualan_week = [
+	{% for it in data.penjualan_week %}
+	{y: '{{ it.tanggal|date:"Y-m-d"}}', a: {{ it.gross}}, b:{{ it.netto }} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+	var penjualan_month = [
+	{% for it in data.penjualan_month %}
+	{y: '{{ it.tanggal|date:"Y-m-d"}}', a: {{ it.gross}}, b:{{ it.netto }} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+
+	var pembelian_day = [
+	{% for it in data.pembelian_day %}
+	{y: '{{ it.tanggal|date:"Y-m-d"}}', a: {{ it.total}} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+	var pembelian_all = [
+	{% for it in data.pembelian_pertanggal %}
+	{y: '{{ it.tanggal|date:"Y-m-d"}}', a: {{ it.total}} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+	var pembelian_week = [
+	{% for it in data.pembelian_week %}
+	{y: '{{ it.tanggal|date:"Y-m-d"}}', a: {{ it.total}} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+	var pembelian_month = [
+	{% for it in data.pembelian_month %}
+	{y: '{{ it.tanggal|date:"Y-m-d"}}', a: {{ it.total}} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+
+
+	var stok_day = [
+	{% for it in data.stok_day %}
+	{y: '{{it.kode}}', a: {{ it.in_stok}}, b:{{ it.out_stok }} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+
+	var stok_week = [
+	{% for it in data.stok_week %}
+	{y: '{{it.kode}}', a: {{ it.in_stok}}, b:{{ it.out_stok }} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+
+	var stok_month = [
+	{% for it in data.stok_month %}
+	{y: '{{it.kode}}', a: {{ it.in_stok}}, b:{{ it.out_stok }} }{% if not forloop.last %},{% endif %}
+	{% endfor %}
+	];
+
+	function setPenjualan(chartData){
+		$("#penjualan-chart").empty();
+		Morris.Bar({
+			element: 'penjualan-chart',
+			data: chartData,
+			xkey: 'y',
+			ykeys: ['a', 'b'],
+			labels: ['Bruto', 'Netto'],
+			xLabels : "day",
+			hideHover : true
+		});
+	}
+
+	function setPembelian(chartData){
+		$("#pembelian-chart").empty();
+		Morris.Bar({
+			element: 'pembelian-chart',
+			data: chartData,
+			xkey: 'y',
+			ykeys: ['a'],
+			labels: ['Total'],
+			xLabels : "day",
+			hideHover : true
+		});
+	}
+
+	function setStok(stokData){
+		$("#stok-chart").empty();
+		Morris.Bar({
+			element: 'stok-chart',
+			data: stokData,
+			xkey: 'y',
+			ykeys: ['a', 'b'],
+			labels: ['In', 'Out'],
+			xLabels : "Kategori",
+			hideHover : true
+		});
+	}
+
+	function setTableStok(stockData){
+		var table = "<table class='table'><thead><tr><th>Kode</th><th>In</th><th>Out</th></tr></thead><tbody>";
+		for(var i = 0; i < stockData.length; i++){
+			table += "<tr><td>"+ stockData[i].y+"</td><td>"+stockData[i].a+"</td><td>"+stockData[i].b+"</td></tr>";
+		}
+		table += "</tbody></table>";
+		$("#stok-table").empty().html(table);
+	}
+
+	$(document).ready(function(){
+		Morris.Donut({
+			element: 'aset',
+			data: [
+			{% for it in data.aset  %}
+			{label: '{{ it.nama}}({{ it.kode }})', value: {{ it.sisa}} }{% if not forloop.last %},{% endif %}
+			{% endfor %}
+			],
+		});
+		setPenjualan(penjualan_day);
+		setPembelian(pembelian_day);
+		setTableStok(stok_day);
+	});
+
+</script>
+{% endblock js_extra %}

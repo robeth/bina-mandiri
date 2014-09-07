@@ -1,0 +1,107 @@
+{% extends "transaction/base-ui.html" %}
+{% block nav_activity %}active{% endblock nav_activity %}
+{% load staticfiles %}
+{% load humanize %}
+{% block content %}
+{% load transaction_util %}
+<div class="container">
+	{% if form.errors %}
+	<div class="row">
+		<div class="span12">
+			<div class="alert fade in">
+				<button type="button" class="close" data-dismiss="alert">×</button>
+				<strong>Error:</strong> {{ form.errors }}
+			</div>
+		</div>
+	</div>
+	{% endif %}
+
+
+	<div class="row">
+		<div class="span12">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<form class="navbar-search pull-left form-inline">
+						
+						<button id="adv-button" class="btn btn-small" type="button"><i class="icon-wrench"></i>Advanced</button>
+					</form>
+
+					<a class="btn btn-primary pull-right" href="{% url 'pembelian_add' %}" data-toggle="modal"><i class="icon-plus icon-white"></i>Pembelian</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% include "transaction/advanced_window.html" %}
+
+	<div id="content" class="row">
+		<div class="span12">
+			<table id="table-pembelian" class="table table-hover table-condensed table-bordered display">
+				<thead>
+					<tr class="center-head">
+						<th>#</th>
+						<th>Kode</th>
+						<th>Nota</th>
+						<th>Nasabah</th>
+						<th>Tanggal</th>
+						<th>Total Transaksi</th>
+						<th>Barang</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for p in pembelian %}
+					<tr>
+						<td class="center">{{forloop.counter}}</td>
+						<td class="center">{% pembelian_url p.id %}</td>
+						<td class="center">{% if p.nota %}{{p.nota}}{% endif %}</td>
+						<td>{{p.nasabah.nama}}</td>
+						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
+						<td class="right">{% calculate_gross p %}</td>
+						<td>
+							{% for stok in p.stocks.all %}
+							<a href="#" data-toggle="tooltip">{{ stok.kategori.kode }}</a>
+							{% endfor %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<ul class="pagination">
+		
+	<li><a href="{% url 'pembelian' %}">&laquo;</a></li>
+	
+
+	{% for i in pembelian.paginator.num_pages|get_range %}
+	<li {% if pembelian.number == i %}class="active"{% endif %}><a href="{% url 'pembelian' %}?page={{i}}">{{i}}</a></li>
+	{% endfor %}
+	
+	
+	<li><a href="{% url 'pembelian' %}?page={{ pembelian.paginator.num_pages }}">&raquo;</a></li>
+	
+</ul>
+
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#table-pembelian').dataTable( {
+			"aoColumnDefs": [ {
+				"aTargets": [ 4 ],
+				"sType" : "numeric",
+			}],
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+</script>
+{% include "transaction/advanced_window_script.html" %}
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+{% endblock js_extra %}

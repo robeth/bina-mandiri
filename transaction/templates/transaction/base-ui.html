@@ -1,0 +1,12 @@
+{% extends "transaction/base.html" %}
+{% load staticfiles %}
+{% block extra_css %}
+<link href="{% static "css/jquery-ui.css" %}" rel="stylesheet">
+<link href="{% static "css/default/easyui.css" %}" rel="stylesheet">
+<link href="{% static "css/icon.css" %}" rel="stylesheet">
+{% endblock extra_css %}
+
+{% block js_extra %}
+<script src="{% static "js/jquery-ui-1.9.2.custom.js" %}"></script>
+<script src="{% static "js/jquery.easyui.min.js" %}"></script>
+{% endblock js_extra %}

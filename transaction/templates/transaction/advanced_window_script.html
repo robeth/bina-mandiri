@@ -1,0 +1,23 @@
+{% load staticfiles %}
+<script src="{% static "js/adv-window.js" %}"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$( "#inputDate" ).datepicker({ dateFormat: "yy-mm-dd",
+			"showAnim" : "slideDown",
+			"changeMonth" : true,
+			"changeYear" : true,
+			onClose: function( selectedDate ) {
+				$( "#inputEnd" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+
+		$( "#inputEnd" ).datepicker({ dateFormat: "yy-mm-dd",
+			"showAnim" : "slideDown",
+			"changeMonth" : true,
+			"changeYear" : true,
+			onClose: function( selectedDate ) {
+				$( "#inputDate" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+	});
+</script>

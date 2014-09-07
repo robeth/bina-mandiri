@@ -1,0 +1,45 @@
+select a.kode, a.in_konversi+a.in_pembelian as in_stok, b.out_konversi+b.out_penjualan as out_stok from
+
+(select k.kode, coalesce(in_konversi.jumlah,0) as in_konversi, coalesce(in_pembelian.jumlah,0) as in_pembelian
+from transaction_kategori k left outer join (
+
+select sd.kode, sum(sd.jumlah) as jumlah
+from
+	transaction_konversi k join transaction_konversi_outs ko on k.id = ko.konversi_id
+	join transaction_stok_det sd on ko.stok_id = sd.id
+where
+	k.tanggal=DATE(NOW())
+group by
+	sd.kode
+) in_konversi on k.kode = in_konversi.kode left outer join
+
+(select sd.kode, sum(sd.jumlah) as jumlah
+from 
+	transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id
+	join transaction_stok_det sd on ps.stok_id = sd.id
+where
+	p.tanggal=DATE(NOW())
+group by
+	sd.kode) in_pembelian on k.kode = in_pembelian.kode) a join
+
+
+(select k.kode, coalesce(out_konversi.jumlah,0) as out_konversi, coalesce(out_penjualan.jumlah,0) as out_penjualan
+from transaction_kategori k left outer join (
+
+select sd.kode, sum(d.jumlah) as jumlah
+from
+	transaction_detailin d join transaction_konversi k on d.konversi_id = k.id
+	join transaction_stok_det sd on d.stok_id = sd.id
+where
+	k.tanggal=DATE(NOW())
+group by sd.kode
+) out_konversi on k.kode = out_konversi.kode left outer join
+
+
+(select sd.kode, sum(dp.jumlah) as jumlah
+from
+	transaction_detailpenjualan dp join transaction_penjualan p on p.id = dp.penjualan_id
+	join transaction_stok_det sd on dp.stok_id = sd.id
+where
+	p.tanggal=DATE(NOW())
+group by sd.kode) out_penjualan on k.kode = out_penjualan.kode) b on a.kode = b.kode

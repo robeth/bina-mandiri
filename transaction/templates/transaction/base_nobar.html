@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>
+    {% block judul %}
+    Judul HTML
+    {% endblock judul %}
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  {% load staticfiles %}
+  <!-- Le styles -->
+  {% block css_main %}
+  <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
+  <link href="{% static "css/bootstrap-responsive.css" %}" rel="stylesheet">
+  <link href="{% static "css/docs.css" %}" rel="stylesheet">
+  <link href="{% static "css/other.css" %}" rel="stylesheet">
+  {% block extra_css %}
+
+  {% endblock extra_css %}
+  {% endblock css_main %}
+
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static "ico/apple-touch-icon-144-precomposed.png" %}">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static "ico/apple-touch-icon-114-precomposed.png" %}">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static "ico/apple-touch-icon-72-precomposed.png" %}">
+  <link rel="apple-touch-icon-precomposed" href="{% static "ico/apple-touch-icon-57-precomposed.png" %}">
+  <link rel="shortcut icon" href="{% static "ico/favicon.png" %}">
+  {% block extra_link %}
+
+  {% endblock extra_link %}
+</head>
+
+<body>
+  {% block nav %}
+  <!-- Navbar
+  ================================================== -->
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="brand"  href="{% url 'home' %}">BSM</a>
+        <div class="nav-collapse collapse">
+          <ul class="nav">
+            <li class="{% block nav_home %}{% endblock nav_home %}">
+              <a href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="{% block nav_data %}{% endblock nav_data %} dropdown">
+              <a id="data-label" class="dropdown-toggle" data-toggle="dropdown" href="#">Data<b class="caret"></b></a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="data-label">
+                <li><a tabindex="-1" href="{% url 'nasabah' %}">Nasabah Individu</a></li>
+                <li><a tabindex="-1" href="{% url 'nasabah_kolektif' %}">Nasabah Kolektif</a></li>
+                <li><a tabindex="-1" href="{% url 'vendor' %}">Vendor</a></li>
+                <li><a tabindex="-1" href="{% url 'kategori' %}">Barang</a></li>
+              </ul>
+            </li>
+            <li class="{% block nav_activity %}{% endblock nav_activity %} dropdown">
+              <a id="act-label" class="dropdown-toggle" data-toggle="dropdown" href="#">Aktivitas<b class="caret"></b></a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="act-label">
+                <li><a tabindex="-1" href="{% url 'pembelian' %}">Pembelian</a></li>
+                <li><a tabindex="-1" href="{% url 'penjualan' %}">Penjualan</a></li>
+                <li><a tabindex="-1" href="{% url 'konversi' %}">Konversi</a></li>
+                <li><a tabindex="-1" href="{% url 'penarikan' %}">Penarikan</a></li>
+              </ul>
+            </li>
+            <li class="{% block nav_report %}{% endblock nav_report %} dropdown">
+              <a id="report-label" class="dropdown-toggle" data-toggle="dropdown" href="#">Laporan<b class="caret"></b></a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="report-label">
+                <li><a tabindex="-1" href="{% url 'pembelian' %}">Laba Rugi</a></li>
+                <li><a tabindex="-1" href="{% url 'penjualan' %}">Arus Barang</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="nav pull-right">
+            <li class="dropdown pull-right">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="icon-user"></i>{{user.username}} <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'logout' %}"><i class="icon-road"></i> Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock nav %}
+
+  {% block content %}
+
+  {% endblock content %}
+
+ <!-- Le javascript
+ ================================================== -->
+ <!-- Placed at the end of the document so the pages load faster -->
+ {% block js_main %}
+ <script src="{% static "js/jquery.js" %}"></script>
+ <script src="{% static "js/bootstrap.js" %}"></script>
+ <script src="{% static "js/other.js" %}"></script>
+ {% block js_extra %}
+ {% endblock js_extra %}
+ {% endblock js_main %}
+</body>
+</html>

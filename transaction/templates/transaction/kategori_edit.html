@@ -1,0 +1,32 @@
+{% extends "transaction/base.html" %}
+{% load humanize %}
+{% load transaction_util %}
+{% load staticfiles %}
+{% block nav_kategori %}active{% endblock nav_kategori %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="span6 offset3 well">
+			<h3>Ubah Kategori</h3>
+			{% if form.errors %}
+			<div class="alert">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>Error:</strong> {{ form.errors}}
+			</div>
+			{% endif %}
+			<form class="form-horizontal" action="{% url 'kategori_edit' id%}" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				{% for field in form  %}
+				<div class="control-group">
+					<label class="control-label" for="id_{{ field.html_name}}" >{{ field.label }}</label>	
+					<div class="controls">
+						{{ field }}
+					</div>
+				</div>	
+				{% endfor %}
+				<button class="btn btn-primary" type="submit">Ubah</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}

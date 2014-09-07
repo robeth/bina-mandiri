@@ -1,0 +1,112 @@
+{% extends "transaction/base.html" %}
+{% load transaction_util %}
+{% load humanize %}
+{% load staticfiles %}
+{% block content %}
+{% if detail.general|length < 1 %}
+Not exist
+{% else %}
+
+<div class="container">
+  <div class="row">
+    <div class="span7 well">
+      <div class="row">
+        <div class="span2">
+          <ul class="thumbnails">
+            <li>
+              <a href="#" class="thumbnail">
+                <img data-src="holder.js/128x128" alt="">
+              </a>
+            </li>
+          </ul>
+          <label>Total: {{detail.total_bruto|floatformat:2|intcomma}}</label>
+          <label>Sejak: {{detail.general.0.tanggal_daftar|date:"d-m-Y"}}</label>
+        </div>
+        <div class="span3">
+          <form>
+            <div class="input-prepend">
+              <span class="add-on">@</span>
+              <input disabled id="name" placeholder="Nama" type="text" value="{{detail.general.0.nama}}">
+            </div>
+            <div class="input-prepend">
+              <span class="add-on"><i class="icon-headphones"></i></span>
+              <input disabled id="telepon" placeholder="Telepon" type="text" value="{{detail.general.0.telepon}}">
+            </div>
+            <div class="input-prepend">
+              <span class="add-on"><i class="icon-home"></i></span>
+              <input disabled id="kota" placeholder="Alamat" type="text" value="{{detail.general.0.alamat}}">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="span7">
+    </div>  
+  </div>
+
+  <div id="content" class="row">
+    <div class="span6">
+      <h3>Daftar Penjualan</h3>
+      <table class="table table-hover table-condensed table-bordered">
+        <thead class="center">
+          <tr class="center">
+            <th>#</th>
+            <th>Kode</th>
+            <th>Tanggal</th>
+            <th>Nilai</th>
+            <th>Netto</th>
+            <th>Barang</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pkey, p in detail.penjualan.items  %}
+          <tr>
+            <td class="center">{{forloop.counter}}</td>
+            <td class="center">{% penjualan_url pkey%}</td>
+            <td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
+            <td class="right">{{p.sum_bruto|floatformat:2|intcomma}}</td>
+            <td class="right">{{p.sum_netto|floatformat:2|intcomma}}</td>
+            <td>
+              {% for kkey, k in p.kategori.items  %}
+              <a href="#" data-toggle="tooltip" title="{{k.nama}}-{{k.nilai|floatformat:2|intcomma}}">{{kkey}}</a>
+              {% endfor %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="span6">
+      <h3>Daftar Barang</h3>
+      <table class="table table-hover table-condensed table-bordered">
+        <thead class="center">
+          <tr>
+            <th>#</th>
+            <th>Kode</th>
+            <th>Jumlah</th>
+            <th>Nilai</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if detail.stok|length < 1 %}
+            <tr><td colspan="4">Tidak ada history stok penjualan</td></tr>
+            {% else %}
+            {% for s in detail.stok %}
+            <tr>
+              <td class="center">{{forloop.counter}}</td>
+              <td><a href="#" data-toggle="tooltip" title="{{s.nama}}">{{s.kode}}</a></td>
+              <td class="right">{{s.jumlah|floatformat:2|intcomma}}</td>
+              <td class="right">{{s.nilai|floatformat:2|intcomma}}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div> 
+{% endif %}
+ 
+{% endblock content %}
+ {% block js_extra %}
+<script src="{% static "js/holder/holder.js" %}"></script>
+{% endblock js_extra %}

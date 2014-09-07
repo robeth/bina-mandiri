@@ -1,0 +1,156 @@
+{% extends "transaction/base.html" %}
+{% load transaction_util %}
+{% load staticfiles %}
+{% load humanize %}
+{% block content %}
+{% if detail.general == None %}
+Not found
+{% else %}
+<div class="container">
+      <div class="row">
+        <div class="span7 well">
+          <div class="row">
+            <div class="span2">
+              <ul class="thumbnails">
+                <li>
+                  <a href="#" class="thumbnail">
+                  {% if detail.general.foto %}
+                    <img src="{{ MEDIA_URL }}{{ detail.general.foto }}" alt="" width="128">
+                  {% else %}
+                    <img data-src="holder.js/128x128" alt="">
+                  {% endif %}
+                  </a>
+                </li>
+              </ul>
+              <label>Saldo: {{detail.general.saldo|floatformat:2|intcomma}}</label>
+              <label>Sejak: {{detail.general.tanggal_daftar|date:"d-m-Y"}}</label>
+            </div>
+            <div class="span3">
+              <form>
+                <div class="input-prepend">
+                  <span class="add-on"><i class="icon-tag"></i></span>
+                  <input disabled id="id" placeholder="Id" type="text" value="{{detail.general.ktp}}">
+                </div>
+                <div class="input-prepend">
+                  <span class="add-on"><i class="icon-question-sign"></i></span>
+                  <input disabled id="id" placeholder="Jenis" type="text" value="{{detail.general.jenis}}">
+                </div>
+                <div class="input-prepend">
+                  <span class="add-on">@</span>
+                  <input disabled id="name" placeholder="Nama" type="text" value="{{detail.general.nama}}">
+                </div>
+                <div class="input-prepend">
+                  <span class="add-on"><i class="icon-headphones"></i></span>
+                  <input disabled id="telepon" placeholder="Telepon" type="text" value="{{detail.general.telepon}}">
+                </div>
+                <div class="input-prepend">
+                  <span class="add-on"><i class="icon-home"></i></span>
+                  <input disabled id="kota" placeholder="Alamat" type="text" value="Surabaya">
+                </div>
+                <div class="input-prepend">
+                  <span class="add-on"><i class="icon-calendar"></i></span>
+                  <input disabled id="tanggal" placeholder="Tanggal Lahir" type="text" value="{{detail.general.tanggal_lahir}}">
+                </div>
+                <a class="btn btn-primary" href="{% url 'nasabah_edit' detail.general.id%}">Ubah</a>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="span7">
+        </div>  
+      </div>
+
+      <div id="content" class="row">
+        <div class="span6">
+        <h3>Daftar Pembelian</h3>
+          <table class="table table-hover table-condensed table-bordered">
+                <thead class="center">
+                  <tr>
+                    <th>#</th>
+                    <th>Kode</th>
+                    <th>Tanggal</th>
+                    <th>Total Transaksi</th>
+                    <th>Barang</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for pkey, p in detail.pembelian.items %}
+                  <tr>
+                    <td class="center">{{forloop.counter}}</td>
+                    <td class="center">{% pembelian_url p.id %}</td>
+                    <td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
+                    <td class="right">{{p.sum|floatformat:2|intcomma}}</td>
+                    <td>
+                      {% for kkey, k in p.kategori.items %}
+                        <code><a href="#" data-toggle="tooltip" title="{{k.nama}}-{{k.nilai|floatformat:2|intcomma}}">{{kkey}}</a></code>
+                      {% endfor %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+        <div class="span6">
+          <h3>Daftar Penarikan</h3>
+          <table class="table table-hover table-condensed table-bordered">
+                <thead class="center">
+                  <tr>
+                    <th>#</th>
+                    <th>Kode</th>
+                    <th>Tanggal</th>
+                    <th>Total Transaksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if detail.penarikan|length < 1 %}
+                  <tr><td colspan="4">Tidak ada penarikan</td></tr>
+                  {% else %}
+                  {% for p in  detail.penarikan%}
+                  <tr>
+                    <td class="center">{{forloop.counter}}</td>
+                    <td class="center">{% penarikan_url p.id%}</td>
+                    <td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
+                    <td class="right">{{p.total}}</td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+      <div id="content" class="row">
+        <div class="span6">
+        <h3>Daftar Barang</h3>
+          <table class="table table-hover table-condensed table-bordered">
+                <thead class="center">
+                  <tr>
+                    <th>#</th>
+                    <th>Kode</th>
+                    <th>Jumlah</th>
+                    <th>Nilai</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if detail.stok|length < 1 %}
+                  <tr><td colspan="4">Tidak ada history stok</td></tr>
+                  {% else %}
+                  {% for s in detail.stok %}
+                  <tr>
+                    <td class="center">{{forloop.counter}}</td>
+                    <td class="center"><code><a href="#" data-toggle="tooltip" title="{{s.nama}}">{{s.kode}}</a></code></td>
+                    <td class="right">{{s.jumlah|floatformat:2|intcomma}}</td>
+                    <td class="right">{{s.nilai|floatformat:2|intcomma}}</td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>  
+{% endif %}
+{% endblock content %}
+{% block js_extra %}
+<script src="{% static "js/holder/holder.js" %}"></script>
+{% endblock js_extra %}

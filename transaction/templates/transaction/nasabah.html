@@ -1,0 +1,93 @@
+{% extends "transaction/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load transaction_util %}
+{% block nav_data %}active{% endblock nav_data %}
+{% block content %}
+<div class="container">
+	{% for field in form %}
+	<div class="fieldWrapper">
+		{{ field.errors }}
+	</div>
+	{% endfor %}
+	<div class="row">
+		<div class="span12">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<a class="btn btn-primary pull-right" href="{% url 'nasabah_add' %}" role="button"><span class="glyphicon glyphicon-plus"> Nasabah</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="content" class="row">
+		<div class="span12">
+			<table id="table-nasabah" class="table table-hover table-condensed table-bordered">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Kode</th>
+						<th>Nama</th>
+						<th>Alamat</th>
+						<th>Telepon</th>
+						<th>Total In</th>
+						<th>Total Out</th>
+						<th>Saldo</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for n in nasabah  %}
+					<tr>
+						<td class="center">{{ forloop.counter }}</td>
+						<td>{% nasabah_url n.id %}</td>
+						<td>{{ n.nama }}</td>
+						<td>{{ n.alamat }}</td>
+						<td>{{ n.telepon }}</td>
+						<td class="right">{{ n.In|floatformat:2 }}</td>
+						<td class="right">{{ n.Out|floatformat:2 }}</td>
+						<td class="right">{{ n.saldo|floatformat:2 }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}
+{% block js_extra %}
+<script type="text/javascript">
+	Number.prototype.formatMoney = function(c, d, t){
+		var n = this, 
+		c = isNaN(c = Math.abs(c)) ? 2 : c, 
+		d = d == undefined ? "." : d, 
+		t = t == undefined ? "," : t, 
+		s = n < 0 ? "-" : "", 
+		i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
+		j = (j = i.length) > 3 ? j % 3 : 0;
+		return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+	};
+	$(document).ready(function() {
+		$('#table-nasabah').dataTable( {
+			"aoColumnDefs": [ {
+				"aTargets": [ 5 ],
+				"sType" : "numeric",
+			},{
+				"aTargets": [ 6 ],
+				"sType" : "numeric",
+			},{
+				"aTargets": [ 7 ],
+				"sType" : "numeric",
+			}],
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+</script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/other.js" %}"></script>
+{% endblock js_extra %}

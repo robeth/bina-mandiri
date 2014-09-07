@@ -1,0 +1,121 @@
+{% extends "transaction/base.html" %}
+{% load transaction_util %}
+{% load humanize %}
+{% load staticfiles %}
+{% block nav_activity %}active{% endblock nav_activity %}
+{% block content %}
+{% if general|length < 1 %}
+Not found
+{% else %}
+<div class="container">
+  <div id="content" class="row">
+    <div class="span12">
+      <button {% if not can_delete %}disabled{% endif %} class="btn btn-danger pull-right" href="#myModal" data-toggle="modal"><i class="icon-remove icon-white"></i> Hapus</button>
+      <button class="btn btn-success pull-right" onclick="location.href='{% url 'pembelian_print'  general.0.id %}'"><i class="icon-print icon-white"></i> Cetak</button>
+      <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="myModalLabel">Hapus Pembelian ID {{ general.0.id }}</h3>
+        </div>
+        <div class="modal-body">
+          <p>Apakah anda yakin?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
+          <button class="btn btn-danger" onclick="location.href='{% url 'pembelian_del'  general.0.id %}'">Ya</button>
+        </div>
+      </div>
+
+      <h3>Pembelian ID {{ general.0.id }}</h3>
+      <form>
+        <div class="input-prepend">
+          <span class="add-on">{% nasabah_url general.0.nasabah.id %}</span>
+          <input disabled id="name" placeholder="Nama" type="text" value="{{general.0.nasabah.nama}}">
+        </div>
+        <div class="input-prepend">
+          <span class="add-on"><i class="icon-tag"></i></span>
+          <input disabled id="nota" placeholder="Nota" type="text" value="{{general.0.nota}}">
+        </div>
+        <div class="input-prepend">
+          <span class="add-on"><i class="icon-calendar"></i></span>
+          <input disabled id="tanggal" placeholder="Tanggal Pembelian" type="text" value="{{general.0.tanggal|date:"Y-m-d"}}">
+        </div>
+      </form>
+      <table class="table table-hover table-condensed table-bordered">
+        <thead class="center">
+          <tr>
+            <th rowspan="2">#</th>
+            <th colspan="5">Pembelian</th>
+            <th colspan="4">Output</th>
+            <th colspan="2">Lain-Lain</th>
+          </tr>
+          <tr>
+            <th>Kode</th>
+            <th>Barang</th>
+            <th>Jumlah</th>
+            <th>Satuan</th>
+            <th>Total</th>
+            <th>Kode</th>
+            <th>Jumlah</th>
+            <th>Harga</th>
+            <th>Total</th>
+            <th>Sisa</th>
+            <th>Profit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for k,v in pembelian_detail.items %}
+          {% if v.has %}
+          {% for vp in v.keluaran %}
+         <tr>
+         {% if forloop.counter == 1 %}
+            <td class="center" rowspan="{{v.length}}">{{forloop.counter}}</td>
+            <td class="center" rowspan="{{v.length}}">{% stok_url v.id %}</td>
+            <td rowspan="{{v.length}}"><a href="#" data-toggle="tooltip" title="{{v.nama}}">{{v.kode}}</a></td>
+            <td class="right" rowspan="{{v.length}}">{{v.jumlah|floatformat:2|intcomma}}</td>
+            <td class="right" rowspan="{{v.length}}">{{v.harga|floatformat:2|intcomma}}</td>
+            <td class="right" rowspan="{{v.length}}">{{v.nilai_beli|floatformat:2|intcomma}}</td>
+          {% endif %}
+            <td class="center">{% if vp.status == 1 %} {% penjualan_url vp.kode_status %}
+                {% else %} {% konversi_url vp.kode_status %}
+                {% endif%}
+            </td>
+            <td class="right">{{vp.jumlah_keluar|floatformat:2|intcomma}}</td>
+            <td class="right">{{vp.harga_keluar|floatformat:2|intcomma}}</td>
+            <td class="right">{{vp.nilai_keluar|floatformat:2|intcomma}}</td>
+          {% if forloop.counter == 1 %}
+            <td class="right" rowspan="{{v.length}}">{{vp.sisa|floatformat:2|intcomma}}</td>
+          {% endif %}
+            <td class="right">{{vp.netto|floatformat:2|intcomma}}</td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td class="center">{{forloop.counter}}</td>
+            <td class="center">{% stok_url v.id %}</td>
+            <td><a href="#" data-toggle="tooltip" title="{{v.nama}}">{{v.kode}}</a></td>
+            <td class="right">{{v.jumlah|floatformat:2|intcomma}}</td>
+            <td class="right">{{v.harga|floatformat:2|intcomma}}</td>
+            <td class="right">{{v.nilai_beli|floatformat:2|intcomma}}</td>
+            <td colspan="3"></td>
+            <td class="right">0.00</td>
+            <td class="right">{{v.jumlah}}</td>
+            <td class="right">0.00</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          <tr>
+            <td colspan="5"></td>
+            <td class="right">{{ total_pembelian|floatformat:2|intcomma }}</td>
+            <td colspan="3"></td>
+            <td class="right">{{ total_penjualan|floatformat:2|intcomma }}</td>
+            <td></td>
+            <td class="right">{{ total_profit|floatformat:2|intcomma }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>  
+{% endif %}
+{% endblock content %}

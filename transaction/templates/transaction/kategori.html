@@ -1,0 +1,68 @@
+{% extends "transaction/base.html" %}
+{% load humanize %}
+{% load transaction_util %}
+{% load staticfiles %}
+{% block nav_data %}active{% endblock nav_data %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<a class="btn btn-primary pull-right" href="{% url 'kategori_add' %}" ><span class="glyphicon glyphicon-plus"> Kategori</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="content" class="row">
+		<div class="span12">
+			<table id="table-kategori" class="table table-hover table-condensed table-bordered">
+				<thead class="center">
+					<tr>
+						<th>#</th>
+						<th>Kode</th>
+						<th>Nama</th>
+						<th>Harga Normal</th>
+						<th>Harga Fluktuatif</th>
+						<th>Satuan</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for k in data  %}
+					<tr>
+						<td class="center">{{ forloop.counter }}</td>
+						<td class="center">{{ k.kode }}<a href="{% url 'kategori_edit' k.id %}"><i class="icon-pencil"></i></a></td>
+						<td>{{ k.nama }}</td>
+						<td class="right">{{ k.stabil|floatformat:2 }}</td>
+						<td class="right">{{ k.fluktuatif|floatformat:2 }}</td>
+						<td class="center">{{ k.satuan }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#table-kategori').dataTable( {
+			"aoColumnDefs": [ {
+				"aTargets": [ 3 ],
+				"sType" : "numeric",
+			},{
+				"aTargets": [ 4 ],
+				"sType" : "numeric",
+			}],
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+</script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+{% endblock js_extra %}

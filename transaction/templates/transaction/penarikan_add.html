@@ -1,0 +1,67 @@
+{% extends "transaction/base-ui.html" %}
+{% load humanize %}
+{% load transaction_util %}
+{% load staticfiles %}
+{% block nav_penarikan %}active{% endblock nav_penarikan %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="span6 offset3 well">
+			<h3>Tambah Penarikan</h3>
+			{% if form.errors %}
+			<div class="alert">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>Error:</strong> {{ form.errors}}
+			</div>
+			{% endif %}
+			<form class="form-horizontal" action="{% url 'penarikan_add' %}" method="POST">
+				{% csrf_token %}
+				<div class="control-group">
+					<label class="control-label" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>	
+					<div class="controls">
+						<select class="easyui-combobox" name="nasabah" id="id_{{form.nasabah.html_name}}">
+							{% for n in nasabah %}
+							<option value="{{ n.id  }}">{{n.nama}}-{{n.saldo}}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
+					<div class="controls">
+						{{ form.tanggal}}
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
+					<div class="controls">
+						{{ form.nota}}
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="id_{{ form.total.html_name}}" >{{ form.total.label }}</label>	
+					<div class="controls">
+						{{ form.total}}
+					</div>
+				</div>
+				<button class="btn btn-primary" type="submit">Tambah</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$( "#id_{{ form.tanggal.html_name}}" ).datepicker({ dateFormat: "yy-mm-dd",
+			"showAnim" : "slideDown",
+			"changeMonth" : true,
+			"changeYear" : true});
+	});
+
+</script>
+{% endblock js_extra %}

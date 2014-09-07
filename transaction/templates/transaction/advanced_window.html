@@ -1,0 +1,27 @@
+<div class="row">
+	<div class="span6 offset1">
+		<div id="adv-window" class="well">
+			<form class="form-horizontal" method="GET" action="{% url 'pembelian'%}" >
+				<div class="control-group">
+					<label class="control-label" for="inputDate">Tanggal</label>
+					<div class="controls">
+						<input class="input-small" id="inputDate" placeholder="Mulai" type="text" name="inputDate">
+						<input class="input-small" id="inputEnd" placeholder="Akhir" type="text" name="inputEnd">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label" for="inputValue">Nilai</label>
+					<div class="controls">
+						<input class="input-small" id="inputValue" placeholder="Min" type="text">
+						<input class="input-small" id="inputVEnd" placeholder="Max" type="text">
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="controls">
+						<button type="submit" class="btn btn-primary"><i class="icon-refresh"></i>Refresh</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

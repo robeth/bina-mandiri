@@ -1,0 +1,81 @@
+{% extends "transaction/base.html" %}
+{% block nav_data %}active{% endblock nav_data %}
+{% load humanize %}
+{% load staticfiles %}
+{% load transaction_util %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<form class="navbar-search pull-left">
+						
+					</form>
+					<a class="btn btn-primary pull-right" href="{% url 'vendor_add' %}" data-toggle="modal"><span class="glyphicon glyphicon-plus"> Vendor</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="content" class="row">
+		<div class="span12">
+			<table id="table-vendor" class="table table-hover table-condensed table-bordered">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Kode</th>
+						<th>Nama</th>
+						<th>Alamat</th>
+						<th>Telepon</th>
+						<th>Total Transaksi</th>
+						<th>Netto</th>
+						<th>Barang</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for k, v in vendor.items %}
+					<tr>
+						<td class="center">{{ forloop.counter }}</td>
+						<td class="center">{% vendor_url k%}</td>
+						<td>{{ v.nama }}</td>
+						<td>{{ v.alamat }}</td>
+						<td>{{ v.telepon }}</td>
+						<td class="right">{{ v.sum_bruto|floatformat:2 }}</td>
+						<td class="right">{{ v.sum_netto|floatformat:2}}</td>
+						<td>
+							{% for kk, vv in v.kategori.items %}
+							<a href="#" data-toggle="tooltip" title="{{ vv.nama }}-{{ vv.nilai|floatformat:2|intcomma }}">{{ kk }}</a>	
+							{% endfor %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#table-vendor').dataTable( {
+			"aoColumnDefs": [ {
+					"aTargets": [ 5 ],
+					"sType" : "numeric",
+				},{
+					"aTargets": [ 6 ],
+					"sType" : "numeric",
+				}],
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+</script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/other.js" %}"></script>
+{% endblock js_extra %}
