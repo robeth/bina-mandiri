@@ -45,7 +45,7 @@
 						<td class="right">{{ v.sum_netto|floatformat:2}}</td>
 						<td>
 							{% for kk, vv in v.kategori.items %}
-							<a href="#" data-toggle="tooltip" title="{{ vv.nama }}-{{ vv.nilai|floatformat:2|intcomma }}">{{ kk }}</a>	
+							<code><a href="#" data-toggle="tooltip" title="{{ vv.nama }}-{{ vv.nilai|floatformat:2|intcomma }}">{{ kk }}</a></code>	
 							{% endfor %}
 						</td>
 					</tr>
