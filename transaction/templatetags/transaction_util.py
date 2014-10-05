@@ -4,6 +4,8 @@ from django.core.serializers import serialize
 from django.utils import simplejson
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
+import re
+from django.utils.safestring import mark_safe
 
 register = Library()
 
@@ -60,6 +62,11 @@ def penarikan_url(penarikan_id):
 def get_range( value ):
   return range(1, value+1)
 
+@register.filter
+def unique_penjualan(stocks):
+  res = [ s.kategori.kode for s in stocks]
+  return set(res)
+
 @register.simple_tag
 def calculate_gross(p):
   gross_amount = 0
@@ -91,3 +98,26 @@ def calculate_netto(p):
 
 #   for sales_stock in p.stocks.all():
 #     netto += sales_stock.jumlah * sales_stock.
+
+@register.simple_tag
+def if_empty(content):
+  if len(content) > 0:
+    return content
+  return "-"
+
+class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
+@register.filter
+def add_class(value, css_class):
+    string = unicode(value)
+    match = class_re.search(string)
+    if match:
+        m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class, 
+                                                    css_class, css_class), 
+                                                    match.group(1))
+        print match.group(1)
+        if not m:
+            return mark_safe(class_re.sub(match.group(1) + " " + css_class, 
+                                          string))
+    else:
+        return mark_safe(string.replace('>', ' class="%s">' % css_class))
+    return value
