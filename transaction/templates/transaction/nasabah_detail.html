@@ -8,60 +8,66 @@ Not found
 {% else %}
 <div class="container">
       <div class="row">
-        <div class="span7 well">
+        <div class="col-md-7 well">
           <div class="row">
-            <div class="span2">
-              <ul class="thumbnails">
-                <li>
-                  <a href="#" class="thumbnail">
-                  {% if detail.general.foto %}
-                    <img src="{{ MEDIA_URL }}{{ detail.general.foto }}" alt="" width="128">
-                  {% else %}
-                    <img data-src="holder.js/128x128" alt="">
-                  {% endif %}
-                  </a>
-                </li>
-              </ul>
-              <label>Saldo: {{detail.general.saldo|floatformat:2|intcomma}}</label>
-              <label>Sejak: {{detail.general.tanggal_daftar|date:"d-m-Y"}}</label>
+            <div class="col-md-5">
+              <a href="#" class="thumbnail">
+              {% if detail.general.foto %}
+                <img src="{{ MEDIA_URL }}{{ detail.general.foto }}" alt="" width="128">
+              {% else %}
+                <img data-src="holder.js/128x128" alt="">
+              {% endif %}
+              </a>
+              <p>Saldo: {{detail.general.saldo|floatformat:2|intcomma}}</p>
+              <p>Sejak: {{detail.general.tanggal_daftar|date:"d-m-Y"}}</p>
             </div>
-            <div class="span3">
-              <form>
-                <div class="input-prepend">
-                  <span class="add-on"><i class="icon-tag"></i></span>
-                  <input disabled id="id" placeholder="Id" type="text" value="{{detail.general.ktp}}">
+            <div class="col-md-5">
+              <form role="form">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-tag"></span></div>
+                    <input class="form-control" disabled id="id" placeholder="Id" type="text" value="{%if_empty detail.general.ktp%}">
+                  </div>
                 </div>
-                <div class="input-prepend">
-                  <span class="add-on"><i class="icon-question-sign"></i></span>
-                  <input disabled id="id" placeholder="Jenis" type="text" value="{{detail.general.jenis}}">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-question-sign"></span></div>
+                    <input class="form-control" disabled id="id" placeholder="Jenis" type="text" value="{{detail.general.jenis}}">
+                  </div>
                 </div>
-                <div class="input-prepend">
-                  <span class="add-on">@</span>
-                  <input disabled id="name" placeholder="Nama" type="text" value="{{detail.general.nama}}">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon">@</div>
+                    <input class="form-control" disabled id="name" placeholder="Nama" type="text" value="{{detail.general.nama}}">
+                  </div>
                 </div>
-                <div class="input-prepend">
-                  <span class="add-on"><i class="icon-headphones"></i></span>
-                  <input disabled id="telepon" placeholder="Telepon" type="text" value="{{detail.general.telepon}}">
+               <div class="form-group">
+                  <div class="input-group">
+                   <div class="input-group-addon"><span class="glyphicon glyphicon-headphones"></span></div>
+                   <input class="form-control" disabled id="telepon" placeholder="Telepon" type="text" value="{%if_empty detail.general.telepon%}">
+                 </div>
+               </div>
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-home"></span></div>
+                    <input class="form-control" disabled id="kota" placeholder="Alamat" type="text" value="{%if_empty detail.general.alamat%}">
+                  </div>
                 </div>
-                <div class="input-prepend">
-                  <span class="add-on"><i class="icon-home"></i></span>
-                  <input disabled id="kota" placeholder="Alamat" type="text" value="Surabaya">
-                </div>
-                <div class="input-prepend">
-                  <span class="add-on"><i class="icon-calendar"></i></span>
-                  <input disabled id="tanggal" placeholder="Tanggal Lahir" type="text" value="{{detail.general.tanggal_lahir}}">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></div>
+                    <input class="form-control" disabled id="tanggal" placeholder="Tanggal Lahir" type="text" value="{{detail.general.tanggal_lahir}}">
+                  </div>
                 </div>
                 <a class="btn btn-primary" href="{% url 'nasabah_edit' detail.general.id%}">Ubah</a>
               </form>
             </div>
           </div>
         </div>
-        <div class="span7">
-        </div>  
       </div>
 
       <div id="content" class="row">
-        <div class="span6">
+        <div class="col-md-6">
         <h3>Daftar Pembelian</h3>
           <table class="table table-hover table-condensed table-bordered">
                 <thead class="center">
@@ -90,7 +96,7 @@ Not found
                 </tbody>
               </table>
             </div>
-        <div class="span6">
+        <div class="col-md-6">
           <h3>Daftar Penarikan</h3>
           <table class="table table-hover table-condensed table-bordered">
                 <thead class="center">
@@ -120,7 +126,7 @@ Not found
           </div>
 
       <div id="content" class="row">
-        <div class="span6">
+        <div class="col-md-6">
         <h3>Daftar Barang</h3>
           <table class="table table-hover table-condensed table-bordered">
                 <thead class="center">
