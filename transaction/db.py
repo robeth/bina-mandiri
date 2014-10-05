@@ -4,17 +4,34 @@ from datetime import datetime
 def to_dict(c):
 	return [ dict(zip([col[0] for col in c.description], row)) for row in c.fetchall()]
 
-def q_nasabah():
-	c = connection.cursor()
-	c.execute("select n.id, n.nama, n.alamat, n.telepon, coalesce(inning.total,0) as 'In', coalesce(outting.total,0) as 'Out' from transaction_nasabah n left outer join (select p.nasabah_id as id, sum(s.jumlah*s.harga) as total from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok s on s.id = ps.stok_id group by p.nasabah_id) as inning on n.id = inning.id left outer join (select n.id as id, sum(p.total) as total from transaction_nasabah n join transaction_penarikan p on n.id = p.nasabah_id group by n.id) as outting on n.id = outting.id where n.jenis='individu'")
-	res = to_dict(c)
-	for t in res:
-		t['saldo'] = t['In'] - t['Out'] 
-	return res
+def strip(query):
+	return query.replace('\n', ' ').replace('\t', ' ')
 
-def q_nasabah_kolektif():
+def q_nasabah(kind):
 	c = connection.cursor()
-	c.execute("select n.id, n.nama, n.alamat, n.telepon, coalesce(inning.total,0) as 'In', coalesce(outting.total,0) as 'Out' from transaction_nasabah n left outer join (select p.nasabah_id as id, sum(s.jumlah*s.harga) as total from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok s on s.id = ps.stok_id group by p.nasabah_id) as inning on n.id = inning.id left outer join (select n.id as id, sum(p.total) as total from transaction_nasabah n join transaction_penarikan p on n.id = p.nasabah_id group by n.id) as outting on n.id = outting.id where n.jenis='kolektif'")
+	c.execute(strip(
+		"""SELECT n.id,
+		       n.nama,
+		       n.alamat,
+		       n.telepon,
+		       coalesce(inning.total,0) AS 'In',
+		       coalesce(outting.total,0) AS 'Out'
+		FROM transaction_nasabah n
+		LEFT OUTER JOIN
+		 (SELECT p.nasabah_id AS id,
+		         sum(s.jumlah*s.harga) AS total
+		  FROM transaction_pembelian p
+		  JOIN transaction_pembelian_stocks ps ON p.id = ps.pembelian_id
+		  JOIN transaction_stok s ON s.id = ps.stok_id
+		  GROUP BY p.nasabah_id) AS inning ON n.id = inning.id
+		LEFT OUTER JOIN
+		 (SELECT n.id AS id,
+		         sum(p.total) AS total
+		  FROM transaction_nasabah n
+		  JOIN transaction_penarikan p ON n.id = p.nasabah_id
+		  GROUP BY n.id) AS outting ON n.id = outting.id
+		WHERE n.jenis=%s
+		"""), [kind])
 	res = to_dict(c)
 	for t in res:
 		t['saldo'] = t['In'] - t['Out'] 
@@ -30,7 +47,37 @@ def q_nasabah_all():
 
 def q_vendor():
 	c = connection.cursor()
-	c.execute("select v.id, v.nama, v.alamat, v.telepon, coalesce(r.sid,-1) as stokid, r.kode, r.nama as stok_nama, r.deskripsi, v.nama, v.alamat, v.telepon, coalesce(r.gross,0) as bruto, coalesce(r.netto,0) as netto from transaction_vendor v left outer join ( select p.vendor_id as id, s.id as sid, s.kode, s.nama, s.deskripsi, sum(dp.jumlah*dp.harga) as gross, sum(dp.jumlah*(dp.harga-s.harga)) as netto from transaction_detailpenjualan dp join transaction_penjualan p on dp.penjualan_id = p.id join transaction_stok_det s on s.id = dp.stok_id group by p.vendor_id, s.id) as r on v.id = r.id order by v.id asc, bruto desc")
+	c.execute(strip(
+		"""SELECT v.id,
+		       v.nama,
+		       v.alamat,
+		       v.telepon,
+		       coalesce(r.sid,-1) AS stokid,
+		       r.kode,
+		       r.nama AS stok_nama,
+		       r.deskripsi,
+		       v.nama,
+		       v.alamat,
+		       v.telepon,
+		       coalesce(r.gross,0) AS bruto,
+		       coalesce(r.netto,0) AS netto
+		FROM transaction_vendor v
+		LEFT OUTER JOIN
+		 (SELECT p.vendor_id AS id,
+		         s.id AS sid,
+		         s.kode,
+		         s.nama,
+		         s.deskripsi,
+		         sum(dp.jumlah*dp.harga) AS gross,
+		         sum(dp.jumlah*(dp.harga-s.harga)) AS netto
+		  FROM transaction_detailpenjualan dp
+		  JOIN transaction_penjualan p ON dp.penjualan_id = p.id
+		  JOIN transaction_stok_det s ON s.id = dp.stok_id
+		  GROUP BY p.vendor_id,
+		           s.id) AS r ON v.id = r.id
+		ORDER BY v.id ASC,
+		         bruto DESC
+		 """))
 	res = to_dict(c)
 
 	res2 = {}
@@ -165,7 +212,33 @@ def q_nasabah_detail(nasabah_id):
 	res = {}
 	
 	c = connection.cursor()
-	c.execute("select n.id, n.jenis, n.ktp, n.nama, n.alamat, n.telepon, n.tanggal_daftar, n.tanggal_lahir, n.foto, coalesce(inning.total,0) as 'In', coalesce(outting.total,0) as 'Out' from transaction_nasabah n left outer join (select p.nasabah_id as id, sum(s.jumlah*s.harga) as total from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok s on s.id = ps.stok_id group by p.nasabah_id) as inning on n.id = inning.id left outer join (select n.id as id, sum(p.total) as total from transaction_nasabah n join transaction_penarikan p on n.id = p.nasabah_id group by n.id) as outting on n.id = outting.id where n.id=%s",[nasabah_id])
+	c.execute(strip(
+		"""SELECT n.id,
+			       n.jenis,
+			       n.ktp,
+			       n.nama,
+			       n.alamat,
+			       n.telepon,
+			       n.tanggal_daftar,
+			       n.tanggal_lahir,
+			       n.foto,
+			       coalesce(inning.total,0) AS 'In',
+			       coalesce(outting.total,0) AS 'Out'
+			FROM transaction_nasabah n
+			LEFT OUTER JOIN
+			 (SELECT p.nasabah_id AS id,
+			         sum(s.jumlah*s.harga) AS total
+			  FROM transaction_pembelian p
+			  JOIN transaction_pembelian_stocks ps ON p.id = ps.pembelian_id
+			  JOIN transaction_stok s ON s.id = ps.stok_id
+			  GROUP BY p.nasabah_id) AS inning ON n.id = inning.id
+			LEFT OUTER JOIN
+			 (SELECT n.id AS id,
+			         sum(p.total) AS total
+			  FROM transaction_nasabah n
+			  JOIN transaction_penarikan p ON n.id = p.nasabah_id
+			  GROUP BY n.id) AS outting ON n.id = outting.id
+			WHERE n.id=%s"""),[nasabah_id])
 	temp = to_dict(c)
 	res['general'] = None
 	if len(temp) > 0:
