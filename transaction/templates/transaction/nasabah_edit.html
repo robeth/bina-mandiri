@@ -6,7 +6,7 @@
 {% block content %}
 <div class="container">
 	<div class="row">
-		<div class="span6 offset3 well">
+		<div class="col-md-6 col-md-offset-3 well">
 			<h3>Ubah Nasabah</h3>
 			{% if form.errors %}
 			<div class="alert">
@@ -14,12 +14,12 @@
 				<strong>Error:</strong> {{ form.errors}}
 			</div>
 			{% endif %}
-			<form class="form-horizontal" action="{% url 'nasabah_edit' id%}" method="post" enctype="multipart/form-data">
+			<form class="form-horizontal" role="form" action="{% url 'nasabah_edit' id%}" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
-				<div class="control-group">
-					<label class="control-label" for="id_jenis" >Jenis</label>	
-					<div class="controls">
-						<select id="id_jenis" name="jenis">
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_jenis" >Jenis</label>	
+					<div class="col-md-10">
+						<select class="form-control" id="id_jenis" name="jenis">
 							<option value="individu" {% if form.jenis.value == 'individu' %}selected{% endif %}>Individu</option>
 							<option value="kolektif" {% if form.jenis.value == 'kolektif' %}selected{% endif %}>Kolektif</option>
 						</select>
@@ -28,10 +28,14 @@
 				</div>
 				{% for field in form  %}
 				{% if field.label != 'Jenis' %}
-				<div class="control-group">
-					<label class="control-label" for="id_{{ field.html_name}}" >{{ field.label }}</label>	
-					<div class="controls">
+				<div class="form-group">
+					<label class="col-md-2 control-label" for="id_{{ field.html_name}}" >{{ field.label }}</label>	
+					<div class="col-md-10">
+						{% if field.label != 'Foto' %}
+						{{ field|add_class:"form-control" }}
+						{% else %}
 						{{ field }}
+						{% endif %}
 					</div>
 				</div>	
 				{% endif %}
