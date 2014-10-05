@@ -9,43 +9,43 @@ Not exist
 
 <div class="container">
   <div class="row">
-    <div class="span7 well">
+    <div class="col-md-8 well">
       <div class="row">
-        <div class="span2">
-          <ul class="thumbnails">
-            <li>
-              <a href="#" class="thumbnail">
-                <img data-src="holder.js/128x128" alt="">
-              </a>
-            </li>
-          </ul>
-          <label>Total: {{detail.total_bruto|floatformat:2|intcomma}}</label>
-          <label>Sejak: {{detail.general.0.tanggal_daftar|date:"d-m-Y"}}</label>
+        <div class="col-md-5">
+          <a href="#" class="thumbnail">
+            <img data-src="holder.js/128x128" alt="">
+          </a>
+          <p>Total: {{detail.total_bruto|floatformat:2|intcomma}}</p>
+          <p>Sejak: {{detail.general.0.tanggal_daftar|date:"d-m-Y"}}</p>
         </div>
-        <div class="span3">
-          <form>
-            <div class="input-prepend">
-              <span class="add-on">@</span>
-              <input disabled id="name" placeholder="Nama" type="text" value="{{detail.general.0.nama}}">
+        <div class="col-md-7 ">
+          <form role="form">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">@</div>
+                <input class="form-control" disabled id="name" placeholder="Nama" type="text" value="{{detail.general.0.nama}}">
+              </div>
             </div>
-            <div class="input-prepend">
-              <span class="add-on"><i class="icon-headphones"></i></span>
-              <input disabled id="telepon" placeholder="Telepon" type="text" value="{{detail.general.0.telepon}}">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon"><span class="glyphicon glyphicon-headphones"></span></div>
+                <input class="form-control" disabled id="telepon" placeholder="Telepon" type="text" value="{% if_empty detail.general.0.telepon%}">
+              </div>
             </div>
-            <div class="input-prepend">
-              <span class="add-on"><i class="icon-home"></i></span>
-              <input disabled id="kota" placeholder="Alamat" type="text" value="{{detail.general.0.alamat}}">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon"><span class="glyphicon glyphicon-home"></span></div>
+                <input class="form-control" disabled id="kota" placeholder="Alamat" type="text" value="{%if_empty detail.general.0.alamat%}">
+              </div>
             </div>
           </form>
         </div>
       </div>
     </div>
-    <div class="span7">
-    </div>  
   </div>
 
   <div id="content" class="row">
-    <div class="span6">
+    <div class="col-md-6">
       <h3>Daftar Penjualan</h3>
       <table class="table table-hover table-condensed table-bordered">
         <thead class="center">
@@ -76,7 +76,7 @@ Not exist
         </tbody>
       </table>
     </div>
-    <div class="span6">
+    <div class="col-md-6">
       <h3>Daftar Barang</h3>
       <table class="table table-hover table-condensed table-bordered">
         <thead class="center">
