@@ -7,8 +7,8 @@
 
 <div class="container">
 	<div class="row">
-		<div class="span6 offset3 well">
-			<h3>Tambah Nasabah</h3>
+		<div class="col-md-6 col-md-offset-3 well">
+			<h3>Tambah Nasabah</h3>	
 			{% if form.errors %}
 			<div class="alert">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -17,9 +17,9 @@
 			{% endif %}
 			<form class="form-horizontal" action="{% url 'nasabah_add' %}" method="post" enctype="multipart/form-data">
 				{% csrf_token %}
-				<div class="control-group">
-					<label class="control-label" for="id_jenis" >Jenis</label>	
-					<div class="controls">
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_jenis" >Jenis</label>	
+					<div class="col-md-10">
 						<select id="id_jenis" name="jenis">
 							<option value="individu">Individu</option>
 							<option value="kolektif">Kolektif</option>
@@ -29,10 +29,14 @@
 				</div>
 				{% for field in form  %}
 				{% if field.label != 'Jenis' %}
-				<div class="control-group">
-					<label class="control-label" for="id_{{ field.html_name}}" >{{ field.label }}</label>	
-					<div class="controls">
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ field.html_name}}" >{{ field.label }}</label>	
+					<div class="col-md-10">
+						{% if field.label != "Foto"%}
+						{{ field|add_class:"form-control" }}
+						{% else %}
 						{{ field }}
+						{% endif%}
 					</div>
 				</div>		
 				{% endif %}
