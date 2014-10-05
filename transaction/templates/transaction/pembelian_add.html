@@ -7,7 +7,7 @@
 <div class="container">
 	<form class="form-horizontal" action="{% url 'pembelian_add' %}" method="post" enctype="multipart/form-data">
 		<div class="row">
-			<div class="span6 offset3 well">
+			<div class="col-md-10 col-md-offset-1 well">
 				<h3>Tambah Pembelian</h3>
 				{% if form.errors %}
 				<div class="alert">
@@ -16,42 +16,54 @@
 				</div>
 				{% endif %}
 				{% csrf_token %}
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
-					<div class="controls">
-						{{ form.tanggal }}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
+					<div class="col-md-10">
+						{{ form.tanggal|add_class:"form-control" }}
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
-					<div class="controls">
-						{{ form.nota }}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
+					<div class="col-md-10">
+						{{ form.nota|add_class:"form-control" }}
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="id_cash" >Cash</label>	
-					<div class="controls">
-						<input type="checkbox" name="cash" value="yes"/><input type="text" id="id_nota_cash" name="nota_cash" maxlength="20" placeholder="nota cash (opsional)" />
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_cash" >Cash</label>	
+					<div class="col-md-10">
+						<input type="checkbox" name="cash" value="yes"/><input type="text" id="id_nota_cash" name="nota_cash" maxlength="20" placeholder="nota cash (opsional)" class="form-control"/>
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>	
-					<div class="controls">
-						{{ form.nasabah }}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>	
+					<div class="col-md-10">
+						{{ form.nasabah|add_class:"form-control" }}
 					</div>
 				</div>
 
+				<h3>Daftar Barang</h3>
+
 				<input class="inputs-counter" type="hidden" name="total" value="1" />
-				<div class="dynamic-inputs">
-					<div class="inputs">
-						{#  #}
+				<div class="row">
+					<div class="col-md-10 col-md-offset-1">
+						<div class="dynamic-inputs">
+							<div class="inputs">
+								{#  #}
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="toolbar">
-					<button type=button class="add-input btn" >+</button>
-					<button type=button class="remove-input btn" >-</button>
+				<div class="row">
+					<div class="col-md-4">
+						<div class="toolbar">
+							<button type=button class="add-input btn" >+</button>
+							<button type=button class="remove-input btn" >-</button>
+						</div>
+					</div>
+					<div class="col-md-2 col-md-offset-6">
+						<button class="btn btn-primary" type="submit">Tambah</button>
+					</div>
 				</div>
-				<button class="btn btn-primary" type="submit">Tambah</button>
 			</div>
 		</div>
 	</form>

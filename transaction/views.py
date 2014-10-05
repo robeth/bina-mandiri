@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.utils.dateparse import parse_date
-from transaction.helper import paginate_data
+from transaction.helper import paginate_data, customize_pages
 
 ENTRY_PER_PAGE = 100
 
@@ -175,7 +175,8 @@ def pembelian(request):
 		request.GET.get('page'),
 		100)
 		
-	context = { 'pembelian': pembelian_entries, 'user': request.user}
+	context = { 'pembelian': pembelian_entries, 'user': request.user, 
+		"pages": customize_pages(pembelian_entries.number, pembelian_entries.paginator.num_pages)}
 	return render(request, 'transaction/pembelian.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

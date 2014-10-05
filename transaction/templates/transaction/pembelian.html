@@ -22,7 +22,7 @@
 			<div class="navbar">
 				<div class="navbar-inner">
 
-					<a class="btn btn-primary pull-right" href="{% url 'pembelian_add' %}" data-toggle="modal"><i class="icon-plus icon-white"></i>Pembelian</a>
+					<a class="btn btn-primary pull-right" href="{% url 'pembelian_add' %}" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Pembelian</a>
 				</div>
 			</div>
 		</div>
@@ -30,7 +30,7 @@
 
 
 	<div id="content" class="row">
-		<div class="span12">
+		<div class="col-md-12">
 			<table id="table-pembelian" class="table table-hover table-condensed table-bordered display">
 				<thead>
 					<tr class="center-head">
@@ -53,8 +53,8 @@
 						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
 						<td class="right">{% calculate_gross p %}</td>
 						<td>
-							{% for stok in p.stocks.all %}
-							<a href="#" data-toggle="tooltip">{{ stok.kategori.kode }}</a>
+							{% for stock_code in p.stocks.all|unique_item %}
+							<code>{{ stock_code }}</code>
 							{% endfor %}
 						</td>
 					</tr>
@@ -63,20 +63,22 @@
 			</table>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<ul class="pagination">
+				<li><a href="{% url 'pembelian' %}">&laquo; Pertama</a></li>
+				{% for i in pages %}
+					{% if forloop.last %}
+						<li><a href="{% url 'pembelian' %}?page={{ i }}">Terakhir &raquo;</a></li>
+					{% else %}
+						<li {% if pembelian.number == i %}class="active"{% endif %}><a href="{% url 'pembelian' %}?page={{i}}">{{i}}</a></li>
+					{% endif%}
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
 </div>
-<ul class="pagination">
-		
-	<li><a href="{% url 'pembelian' %}">&laquo;</a></li>
-	
 
-	{% for i in pembelian.paginator.num_pages|get_range %}
-	<li {% if pembelian.number == i %}class="active"{% endif %}><a href="{% url 'pembelian' %}?page={{i}}">{{i}}</a></li>
-	{% endfor %}
-	
-	
-	<li><a href="{% url 'pembelian' %}?page={{ pembelian.paginator.num_pages }}">&raquo;</a></li>
-	
-</ul>
 
 {% endblock content %}
 {% block js_extra %}

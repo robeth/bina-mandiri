@@ -63,7 +63,7 @@ def get_range( value ):
   return range(1, value+1)
 
 @register.filter
-def unique_penjualan(stocks):
+def unique_item(stocks):
   res = [ s.kategori.kode for s in stocks]
   return set(res)
 
@@ -74,7 +74,7 @@ def calculate_gross(p):
   for stock in p.stocks.all():
     gross_amount += stock.jumlah * stock.harga
 
-  return "%.2f"%gross_amount
+  return '{0:,.2f}'.format(gross_amount)
 
 @register.simple_tag
 def calculate_bruto(p):
@@ -82,7 +82,7 @@ def calculate_bruto(p):
   for sales_stock in p.detailpenjualan_set.all():
     bruto += sales_stock.harga * sales_stock.jumlah
 
-  return "%.2f"%bruto
+  return '{0:,.2f}'.format(bruto)
 
 @register.simple_tag
 def calculate_netto(p):
@@ -90,7 +90,7 @@ def calculate_netto(p):
   for sales_stock in p.detailpenjualan_set.all():
     netto += (sales_stock.harga - sales_stock.stok.harga) * sales_stock.jumlah
 
-  return "%.2f"%netto
+  return '{0:,.2f}'.format(netto)
 # @register.simple_tag
 # def calculate_netto(p):
 

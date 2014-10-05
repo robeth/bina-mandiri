@@ -10,25 +10,33 @@
 Not found
 {% else %}
 <div class="container">
-  <div id="content" class="row">
-    <div class="span12">
-      {# <button class="btn btn-danger pull-right"><i class="icon-trash icon-white"></i> Hapus</button> #}
-      {# <button class="btn btn-success pull-right"><i class="icon-print icon-white"></i> Cetak</button> #}
-      <h3>Pembelian ID {{general.0.id}}</h3>
-      <form>
-        <div class="input-prepend">
-          <span class="add-on">{% nasabah_url general.0.nasabah.id %}</span>
-          <input disabled id="name" placeholder="Nama" type="text" value="{{general.0.nasabah.nama}}">
+  <div class="row">
+    <div class="col-md-4 well">
+      <h3>Pembelian ID {{ general.0.id }}</h3>
+      <form >
+        <div class="form-group">
+          <div class="input-group">
+              <div class="input-group-addon">{% nasabah_url general.0.nasabah.id %}</div>
+              <input class="form-control" disabled id="name" placeholder="Nama" type="text" value="{{general.0.nasabah.nama}}">
+          </div>
         </div>
-        <div class="input-prepend">
-          <span class="add-on"><i class="icon-tag"></i></span>
-          <input disabled id="nota" placeholder="Nota" type="text" value="{{general.0.nota}}">
+        <div class="form-group">
+          <div class="input-group">
+              <div class="input-group-addon"><span class="glyphicon glyphicon-tag"></span></div>
+              <input class="form-control" disabled id="nota" placeholder="Nota" type="text" value="{{general.0.nota}}">
+          </div>
         </div>
-        <div class="input-prepend">
-          <span class="add-on"><i class="icon-calendar"></i></span>
-          <input disabled id="tanggal" placeholder="Tanggal Pembelian" type="text" value="{{general.0.tanggal|date:"Y-m-d"}}">
+        <div class="form-group">
+          <div class="input-group">
+              <div class="input-group-addon"><span class="glyphicon glyphicon-calendar"></div>
+              <input class="form-control" disabled id="tanggal" placeholder="Tanggal Pembelian" type="text" value="{{general.0.tanggal|date:"Y-m-d"}}">
+          </div>
         </div>
       </form>
+    </div>
+  </div>
+  <div id="content" class="row">
+    <div class="col-md-12">
       <table class="table table-hover table-condensed table-bordered">
         <thead class="center">
           <tr>
@@ -104,6 +112,6 @@ Not found
       </table>
     </div>
   </div>
-</div>  
+</div> 
 {% endif %}
 {% endblock content %}
