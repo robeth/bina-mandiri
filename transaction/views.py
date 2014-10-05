@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.utils.dateparse import parse_date
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from transaction.helper import paginate_data
 
 ENTRY_PER_PAGE = 100
 
@@ -170,17 +170,11 @@ def vendor_edit(request, vendor_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
 def pembelian(request):
-	pembelian_entries = Pembelian.objects.all().order_by('-tanggal')
-	pager = Paginator(pembelian_entries, 100)
-	selected_page = request.GET.get('page')
-
-	try:
-		pembelian_entries = pager.page(selected_page)
-	except PageNotAnInteger:
-		pembelian_entries = pager.page(1)
-	except EmptyPage:
-		pembelian_entries = pager.page(pager.num_pages)
-
+	pembelian_entries = paginate_data(
+		Pembelian.objects.all().order_by('-tanggal'),
+		request.GET.get('page'),
+		100)
+		
 	context = { 'pembelian': pembelian_entries, 'user': request.user}
 	return render(request, 'transaction/pembelian.html', context)
 
@@ -251,17 +245,11 @@ def pembelian_del(request, pembelian_id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
-def penjualan(request):
-	penjualan_entries = Penjualan.objects.all().order_by('-tanggal')
-	pager = Paginator(penjualan_entries, 100)
-	selected_page = request.GET.get('page')
-
-	try:
-		penjualan_entries = pager.page(selected_page)
-	except PageNotAnInteger:
-		penjualan_entries = pager.page(1)
-	except EmptyPage:
-		penjualan_entries = pager.page(pager.num_pages)
+def penjualan(request): 
+	penjualan_entries = paginate_data(
+		Penjualan.objects.all().order_by('-tanggal'),
+		request.GET.get('page'),
+		100)
 
 	context = { 'penjualan': penjualan_entries, 'user': request.user}
 	return render(request, 'transaction/penjualan.html', context)
