@@ -9,8 +9,7 @@
 		<div class="col-md-12">
 			<div class="navbar">
 				<div class="navbar-inner">
-
-					<a class="btn btn-primary pull-right" href="{% url 'penjualan_add' %}" data-toggle="modal"><i class="icon-plus icon-white"></i>Penjualan</a>
+					<a class="btn btn-primary pull-right" href="{% url 'penjualan_add' %}" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Penjualan</a>
 				</div>
 			</div>
 		</div>
@@ -26,9 +25,7 @@
 						<th>Nota</th>
 						<th>Vendor</th>
 						<th>Tanggal</th>
-						<th>Total Transaksi</th>
-						<th>Netto</th>
-						<th>Barang</th>
+						<th>Nilai Transaksi</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -37,37 +34,30 @@
 						<td class="center">{{forloop.counter}}</td>
 						<td class="center">{% penjualan_url p.id %}</td>
 						<td class="center">{% if p.nota %}{{p.nota}}{% endif %}</td>
-						<td>{{p.vnama}}</td>
+						<td>{{p.vendor.nama}}</td>
 						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
-						<td class="right">{% calculate_bruto p %}</td>
-						<td class="right">{% calculate_netto p %}</td>
-						<td>
-							{% for s in p.stocks.all  %}
-							<a href="#" data-toggle="tooltip">{{ s.stok.kategori.kode }}</a>
-							{% endfor %}
-						</td>
+						<td class="right">{% calculate_gross p%}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
 			</table>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<ul class="pagination">
+				<li><a href="{% url 'penjualan' %}">&laquo; Pertama</a></li>
+				{% for i in pages %}
+					{% if forloop.last %}
+						<li><a href="{% url 'penjualan' %}?page={{ i }}">Terakhir &raquo;</a></li>
+					{% else %}
+						<li {% if penjualan.number == i %}class="active"{% endif %}><a href="{% url 'penjualan' %}?page={{i}}">{{i}}</a></li>
+					{% endif%}
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
 </div>
-
-
-<ul class="pagination">
-		
-	<li><a href="{% url 'penjualan' %}">&laquo;</a></li>
-	
-
-	{% for i in penjualan.paginator.num_pages|get_range %}
-	<li {% if penjualan.number == i %}class="active"{% endif %}><a href="{% url 'penjualan' %}?page={{i}}">{{i}}</a></li>
-	{% endfor %}
-	
-	
-	<li><a href="{% url 'penjualan' %}?page={{ penjualan.paginator.num_pages }}">&raquo;</a></li>
-	
-</ul>
 {% endblock content %}
 {% block js_extra %}
 {{ block.super }}

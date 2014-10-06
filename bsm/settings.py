@@ -98,7 +98,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -127,7 +127,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'transaction',
-    'debug_toolbar',
+    # 'debug_toolbar',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -161,4 +161,4 @@ LOGGING = {
 
 LOGIN_URL= '/trans/login/'
 
-INTERNAL_IPS = ('127.0.0.1',)
+# INTERNAL_IPS = ('127.0.0.1',)

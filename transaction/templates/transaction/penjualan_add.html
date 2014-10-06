@@ -6,7 +6,7 @@
 {% block content %}
 <div class="container">
 	<div class="row">
-		<div class="span6 offset3 well">
+		<div class="col-md-10 col-md-offset-1 well">
 			<form class="form-horizontal" action="{% url 'penjualan_add' %}" method="post">
 				{% csrf_token %}
 				<h3>Tambah Penjualan</h3>
@@ -16,36 +16,48 @@
 					<strong>Error:</strong> {{ form.errors}}
 				</div>
 				{% endif %}
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
-					<div class="controls">
-						{{ form.tanggal }}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
+					<div class="col-md-10">
+						{{ form.tanggal|add_class:"form-control" }}
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
-					<div class="controls">
-						{{ form.nota }}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
+					<div class="col-md-10">
+						{{ form.nota|add_class:"form-control" }}
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.vendor.html_name}}" >{{ form.vendor.label }}</label>	
-					<div class="controls">
-						{{ form.vendor }}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.vendor.html_name}}" >{{ form.vendor.label }}</label>	
+					<div class="col-md-10">
+						{{ form.vendor|add_class:"form-control" }}
 					</div>
 				</div>
 
+				<h3>Daftar Barang</h3>
+
 				<input class="inputs-counter" type="hidden" name="total" value="1" />
-				<div class="dynamic-inputs">
-					<div class="inputs">
-						{#  #}
+				<div class="row">
+					<div class="col-md-10 col-md-offset-1">
+						<div class="dynamic-inputs">
+							<div class="inputs">
+								{#  #}
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="toolbar">
-					<button type=button class="add-input btn" >+</button>
-					<button type=button class="remove-input btn" >-</button>
+				<div class="row">
+					<div class="col-md-4">
+						<div class="toolbar">
+							<button type=button class="add-input btn" >+</button>
+							<button type=button class="remove-input btn" >-</button>
+						</div>
+					</div>
+					<div class="col-md-2 col-md-offset-6">
+						<button class="btn btn-primary" type="submit">Tambah</button>
+					</div>
 				</div>
-				<button class="btn btn-primary" type="submit">Tambah</button>
 			</form>
 		</div>
 	</div>

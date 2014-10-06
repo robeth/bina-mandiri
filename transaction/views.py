@@ -252,7 +252,8 @@ def penjualan(request):
 		request.GET.get('page'),
 		100)
 
-	context = { 'penjualan': penjualan_entries, 'user': request.user}
+	context = { 'penjualan': penjualan_entries, 'user': request.user,
+		"pages": customize_pages(penjualan_entries.number, penjualan_entries.paginator.num_pages)}
 	return render(request, 'transaction/penjualan.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
