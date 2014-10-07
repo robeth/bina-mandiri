@@ -6,7 +6,7 @@
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="span12">
+    <div class="col-md-12">
       <div class="navbar">
         <div class="navbar-inner">
           <form class="navbar-search pull-left form-inline">
@@ -14,7 +14,7 @@
             <button id="adv-button" class="btn btn-small" type="button"><i class="icon-wrench"></i>Advanced</button>
           </form>
 
-          <a class="btn btn-primary pull-right" href="{% url 'konversi_add' %}" data-toggle="modal"><i class="icon-plus icon-white"></i>Konversi</a>
+          <a class="btn btn-primary pull-right" href="{% url 'konversi_add' %}" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Konversi</a>
           <form action="{% url 'konversi'%}" method="post" >
 
           </form>
@@ -34,32 +34,34 @@
             <th>Nota</th>
             <th>Tanggal</th>
             <th>Total Transaksi</th>
-            <th>Barang In</th>
-            <th>Barang Out</th>
           </tr>
         </thead>
         <tbody>
-          {% for kkey, k in konversi.items %}
+          {% for k in konversi %}
           <tr>
             <td class="center">{{forloop.counter}}</td>
             <td class="center">{% konversi_url k.id %}</td>
-            <td class="center">{% if k.kodenota %}{{k.kodenota}}{% endif %}</td>
+            <td class="center">{% if_empty k.kode %}</td>
             <td class="center">{{k.tanggal|date:"Y-m-d"}}</td>
-            <td class="right">{{k.total_in|floatformat:2}}</td>
-            <td>
-              {% for inkey,i in k.in.items %}
-              <a href="#" data-toggle="tooltip" title="{{i.nama}} ({{i.jumlah2}} from {{i.jumlah}})">{{i.kode}}</a>
-              {% endfor %}
-            </td>
-            <td>
-              {% for outkey,o in k.out.items %}
-              <a href="#" data-toggle="tooltip" title="{{o.nama}} ({{o.jumlah}})">{{o.kode}}</a>
-              {% endfor %}
-            </td>
+            <td class="right">{% calculate_konversi_value k %}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <ul class="pagination">
+        <li><a href="{% url 'konversi' %}">&laquo; Pertama</a></li>
+        {% for i in pages %}
+          {% if forloop.last %}
+            <li><a href="{% url 'konversi' %}?page={{ i }}">Terakhir &raquo;</a></li>
+          {% else %}
+            <li {% if konversi.number == i %}class="active"{% endif %}><a href="{% url 'konversi' %}?page={{i}}">{{i}}</a></li>
+          {% endif%}
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </div>
