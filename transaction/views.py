@@ -240,6 +240,7 @@ def pembelian_del(request, pembelian_id):
 	if p:
 		valid = q_is_pembelian_clear(pembelian_id)
 		if valid:
+			p.stocks.all().delete()
 			p.delete()
 
 	return HttpResponseRedirect(reverse('pembelian'))
@@ -250,7 +251,7 @@ def penjualan(request):
 	penjualan_entries = paginate_data(
 		Penjualan.objects.all().order_by('-tanggal'),
 		request.GET.get('page'),
-		100)
+		500)
 
 	context = { 'penjualan': penjualan_entries, 'user': request.user,
 		"pages": customize_pages(penjualan_entries.number, penjualan_entries.paginator.num_pages)}
@@ -301,7 +302,13 @@ def penjualan_del(request, penjualan_id):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
 def konversi(request):
-	context = { 'konversi': q_konversi, 'user': request.user}
+	konversi_entries = paginate_data(
+		Konversi.objects.all().order_by('-tanggal'),
+		request.GET.get('page'),
+		100)
+
+	context = { 'konversi': konversi_entries, 'user': request.user,
+		"pages": customize_pages(konversi_entries.number, konversi_entries.paginator.num_pages)}
 	return render(request, 'transaction/konversi.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -369,8 +376,13 @@ def konversi_add(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
 def penarikan(request):
-	p = Penarikan.objects.order_by('tanggal')
-	context = { 'penarikan': p, 'user': request.user}
+	penarikan_entries = paginate_data(
+		Penarikan.objects.all().order_by('-tanggal'),
+		request.GET.get('page'),
+		100)
+		
+	context = { 'penarikan': penarikan_entries, 'user': request.user, 
+		"pages": customize_pages(penarikan_entries.number, penarikan_entries.paginator.num_pages)}
 	return render(request, 'transaction/penarikan.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

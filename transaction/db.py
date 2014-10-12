@@ -434,7 +434,27 @@ def q_remaining_dict():
 
 def q_last_stock(kode):
 	c = connection.cursor()
-	c.execute("select sd.id as id, sd.tanggal, sd.kode, sd.jumlah as jumlah_in, coalesce(i.jumlah,0) as jumlah_konversi, coalesce(p.jumlah, 0) as jumlah_penjualan, sd.jumlah - coalesce(i.jumlah,0)- coalesce(p.jumlah,0) as sisa from transaction_stok_det sd left outer join transaction_detailin i on sd.id = i.stok_id left outer join transaction_detailpenjualan p on sd.id = p.stok_id where sd.kode = %s order by sd.tanggal", [kode])
+	c.execute(strip(
+		"""SELECT sd.id AS id,
+		       sd.tanggal,
+		       sd.kode,
+		       sd.jumlah AS jumlah_in,
+		       coalesce(i.jumlah,0) AS jumlah_konversi,
+		       coalesce(p.jumlah, 0) AS jumlah_penjualan,
+		       sd.jumlah - coalesce(i.jumlah,0)- coalesce(p.jumlah,0) AS sisa
+		FROM transaction_stok_det sd
+		LEFT OUTER JOIN
+		 ( SELECT ki.stok_id,
+		          sum(ki.jumlah) as jumlah
+		  FROM transaction_detailin ki
+		  GROUP BY ki.stok_id ) i ON sd.id = i.stok_id
+		LEFT OUTER JOIN
+		 ( SELECT ss.stok_id,
+		          sum(ss.jumlah) as jumlah
+		  FROM transaction_detailpenjualan ss
+		  GROUP BY ss.stok_id ) p ON sd.id = p.stok_id
+		WHERE sd.kode = %s
+		ORDER BY sd.tanggal"""), [kode])
 	res = to_dict(c)
 
 	for r in res:
@@ -443,14 +463,14 @@ def q_last_stock(kode):
 		r['jumlah_in'] = float(r['jumlah_in'])
 		r['jumlah_penjualan'] = float(r['jumlah_penjualan'])
 		
-	res = [ r for r in res if r['sisa'] != 0]
+	res = [ r for r in res if r['sisa'] > 0]
 
 	return res
 
 def q_get_last_stock(kode, jumlah):
 	res = []
 	temp = q_last_stock(kode)
-	print temp
+	# print temp
 	need = float(jumlah)
 	counter = 0
 

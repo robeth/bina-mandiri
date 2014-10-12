@@ -55,7 +55,7 @@ class Pembelian(models.Model):
 class Penjualan(models.Model):
 	vendor = models.ForeignKey('Vendor')
 	stocks = models.ManyToManyField('Stok', through='DetailPenjualan')
-	tanggal = models.DateField()
+	tanggal = models.DateField()	
 	nota = models.CharField(max_length=20, null=True, blank=True)
 	def __unicode__(self):
 		return self.vendor.nama + '-' + str(self.tanggal)
