@@ -6,20 +6,20 @@
 {% block content %}
 <div class="container">
 	<div class="row">
-		<div class="span6 offset3 well">
+		<div class="col-md-6 col-md-offset-3 well">
 			<h3>Tambah Penarikan</h3>
 			{% if form.errors %}
 			<div class="alert">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Error:</strong> {{ form.errors}}
+				<strong>Error:</strong> {{ form.errors }}
 			</div>
 			{% endif %}
 			<form class="form-horizontal" action="{% url 'penarikan_add' %}" method="POST">
 				{% csrf_token %}
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>	
-					<div class="controls">
-						<select class="easyui-combobox" name="nasabah" id="id_{{form.nasabah.html_name}}">
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>	
+					<div class="col-md-10">
+						<select class="easyui-combobox form-control" name="nasabah" id="id_{{form.nasabah.html_name}}">
 							{% for n in nasabah %}
 							<option value="{{ n.id  }}">{{n.nama}}-{{n.saldo}}</option>
 							{% endfor %}
@@ -27,24 +27,27 @@
 					</div>
 				</div>
 
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
-					<div class="controls">
-						{{ form.tanggal}}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
+					<div class="col-md-10">
+						{{ form.tanggal|add_class:"form-control" }}
 					</div>
 				</div>
 
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
-					<div class="controls">
-						{{ form.nota}}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
+					<div class="col-md-10">
+						{{ form.nota|add_class:"form-control" }}
 					</div>
 				</div>
 
-				<div class="control-group">
-					<label class="control-label" for="id_{{ form.total.html_name}}" >{{ form.total.label }}</label>	
-					<div class="controls">
-						{{ form.total}}
+				<div class="form-group">
+					<label class="control-label col-md-2" for="id_{{ form.total.html_name}}" >{{ form.total.label }}</label>	
+					<div class="col-md-10">
+						<div class="input-group">
+							<div class="input-group-addon">Rp</div>
+							{{ form.total|add_class:"form-control" }}
+						</div>
 					</div>
 				</div>
 				<button class="btn btn-primary" type="submit">Tambah</button>

@@ -6,30 +6,30 @@
 {% block content %}
 <div class="container">
 	
-	<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h3 id="myModalLabel">Hapus Penarikan ID </h3>
-		</div>
-		<div class="modal-body">
-			<p>Apakah anda yakin?</p>
-		</div>
-		<div class="modal-footer">
-			<button class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
-			<button id="gotobutton" class="btn btn-danger">Ya</button>
-		</div>
-	</div>
-	<div class="row">
-		<div class="span12">
-			<div class="navbar">
-				<div class="navbar-inner">
-					<a class="btn btn-primary pull-right" href="{% url 'penarikan_add' %}" data-toggle="modal"><i class="icon-plus icon-white"></i>Penarikan</a>
+	<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
+					<h3 id="myModalLabel" class="modal-header">Hapus Penarikan ID </h3>
+				</div>
+				<div class="modal-body">
+					<p>Apakah anda yakin?</p>
+				</div>
+				<div class="modal-footer">
+					<button class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
+					<button id="gotobutton" class="btn btn-danger">Ya</button>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-md-1 col-md-offset-11">
+			<a class="btn btn-primary pull-right" href="{% url 'penarikan_add' %}" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Penarikan</a>
+		</div>
+	</div>
 	<div id="content" class="row">
-		<div class="span12">
+		<div class="col-md-12">
 			<table id="table-penarikan" class="table table-hover table-condensed table-bordered">
 				<thead class="center">
 					<tr>
@@ -48,16 +48,30 @@
 					<tr>
 						<td class="center">{{ forloop.counter }}</td>
 						<td class="center">{% penarikan_url p.id%}</td>
-						<td class="center">{% if p.nota %}{{p.nota}} {% endif%}</td>
+						<td class="center">{% if_empty p.nota %}</td>
 						<td class="center">{{ p.tanggal|date:"Y-m-d" }}</td>
 						<td class="center">{% nasabah_url p.nasabah.id %}</td>
 						<td>{{ p.nasabah.nama }}</td>
-						<td class="right">{{ p.total|floatformat:2 }}</td>
-						<td><button class="btn btn-mini btn-danger" onclick="popout({{ p.id }})"><i class="icon-remove icon-white"></i></button></td>
+						<td class="right">{{ p.total|floatformat:2|intcomma }}</td>
+						<td><button class="btn btn-xs btn-danger" onclick="popout({{ p.id }})"><span class="glyphicon glyphicon-remove"></span></button></td>
 					</tr>
 					{% endfor %}
 				</tbody>
 			</table>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<ul class="pagination">
+				<li><a href="{% url 'penarikan' %}">&laquo; Pertama</a></li>
+				{% for i in pages %}
+					{% if forloop.last %}
+						<li><a href="{% url 'penarikan' %}?page={{ i }}">Terakhir &raquo;</a></li>
+					{% else %}
+						<li {% if penarikan.number == i %}class="active"{% endif %}><a href="{% url 'penarikan' %}?page={{i}}">{{i}}</a></li>
+					{% endif%}
+				{% endfor %}
+			</ul>
 		</div>
 	</div>
 </div>

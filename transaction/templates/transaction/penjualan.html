@@ -36,7 +36,7 @@
 						<td class="center">{% if p.nota %}{{p.nota}}{% endif %}</td>
 						<td>{{p.vendor.nama}}</td>
 						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
-						<td class="right">{% calculate_gross p%}</td>
+						<td class="right">{% calculate_bruto p%}</td>
 					</tr>
 					{% endfor %}
 				</tbody>

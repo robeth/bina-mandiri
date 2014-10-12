@@ -91,6 +91,14 @@ def calculate_netto(p):
     netto += (sales_stock.harga - sales_stock.stok.harga) * sales_stock.jumlah
 
   return '{0:,.2f}'.format(netto)
+
+@register.simple_tag
+def calculate_konversi_value(k):
+  value = 0
+  for item in k.outs.all():
+    value += item.harga * item.jumlah
+  return '{0:,.2f}'.format(value)
+
 # @register.simple_tag
 # def calculate_netto(p):
 
@@ -101,9 +109,9 @@ def calculate_netto(p):
 
 @register.simple_tag
 def if_empty(content):
-  if len(content) > 0:
-    return content
-  return "-"
+  if not content or len(content) < 1:
+    return "-"
+  return content
 
 class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
 @register.filter
