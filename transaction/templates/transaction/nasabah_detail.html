@@ -2,6 +2,9 @@
 {% load transaction_util %}
 {% load staticfiles %}
 {% load humanize %}
+{% block judul %}
+Nasabah {{ detail.general.nama }}
+{% endblock judul%}
 {% block content %}
 {% if detail.general == None %}
 Not found

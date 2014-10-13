@@ -2,6 +2,9 @@
 {% load transaction_util %}
 {% load humanize %}
 {% load staticfiles %}
+{% block judul %}
+Detail Pembelian {{ general.0.id }}
+{% endblock judul%}
 {% block nav_activity %}active{% endblock nav_activity %}
 {% block content %}
 {% if general|length < 1 %}

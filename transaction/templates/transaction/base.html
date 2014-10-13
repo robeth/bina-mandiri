@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  {% load staticfiles %}
   <meta charset="utf-8">
+  <link rel="icon" 
+      type="image/png" 
+      href="{% static "img/favicon.ico" %}">
   <title>
     {% block judul %}
     Judul HTML
@@ -10,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
   <meta name="author" content="">
-  {% load staticfiles %}
+  
   <!-- Le styles -->
   {% block css_main %}
   <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">

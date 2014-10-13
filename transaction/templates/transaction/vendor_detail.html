@@ -2,6 +2,9 @@
 {% load transaction_util %}
 {% load humanize %}
 {% load staticfiles %}
+{% block judul %}
+Vendor {{ detail.general.0.nama }}
+{% endblock judul%}
 {% block content %}
 {% if detail.general|length < 1 %}
 Not exist
