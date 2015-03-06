@@ -44,8 +44,8 @@ Vendor
 						<td>{{ v.nama }}</td>
 						<td>{{ v.alamat }}</td>
 						<td>{{ v.telepon }}</td>
-						<td class="right">{{ v.sum_bruto|floatformat:2 }}</td>
-						<td class="right">{{ v.sum_netto|floatformat:2}}</td>
+						<td class="right">{{ v.sum_bruto|floatformat:2|intcomma }}</td>
+						<td class="right">{{ v.sum_netto|floatformat:2|intcomma}}</td>
 						<td>
 							{% for kk, vv in v.kategori.items %}
 							<code><a href="#" data-toggle="tooltip" title="{{ vv.nama }}-{{ vv.nilai|floatformat:2|intcomma }}">{{ kk }}</a></code>	

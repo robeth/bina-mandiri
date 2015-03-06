@@ -46,9 +46,9 @@ Nasabah Individu
 						<td>{{ n.nama }}</td>
 						<td>{{ n.alamat }}</td>
 						<td>{{ n.telepon }}</td>
-						<td class="right">{{ n.In|floatformat:2 }}</td>
-						<td class="right">{{ n.Out|floatformat:2 }}</td>
-						<td class="right">{{ n.saldo|floatformat:2 }}</td>
+						<td class="right">{{ n.In|floatformat:2|intcomma }}</td>
+						<td class="right">{{ n.Out|floatformat:2|intcomma }}</td>
+						<td class="right">{{ n.saldo|floatformat:2|intcomma }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>

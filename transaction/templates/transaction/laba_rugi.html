@@ -55,16 +55,16 @@ Laba Rugi
 						<td class="center">{{forloop.counter}}</td>
 						<td class="center">{{ p.tanggal|date:"Y-m-d" }}</td>
 						<td class="center">{% penjualan_url p.id %}</td>
-						<td class="right">{{ p.bruto|floatformat:2 }}</td>
-						<td class="right">{{ p.hpp|floatformat:2 }}</td>
-						<td class="right">{{ p.netto|floatformat:2 }}</td>
+						<td class="right">{{ p.bruto|floatformat:2|intcomma }}</td>
+						<td class="right">{{ p.hpp|floatformat:2|intcomma }}</td>
+						<td class="right">{{ p.netto|floatformat:2|intcomma }}</td>
 					</tr>
 					{% endfor %}
 					<tr>
 						<td colspan="3"></td>
-						<td class="right">{{ total_bruto|floatformat:2}}</td>
-						<td class="right">{{ total_hpp|floatformat:2}}</td>
-						<td class="right">{{ total_netto|floatformat:2}}</td>
+						<td class="right">{{ total_bruto|floatformat:2|intcomma}}</td>
+						<td class="right">{{ total_hpp|floatformat:2|intcomma}}</td>
+						<td class="right">{{ total_netto|floatformat:2|intcomma}}</td>
 					</tr>
 				</tbody>
 			</table>

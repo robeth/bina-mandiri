@@ -36,8 +36,8 @@ Kategori
 						<td class="center">{{ forloop.counter }}</td>
 						<td class="center"><code>{{ k.kode }}</code><a href="{% url 'kategori_edit' k.id %}"><span class="glyphicon glyphicon-pencil"></span></a></td>
 						<td>{{ k.nama }}</td>
-						<td class="right">{{ k.stabil|floatformat:2 }}</td>
-						<td class="right">{{ k.fluktuatif|floatformat:2 }}</td>
+						<td class="right">{{ k.stabil|floatformat:2|intcomma }}</td>
+						<td class="right">{{ k.fluktuatif|floatformat:2|intcomma }}</td>
 						<td class="center">{{ k.satuan }}</td>
 					</tr>
 					{% endfor %}
