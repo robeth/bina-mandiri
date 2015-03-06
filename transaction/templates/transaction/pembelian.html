@@ -43,6 +43,7 @@ Pembelian
 						<th>Nasabah</th>
 						<th>Tanggal</th>
 						<th>Total Transaksi</th>
+						<th>Total Unit</th>
 						<th>Barang</th>
 					</tr>
 				</thead>
@@ -55,6 +56,7 @@ Pembelian
 						<td>{{p.nasabah.nama}}</td>
 						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
 						<td class="right">{% calculate_gross p %}</td>
+						<td class="right">{% calculate_total_unit_pembelian p %}</td>
 						<td>
 							{% for stock_code in p.stocks.all|unique_item %}
 							<code>{{ stock_code }}</code>

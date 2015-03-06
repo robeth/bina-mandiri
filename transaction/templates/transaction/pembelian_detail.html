@@ -125,9 +125,13 @@ Not found
           {% endif %}
           {% endfor %}
           <tr>
-            <td colspan="5"></td>
-            <td class="right">{{ total_pembelian|floatformat:2|intcomma }}</td>
             <td colspan="3"></td>
+            <td class="right">{{ total_unit_pembelian|floatformat:2|intcomma }}</td>
+            <td></td>
+            <td class="right">{{ total_pembelian|floatformat:2|intcomma }}</td>
+            <td colspan="1"></td>
+            <td class="right">{{ total_unit_penjualan|floatformat:2|intcomma }}</td>
+            <td></td>
             <td class="right">{{ total_penjualan|floatformat:2|intcomma }}</td>
             <td></td>
             <td class="right">{{ total_profit|floatformat:2|intcomma }}</td>

@@ -77,7 +77,9 @@ Not Found
 					</tr>
 					{% endfor %}
 					<tr>
-						<td colspan="5"></td>
+						<td colspan="3"></td>
+						<td class="right">{{detail.total_unit_in|floatformat:2|intcomma}}</td>
+						<td></td>
 						<td class="right"><b>{{detail.total_in|floatformat:2|intcomma}}</b></td>
 					</tr>
 				</tbody>
@@ -108,7 +110,9 @@ Not Found
 					</tr>
 					{% endfor %}
 					<tr>
-						<td colspan="5"></td>
+						<td colspan="3"></td>
+						<td class="right">{{detail.total_unit_out|floatformat:2|intcomma}}</td>
+						<td></td>
 						<td class="right"><b>{{detail.total_out|floatformat:2|intcomma}}</b></td>
 					</tr>
 				</tbody>
@@ -183,9 +187,13 @@ Not Found
 					{% endif %}
 					{% endfor %}
 					<tr>
-						<td colspan="5"></td>
-						<td class="right">{{ total_pembelian|floatformat:2|intcomma }}</td>
 						<td colspan="3"></td>
+						<td class="right">{{ total_unit_pembelian|floatformat:2|intcomma }}</td>
+						<td></td>
+						<td class="right">{{ total_pembelian|floatformat:2|intcomma }}</td>
+						<td colspan="1"></td>
+						<td class="right">{{ total_unit_penjualan|floatformat:2|intcomma }}</td>
+						<td></td>
 						<td class="right">{{ total_penjualan|floatformat:2|intcomma }}</td>
 						<td></td>
 						<td class="right">{{ total_profit|floatformat:2|intcomma }}</td>

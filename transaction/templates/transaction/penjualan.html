@@ -29,6 +29,7 @@ Penjualan
 						<th>Vendor</th>
 						<th>Tanggal</th>
 						<th>Nilai Transaksi</th>
+						<th>Total Unit</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -40,6 +41,7 @@ Penjualan
 						<td>{{p.vendor.nama}}</td>
 						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
 						<td class="right">{% calculate_bruto p%}</td>
+						<td class="right">{% calculate_total_unit_penjualan p %}</td>
 					</tr>
 					{% endfor %}
 				</tbody>

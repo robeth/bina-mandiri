@@ -95,7 +95,9 @@ Not found
           </tr>
           {% endfor %}
           <tr>
-            <td colspan="4"></td>
+            <td colspan="2"></td>
+            <td class="right">{{total_unit|floatformat:2|intcomma}}</td>
+            <td></td>
             <td class="right">{{total_penjualan|floatformat:2|intcomma}}</td>
             <td colspan="2"></td>
             <td class="right">{{total_pembelian|floatformat:2|intcomma}}</td>

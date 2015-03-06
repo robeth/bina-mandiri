@@ -37,6 +37,8 @@ Konversi
             <th>Nota</th>
             <th>Tanggal</th>
             <th>Total Transaksi</th>
+            <th>Input Unit</th>
+            <th>Output Unit</th>
           </tr>
         </thead>
         <tbody>
@@ -47,6 +49,8 @@ Konversi
             <td class="center">{% if_empty k.kode %}</td>
             <td class="center">{{k.tanggal|date:"Y-m-d"}}</td>
             <td class="right">{% calculate_konversi_value k %}</td>
+            <td class="right">{% calculate_konversi_total_input_unit k %}</td>
+            <td class="right">{% calculate_konversi_total_output_unit k %}</td>
           </tr>
           {% endfor %}
         </tbody>

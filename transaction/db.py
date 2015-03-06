@@ -190,9 +190,11 @@ def q_konversi2(konversi_id):
 		if t['id'] in res2:
 			if t['is_out'] == 1:
 				res2[t['id']]['total_out'] += t['harga']*t['jumlah']
+				res2[t['id']]['total_unit_out'] += t['jumlah']
 				res2[t['id']]['out'].append({'id':t['stok_id'], 'kode':t['kode'], 'nama':t['nama'], 'tanggal': t['stanggal'], 'jumlah':t['jumlah'], 'harga':t['harga'], 'nilai': t['harga']*t['jumlah'] })
 			else:
 				res2[t['id']]['total_in'] += t['jumlah2'] * t['harga']
+				res2[t['id']]['total_unit_in'] += t['jumlah2']
 				res2[t['id']]['in'].append({'id':t['stok_id'], 'kode':t['kode'], 'nama':t['nama'], 'tanggal':t['stanggal'], 'jumlah':t['jumlah'], 'harga':t['harga'], 'jumlah2':t['jumlah2'], 'nilai': t['harga']*t['jumlah']})
 		else:
 			res2[t['id']] = t
@@ -200,11 +202,15 @@ def q_konversi2(konversi_id):
 			t['out'] = []
 			t['total_in'] = 0
 			t['total_out'] = 0
+			t['total_unit_in'] = 0
+			t['total_unit_out'] = 0
 			if t['is_out'] == 1:
 				t['total_out'] = t['harga']*t['jumlah']
+				t['total_unit_out'] = t['jumlah']
 				t['out'].append({'id':t['stok_id'], 'kode':t['kode'], 'nama':t['nama'], 'tanggal': t['stanggal'], 'jumlah':t['jumlah'], 'harga':t['harga'], 'nilai': t['harga']*t['jumlah'] })
 			else:
 				t['total_in'] = t['jumlah2'] * t['harga']
+				t['total_unit_in'] = t['jumlah2']
 				t['in'].append({'id':t['stok_id'], 'kode':t['kode'], 'nama':t['nama'], 'tanggal':t['stanggal'], 'jumlah':t['jumlah'], 'harga':t['harga'], 'jumlah2':t['jumlah2'], 'nilai': t['harga']*t['jumlah2']})
 	return res2
 
@@ -252,6 +258,7 @@ def q_nasabah_detail(nasabah_id):
 	for t in pembelian:
 		if t['id'] in res2:
 			res2[t['id']]['sum'] += t['total']
+			res2[t['id']]['sum_weight'] += t['jumlah']
 			if t['kode'] in res2[t['id']]['kategori']:
 				res2[t['id']]['kategori'][t['kode']]['nilai'] += t['total']
 			else:
@@ -259,6 +266,7 @@ def q_nasabah_detail(nasabah_id):
 		else:
 			res2[t['id']] = t
 			t['sum'] = t['total']
+			t['sum_weight'] = t['jumlah']
 			t['kategori'] = { t['kode'] : {'nama':t['snama'], 'nilai':t['total']}}
 	res['pembelian'] = res2
 
@@ -294,10 +302,12 @@ def q_penjualan_detail(penjualan_id):
 	res['total_penjualan']=0
 	res['total_pembelian']=0
 	res['total_profit'] =0
+	res['total_unit'] = 0
 	for v in res['penjualan_detail']:
 		res['total_penjualan'] += v['bruto']
 		res['total_pembelian'] += v['invest']
 		res['total_profit'] += v['netto']
+		res['total_unit'] += v['jumlah']
 
 	return res
 
@@ -313,12 +323,15 @@ def q_pembelian_detail(pembelian_id):
 	res['total_penjualan']=0
 	res['total_pembelian']=0
 	res['total_profit'] =0
+	res['total_unit_pembelian']=0
+	res['total_unit_penjualan']=0
 	
 	for t in temp:
 		if t['id'] in res2:
 			if t['status'] != 0:
 				res2[t['id']]['keluaran'].append(t)
 				res['total_penjualan'] += t['nilai_keluar']
+				res['total_unit_penjualan'] += t['jumlah_keluar']
 				res['total_profit'] += t['netto']
 				res2[t['id']]['sisa'] -= t['jumlah_keluar']
 		else:
@@ -326,9 +339,11 @@ def q_pembelian_detail(pembelian_id):
 			res2[t['id']]['keluaran'] = []
 			res2[t['id']]['sisa'] = t['jumlah']
 			res['total_pembelian'] += t['nilai_beli']
+			res['total_unit_pembelian'] += t['jumlah']
 			if t['status'] != 0:
 				res2[t['id']]['keluaran'].append(t)
 				res['total_penjualan'] += t['nilai_keluar']
+				res['total_unit_penjualan'] += t['jumlah_keluar']
 				res['total_profit'] += t['netto']
 				res2[t['id']]['sisa'] -= t['jumlah_keluar']
 
@@ -369,12 +384,16 @@ def q_is_konversi_clear(konversi_id):
 def q_konversi_detail(konversi_id):
 	res= {}
 	temp = q_konversi2(konversi_id)
+	print temp
 
 	if len(temp) < 1:
 		res['detail'] = {}
 	else:
 		res['detail'] = temp[temp.keys()[0]]
 		res['length'] = max(len(res['detail']['in']), len(res['detail']['out']))
+	print res['detail']
+	# import ipdb
+	# ipdb.set_trace()
 	c = connection.cursor()
 	c.execute("select * from (( select if(dp.jumlah is null, 0,1) as status, s.*, s.jumlah*s.harga as nilai_beli, dp.jumlah as jumlah_keluar, dp.harga as harga_keluar, dp.jumlah*dp.harga as nilai_keluar, dp.jumlah*(dp.harga-s.harga) as netto, dp.penjualan_id as kode_status  from ( select s.* from transaction_konversi_outs p join transaction_stok_det s on p.stok_id = s.id where p.konversi_id = %s ) s left outer join transaction_detailpenjualan dp on s.id = dp.stok_id) Union (select if(di.jumlah is null, 0,2) as status, s.*, s.jumlah*s.harga as nilai_beli, di.jumlah as jumlah_keluar, s.harga as harga_keluar, di.jumlah*s.harga as nilai_keluar, 0 as netto, di.konversi_id as kode_status  from ( select s.* from transaction_konversi_outs p join transaction_stok_det s on p.stok_id = s.id where p.konversi_id = %s ) s left outer join transaction_detailin di on s.id = di.stok_id)) a order by a.id", [konversi_id, konversi_id])
 	resTracking = {}
@@ -384,6 +403,8 @@ def q_konversi_detail(konversi_id):
 	res['total_penjualan']=0
 	res['total_pembelian']=0
 	res['total_profit'] =0
+	res['total_unit_penjualan']=0
+	res['total_unit_pembelian']=0
 	
 	for t in temp:
 		if t['id'] in resTracking:
@@ -391,16 +412,19 @@ def q_konversi_detail(konversi_id):
 				resTracking[t['id']]['keluaran'].append(t)
 				res['total_penjualan'] += t['nilai_keluar']
 				res['total_profit'] += t['netto']
+				res['total_unit_penjualan'] += t['jumlah_keluar']
 				resTracking[t['id']]['sisa'] -= t['jumlah_keluar']
 		else:
 			resTracking[t['id']] = t
 			resTracking[t['id']]['keluaran'] = []
 			resTracking[t['id']]['sisa'] = t['jumlah']
 			res['total_pembelian'] += t['nilai_beli']
+			res['total_unit_pembelian'] += t['jumlah']
 			if t['status'] != 0:
 				resTracking[t['id']]['keluaran'].append(t)
 				res['total_penjualan'] += t['nilai_keluar']
 				res['total_profit'] += t['netto']
+				res['total_unit_penjualan'] += t['jumlah_keluar']
 				resTracking[t['id']]['sisa'] -= t['jumlah_keluar']
 
 	for k, v in resTracking.iteritems():

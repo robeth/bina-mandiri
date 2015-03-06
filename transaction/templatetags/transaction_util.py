@@ -77,6 +77,22 @@ def calculate_gross(p):
   return '{0:,.2f}'.format(gross_amount)
 
 @register.simple_tag
+def calculate_total_unit_pembelian(p):
+  total_unit = 0
+
+  for stock in p.stocks.all():
+    total_unit += stock.jumlah
+
+  return '{0:,.2f}'.format(total_unit)
+
+@register.simple_tag
+def calculate_total_unit_penjualan(p):
+  total_unit = 0
+  for stock in p.detailpenjualan_set.all():
+    total_unit += stock.jumlah
+  return '{0:,.2f}'.format(total_unit)
+
+@register.simple_tag
 def calculate_bruto(p):
   bruto = 0
   for sales_stock in p.detailpenjualan_set.all():
@@ -98,6 +114,20 @@ def calculate_konversi_value(k):
   for item in k.outs.all():
     value += item.harga * item.jumlah
   return '{0:,.2f}'.format(value)
+
+@register.simple_tag
+def calculate_konversi_total_input_unit(k):
+  total_unit = 0
+  for item in k.detailin_set.all():
+    total_unit += item.jumlah
+  return '{0:,.2f}'.format(total_unit)
+
+@register.simple_tag
+def calculate_konversi_total_output_unit(k):
+  total_unit = 0
+  for item in k.outs.all():
+    total_unit += item.jumlah
+  return '{0:,.2f}'.format(total_unit)
 
 # @register.simple_tag
 # def calculate_netto(p):

@@ -79,6 +79,7 @@ Not found
                     <th>Kode</th>
                     <th>Tanggal</th>
                     <th>Total Transaksi</th>
+                    <th>Total Unit</th>
                     <th>Barang</th>
                   </tr>
                 </thead>
@@ -89,6 +90,7 @@ Not found
                     <td class="center">{% pembelian_url p.id %}</td>
                     <td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
                     <td class="right">{{p.sum|floatformat:2|intcomma}}</td>
+                    <td class="right">{{p.sum_weight|floatformat:2|intcomma}}</td>
                     <td>
                       {% for kkey, k in p.kategori.items %}
                         <code><a href="#" data-toggle="tooltip" title="{{k.nama}}-{{k.nilai|floatformat:2|intcomma}}">{{kkey}}</a></code>
