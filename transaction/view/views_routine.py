@@ -9,22 +9,3 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.utils.dateparse import parse_date
 from transaction.helper import paginate_data, customize_pages
-
-ENTRY_PER_PAGE = 100
-
-def is_valid_date(inputDate):
-	try: 
-		n = parse_date(inputDate)
-	except ValueError:
-		return False
-
-	if n :
-		return True
-	else:
-		return False
-
-@cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def logout_please(request):
-	logout(request)
-	return HttpResponseRedirect(reverse('django.contrib.auth.views.login'))
-
