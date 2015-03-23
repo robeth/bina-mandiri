@@ -18,7 +18,6 @@ def add(request):
 	if request.method == 'POST':
 		form = KonversiForm(request.POST)
 		if form.is_valid():
-			print "Valid"
 			data = form.data
 			k = Konversi(tanggal=data['tanggal'], kode=data['kode'])
 			k.save()
@@ -33,7 +32,6 @@ def add(request):
 				for s in stocks:
 					st = Stok.objects.get(id=s['id'])
 					total_nilai += float(st.harga) * float(s['jumlah'])
-					print "total_nilai: "+str(float(st.harga)) + " * " + str(float(data['jumlah_in'+str(i)]))
 					di = DetailIn(stok=st, konversi=k, jumlah=s['jumlah'])
 					di.save()
 				i += 1
@@ -45,9 +43,6 @@ def add(request):
 				i += 1
 
 			harga_satuan = total_nilai / total_jumlah
-			print "satuan:" + str(harga_satuan)
-			print "total nilai:" + str(total_nilai)
-			print "total jumlah" + str(total_jumlah)
 			i=1
 			# Saving new stocks
 			while i <= limit:
@@ -69,7 +64,7 @@ def add(request):
 	options = []
 
 	for k in kk:
-		options.append({'kode' : k.kode, 'nama': k.nama, 'id': k.id})
+		options.append({'kode' : k.kode, 'nama': k.nama, 'id': k.id, 'satuan': k.satuan})
 
 	context = {'remaining' : q_remaining(), 'category': options,'form': form, 'user': request.user}
 	return render(request, 'transaction/konversi_add.html', context)

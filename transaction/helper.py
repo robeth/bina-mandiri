@@ -14,8 +14,6 @@ def paginate_data(data, selected_page, n_entries):
 	return page_entries
 
 def customize_pages(current, last_page):
-  print current
-  print last_page
   pages = []
 
   current_teens = int(current / 10)
@@ -25,18 +23,16 @@ def customize_pages(current, last_page):
   for i in range(1, current_teens):
     pages.append(i * 10)
 
-  print pages
-
   # Add all element in current teens
   for i in range(10):
     next_page = current_teens * 10 + i
     if next_page <= last_page and next_page > 0:
       pages.append(next_page)
-  print pages
+
   # Add next teens
   for i in range(current_teens + 1, last_teens + 1):
     pages.append(i * 10)
 
   pages.append(last_page)
-  print pages
+
   return pages

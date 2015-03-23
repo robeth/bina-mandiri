@@ -6,7 +6,6 @@ def index(request):
 	if request.method == 'POST':
 		form = KategoriForm(request.POST, request.FILES)
 		if form.is_valid():
-			print "Valid"
 			form.save()
 			return HttpResponseRedirect(reverse('nasabah'))
 	else:
@@ -25,7 +24,6 @@ def edit(request, kategori_id):
 	if request.method == 'POST':
 		form = KategoriForm(request.POST, request.FILES, instance=kk[0])
 		if form.is_valid():
-			print "Valid"
 			form.save()
 			return HttpResponseRedirect(reverse('kategori'))
 	else:
@@ -40,7 +38,6 @@ def add(request):
 	if request.method == 'POST':
 		form = KategoriForm(request.POST, request.FILES)
 		if form.is_valid():
-			print "Valid"
 			form.save()
 			return HttpResponseRedirect(reverse('kategori'))
 	else:

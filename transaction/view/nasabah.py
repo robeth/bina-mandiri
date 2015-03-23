@@ -25,7 +25,6 @@ def add(request):
 	if request.method == 'POST':
 		form = NasabahForm(request.POST, request.FILES)
 		if form.is_valid():
-			print "Valid"
 			form.save()
 			return HttpResponseRedirect(reverse('nasabah'))
 	else:
@@ -44,7 +43,6 @@ def edit(request, nasabah_id):
 	if request.method == 'POST':
 		form = NasabahForm(request.POST, request.FILES, instance=nn[0])
 		if form.is_valid():
-			print "Valid"
 			form.save()
 			return HttpResponseRedirect(reverse('nasabah'))
 	else:

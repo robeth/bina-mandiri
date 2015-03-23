@@ -18,7 +18,6 @@ def add(request):
 	if request.method == 'POST':
 		form = PenjualanForm(request.POST)
 		if form.is_valid():
-			print "Valid"
 			data = form.data
 			v = Vendor.objects.get(id=data['vendor'])
 			p = Penjualan(tanggal=data['tanggal'], vendor = v, nota=data['nota'])

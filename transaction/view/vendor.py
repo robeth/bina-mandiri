@@ -12,7 +12,6 @@ def add(request):
 	if request.method == 'POST':
 		form = VendorForm(request.POST, request.FILES)
 		if form.is_valid():
-			print "Valid"
 			form.save()
 			return HttpResponseRedirect(reverse('vendor'))
 	else:
@@ -30,7 +29,6 @@ def edit(request, vendor_id):
 	if request.method == 'POST':
 		form = VendorForm(request.POST, request.FILES, instance=vv[0])
 		if form.is_valid():
-			print "Valid"
 			form.save()
 			return HttpResponseRedirect(reverse('vendor'))
 	else:

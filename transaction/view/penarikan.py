@@ -18,7 +18,6 @@ def add(request):
 	if request.method == 'POST':
 		form = PenarikanForm(request.POST)
 		if form.is_valid():
-			print "Valid"
 			form.save()
 			return HttpResponseRedirect(reverse('penarikan'))
 	else:

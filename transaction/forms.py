@@ -47,7 +47,6 @@ class PembelianForm(ModelForm):
 					temp = Kategori.objects.get(id=data['stok'+str(i)])
 				except Kategori.DoesNotExist :
 					raise forms.ValidationError('Kategori '+ str(i)+ ' Does Not Exist')
-				print str(data['stok'+str(i)]) + '-' + str(data['jumlah'+str(i)]) + '-' + str(data['harga'+str(i)])
 				i += 1
 
 			return cleaned_data
@@ -73,7 +72,6 @@ class PenjualanForm(ModelForm):
 						raise forms.ValidationError('Kategori '+ data['stok'+str(i)]+ ' Insufficient. Stok:' + str(float(remaining[data['stok'+str(i)]]['sisa'])))
 				except Kategori.DoesNotExist :
 					raise forms.ValidationError('Kategori '+ str(i)+ ' Does Not Exist')
-				print str(data['stok'+str(i)]) + '-' + str(data['jumlah'+str(i)]) + '-' + str(data['harga'+str(i)])
 				i += 1
 
 			return cleaned_data
@@ -100,7 +98,6 @@ class KonversiForm(ModelForm):
 						raise forms.ValidationError('Kategori '+ data['stok_in'+str(i)]+ ' Insufficient. Stok:' + str(float(remaining[data['stok_in'+str(i)]]['sisa'])))
 				except Kategori.DoesNotExist :
 					raise forms.ValidationError('Kategori '+ str(i)+ ' Does Not Exist')
-				print str(data['stok_in'+str(i)]) + '-' + str(data['jumlah_in'+str(i)]) + '-'
 				i += 1
 
 			return cleaned_data
@@ -115,15 +112,13 @@ class PenarikanForm(ModelForm):
 		
 		cleaned_data = super(PenarikanForm, self).clean()
 		data = self.data
-		print "Yeah"+data.get('nasabah')
+
 		nasabah_id = data.get('nasabah')
 		total = float(data.get('total'))
 
 		res = q_nasabah_detail_only(nasabah_id)
 
 		if res['general']:
-			print "saldo:"+str(float(res['general']['saldo']))
-			print "total:"+str(total)
 			if float(res['general']['saldo']) < total:
 				raise forms.ValidationError('Saldo Tidak mencukupi')
 		return cleaned_data

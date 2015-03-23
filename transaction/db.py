@@ -374,7 +374,6 @@ def q_is_konversi_clear(konversi_id):
 		k = k[0]
 		stocks = k.outs.all()
 		for stock in stocks:
-			print stock
 			if stock.penjualan_set.all() or stock.detailin_set.all():
 				return False
 	else:
@@ -384,14 +383,13 @@ def q_is_konversi_clear(konversi_id):
 def q_konversi_detail(konversi_id):
 	res= {}
 	temp = q_konversi2(konversi_id)
-	print temp
 
 	if len(temp) < 1:
 		res['detail'] = {}
 	else:
 		res['detail'] = temp[temp.keys()[0]]
 		res['length'] = max(len(res['detail']['in']), len(res['detail']['out']))
-	print res['detail']
+
 	# import ipdb
 	# ipdb.set_trace()
 	c = connection.cursor()
@@ -437,11 +435,12 @@ def q_konversi_detail(konversi_id):
 
 def q_remaining():
 	c = connection.cursor()
-	c.execute("select * from stok_remain")
+	c.execute("select sr.kode, k.nama, k.satuan, k.stabil, sr.jumlah_in, sr.jumlah_penjualan, sr.jumlah_konversi, sr.sisa from stok_remain sr join transaction_kategori k on sr.kode = k.kode")
 	res = to_dict(c)
 
 	for r in res:
 		r['sisa'] = float(r['sisa'])
+		r['stabil'] = float(r['stabil'])
 		r['jumlah_konversi'] = float(r['jumlah_konversi'])
 		r['jumlah_in'] = float(r['jumlah_in'])
 		r['jumlah_penjualan'] = float(r['jumlah_penjualan'])
@@ -494,7 +493,7 @@ def q_last_stock(kode):
 def q_get_last_stock(kode, jumlah):
 	res = []
 	temp = q_last_stock(kode)
-	# print temp
+
 	need = float(jumlah)
 	counter = 0
 

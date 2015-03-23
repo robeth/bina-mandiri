@@ -18,7 +18,6 @@ def add(request):
 	if request.method == 'POST':
 		form = PembelianForm(request.POST)
 		if form.is_valid():
-			print "Valid"
 			# Add new stock items
 			data = form.data
 
@@ -39,7 +38,6 @@ def add(request):
 				p.stocks.add(s)
 				temp_total += float(s.jumlah) * float(s.harga)
 				i += 1
-				print temp_total
 
 			p.save()
 			if 'cash' in data:
@@ -56,7 +54,7 @@ def add(request):
 	options = []
 
 	for k in kk:
-		options.append({'kode' : k.kode, 'nama': k.nama, 'id': k.id, 'stabil': str(k.stabil)})
+		options.append({'kode' : k.kode, 'nama': k.nama, 'id': k.id, 'stabil': str(k.stabil), 'satuan': k.satuan})
 
 	context = {'form': form, 'options' : options, 'user': request.user}
 	return render(request, 'transaction/pembelian_add.html', context)
