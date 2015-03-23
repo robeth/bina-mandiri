@@ -4,8 +4,11 @@
 <link href="{% static "css/jquery-ui.css" %}" rel="stylesheet">
 <link href="{% static "css/default/easyui.css" %}" rel="stylesheet">
 <link href="{% static "css/icon.css" %}" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static "css/stock-autocomplete.css" %}">
 {% endblock extra_css %}
 
 {% block js_extra %}
-<script src="{% static "js/jquery-ui-1.9.2.custom.js" %}"></script>
+<script src="{% static "js/jquery-ui.js" %}"></script>
+<script src="{% static "js/stock-autocomplete.js" %}"></script>
+<script src="{% static "js/stock-input.js" %}"></script>
 {% endblock js_extra %}

@@ -38,30 +38,23 @@ Tambah Konversi
 
 		</div>
 		<div class="row">
-			<div class="col-md-5 well">
+			<div class="col-md-6 well">
 				<h4>Daftar Input Konversi</h4>
-				<input class="inputs-counter" type="hidden" name="total" value="1" />
-				<div class="dynamic-inputs">
-					<div class="inputs">
-						{#  #}
+				<div id="inputs" class="row">
+					{#  #}
 
-					</div>
 				</div>
-				<div class="toolbar">
+				<div class="row">
 					<button type=button class="add-input btn" >+</button>
 					<button type=button class="remove-input btn" >-</button>
 				</div>
 			</div>
-			<div class="col-md-5 col-md-offset-2 well">
+			<div class="col-md-5 col-md-offset-1 well">
 				<h4>Daftar Output Konversi</h4>
-				<input class="inputs-counter2" type="hidden" name="total2" value="1" />
-				<div class="dynamic-inputs2">
-					<div class="inputs2">
-						{#  #}
-
-					</div>
+				<div id="inputs2" class="row">
+					{#  #}
 				</div>
-				<div class="toolbar2">
+				<div class="row">
 					<button type=button class="add-input2 btn" >+</button>
 					<button type=button class="remove-input2 btn" >-</button>
 				</div>
@@ -75,29 +68,55 @@ Tambah Konversi
 <script type="text/javascript">
 	var options_in = jQuery.parseJSON('{{ remaining|jsonify_simple|safe }}');
 	var options_out = jQuery.parseJSON('{{ category|jsonify_simple|safe }}');
-	function getOptionsHTML(){
-		var result = "";
-		for(var i = 0; i < options_in.length; i++ ){
-			result += '<option value="'+ options_in[i].kode +'">'+ options_in[i].kode + '-'+ options_in[i].sisa+'</option>'
-		}
-		return result;
-	}
 
-	function getInputDiv(index){
-		return '<div class="single-field"><select name="stok_in'+index+'">'+getOptionsHTML()+'<input type="text" name="jumlah_in'+index+'"/></div>'
-	}
+    StockInput($("div#inputs"), {
+    	counterName: "total",
+		fields: {
+			autocomplete: {
+				len: 8
+			},
+			amount: {
+				len: 4,
+				name: "jumlah_in"
+			}
+		},
+        addButton: $("button.add-input"),
+        removeButton: $("button.remove-input"),
+        autoComplete: {
+        	stockData: options_in,
+        	idLabel: "stok_in",
+        	key: "kode",
+			codeLabel: "kode",
+			additionalInfo: {
+	        	key: "sisa",
+	        	htmlTag: "<code/>",
+	        	renderCallback: function(ui,value){
+	        		ui.text(value + " tersisa");
+	        	}
+	        }
+    	}
+    });
 
-	function getOptionsHTML2(){
-		var result = "";
-		for(var i = 0; i < options_out.length; i++ ){
-			result += '<option value="'+ options_out[i].kode +'">'+ options_out[i].kode + '</option>'
-		}
-		return result;
-	}
-
-	function getInputDiv2(index){
-		return '<div class="single-field2"><select name="stok_out'+index+'">'+getOptionsHTML2()+'<input type="text" name="jumlah_out'+index+'"/></div>'
-	}
+    StockInput($("div#inputs2"), {
+    	counterName: "total2",
+		fields: {
+			autocomplete: {
+				len: 8
+			},
+			amount: {
+				len: 4,
+				name: "jumlah_out"
+			}
+		},
+        addButton: $("button.add-input2"),
+        removeButton: $("button.remove-input2"),
+        autoComplete: {
+        	stockData: options_out,
+        	idLabel: "stok_out",
+        	key: "kode",
+			codeLabel: "kode"
+    	}
+    });
 
 	$(document).ready(function(){
 		$( "#id_{{ form.tanggal.html_name}}" ).datepicker({ dateFormat: "yy-mm-dd",
@@ -106,5 +125,4 @@ Tambah Konversi
 			"changeYear" : true});
 	});
 </script>
-<script src="{% static "js/inputs.js" %}"></script>
 {% endblock js_extra %}

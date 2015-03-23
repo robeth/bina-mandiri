@@ -44,15 +44,11 @@ Tambah Pembelian
 					</div>
 				</div>
 
-				<h3>Daftar Barang</h3>
-
-				<input class="inputs-counter" type="hidden" name="total" value="1" />
+				<h3>Daftar Barang Pembelian</h3>
 				<div class="row">
-					<div class="col-md-10 col-md-offset-1">
-						<div class="dynamic-inputs">
-							<div class="inputs">
-								{#  #}
-							</div>
+					<div class="col-md-12">
+						<div id="inputs">
+							{#  #}
 						</div>
 					</div>
 				</div>
@@ -75,26 +71,40 @@ Tambah Pembelian
 {% block js_extra %}
 {{ block.super }}
 <script type="text/javascript">
-	var options = jQuery.parseJSON('{{ options|jsonify|safe }}');
+var options = jQuery.parseJSON('{{ options|jsonify|safe }}');
 
-	function getOptionsHTML(){
-		var result = "";
-		for(var i = 0; i < options.length; i++ ){
-			result += '<option value="'+ options[i].id +'">'+ options[i].kode + '-'+ options[i].nama+'-'+options[i].stabil+'</option>'
-		}
-		return result;
-	}
+$(document).ready(function() {
+    $("#id_{{ form.tanggal.html_name}}").datepicker({
+        dateFormat: "yy-mm-dd",
+        "showAnim": "slideDown",
+        "changeMonth": true,
+        "changeYear": true
+    });
 
-	function getInputDiv(index){
-		return '<div class="single-field"><select name="stok'+index+'">'+getOptionsHTML()+'<input type="text" name="jumlah'+index+'" placeholder="jumlah" class="input-small"/><input type="text" name="harga'+index+'" placeholder="harga satuan"/></div>'
-	}
-
-	$(document).ready(function(){
-		$( "#id_{{ form.tanggal.html_name}}" ).datepicker({ dateFormat: "yy-mm-dd",
-		"showAnim" : "slideDown",
-		"changeMonth" : true,
-		"changeYear" : true});
-	});
+    StockInput($("div#inputs"), {
+    	counterName: "total",
+		fields: {
+			autocomplete: {
+				len: 4
+			},
+			amount: {
+				len: 3,
+				name: "jumlah"
+			},
+			price: {
+				len: 3,
+				name: "harga"
+			}
+		},
+    	addButton: $("button.add-input"),
+    	removeButton: $("button.remove-input"),
+    	autoComplete: {
+    		stockData: options,
+        	idLabel: "stok",
+        	key: "id",
+			codeLabel: "kode"
+    	}
+    });
+});
 </script>
-<script src="{% static "js/input.js" %}"></script>
 {% endblock js_extra %}

@@ -4,3 +4,14 @@ td.right {text-align:right}
 td.left {text-align: left}
 
 th.sorting, th.sorting_asc, th.sorting_desc, td.center {text-align:center;}
+
+div.single-field.form-inline input.form-control,
+div.single-field.form-inline div.form-group {
+	margin-right: 0px;
+	margin-left: 0px
+}
+
+code.code-stock {
+	max-width: 50px;
+	min-width: 50px;
+}
