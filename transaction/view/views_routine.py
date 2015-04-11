@@ -1,4 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
+from django.db import transaction
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from transaction.models import Nasabah, Vendor, Pembelian, Penjualan, DetailPenjualan, Stok, Kategori, Konversi, DetailIn, Penarikan
@@ -9,3 +10,4 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.utils.dateparse import parse_date
 from transaction.helper import paginate_data, customize_pages
+import code
