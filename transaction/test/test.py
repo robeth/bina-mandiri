@@ -338,7 +338,7 @@ class PembelianTest(TestCase):
 			}, follow=True)
 		
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
+		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian_detail/%s/" % pembelian1.id)
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# Should have new info, but the same id
@@ -384,7 +384,7 @@ class PembelianTest(TestCase):
 			}, follow=True)
 
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
+		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian_detail/%s/" % pembelian1.id)
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# All pembelian info should be the same (including id)
@@ -432,7 +432,7 @@ class PembelianTest(TestCase):
 			}, follow=True)
 
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
+		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian_detail/%s/" % pembelian1.id)
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# All pembelian info should be the same (including id)
@@ -489,7 +489,7 @@ class PembelianTest(TestCase):
 			}, follow=True)
 
 		self.assertEqual(response.status_code, 200)
-		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
+		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian_detail/%s/" % pembelian1.id)
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# All pembelian info should be the same (including id)
@@ -526,8 +526,7 @@ class PembelianTest(TestCase):
 
 		pembelian1 = PembelianFactory(stocks=[stok1, stok2])
 
-		response = self.client.post("/trans/pembelian_edit/%s/" % pembelian1.id, {
-				'pembelian_id': pembelian1.id + 100,
+		response = self.client.post("/trans/pembelian_edit/%s/" % (pembelian1.id + 100), {
 				'nasabah': pembelian1.nasabah.id,
 				'tanggal': pembelian1.tanggal,
 				'nota' : pembelian1.nota,
