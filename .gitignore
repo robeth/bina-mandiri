@@ -1,3 +1,8 @@
 *.pyc
 */settings.py
 env/
+*~
+bsm.sql
+bsm.sublime-project
+bsm.sublime-workspace
+database.txt
