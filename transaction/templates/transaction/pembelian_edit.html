@@ -3,19 +3,19 @@
 {% load transaction_util %}
 {% load staticfiles %}
 {% block judul %}
-Tambah Pembelian
+Edit Pembelian {{ pembelian.id }}
 {% endblock judul%}
 {% block nav_pembelian %}active{% endblock nav_pembelian %}
 {% block content %}
 <div class="container">
-	<form class="form-horizontal" action="{% url 'pembelian_add' %}" method="post" enctype="multipart/form-data">
+	<form class="form-horizontal" action="{% url 'pembelian_edit' pembelian.id %}" method="post" enctype="multipart/form-data">
 		<div class="row">
 			<div class="col-md-10 col-md-offset-1 well">
-				<h3>Tambah Pembelian</h3>
+				<h3>Edit Pembelian</h3>
 				{% if form.errors %}
 				<div class="alert">
 					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>Error:</strong> {{ form.errors}}
+					<strong>Error:</strong> {{ form.errors }}
 				</div>
 				{% endif %}
 				{% csrf_token %}
@@ -60,7 +60,7 @@ Tambah Pembelian
 						</div>
 					</div>
 					<div class="col-md-2 col-md-offset-6">
-						<button class="btn btn-primary" type="submit">Tambah</button>
+						<button class="btn btn-primary" type="submit">Edit</button>
 					</div>
 				</div>
 			</div>
@@ -72,6 +72,12 @@ Tambah Pembelian
 {{ block.super }}
 <script type="text/javascript">
 var options = jQuery.parseJSON('{{ options|jsonify|safe }}');
+var pembelian = jQuery.parseJSON('{{ pembelian|jsonify|safe }}');
+
+//Map pembelian stock kategori_id to StokAutoComplete's id 
+for(var i = 0; i < pembelian['stocks'].length; i++){
+	pembelian['stocks'][i]['id'] = pembelian['stocks'][i]['kategori_id'] 
+}
 
 $(document).ready(function() {
     $("#id_{{ form.tanggal.html_name}}").datepicker({
@@ -103,7 +109,8 @@ $(document).ready(function() {
         	idLabel: "stok",
         	key: "id",
 			codeLabel: "kode"
-    	}
+    	},
+    	initial: pembelian['stocks']
     });
 });
 </script>

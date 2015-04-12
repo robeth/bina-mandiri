@@ -35,8 +35,11 @@ Not found
         </div>
       </form>
     </div>
-    <div class="col-md-1 col-md-offset-6">
+    <div class="col-md-1 col-md-offset-5">
       <button class="btn btn-success pull-right" onclick="location.href='{% url 'pembelian_print'  general.0.id %}'"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+    </div>
+    <div class="col-md-1">
+      <button {% if not can_delete %}disabled{% endif %} class="btn btn-info pull-right" onclick="location.href='{% url 'pembelian_edit' general.0.id %}'"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
     </div>
     <div class="col-md-1">
       <button {% if not can_delete %}disabled{% endif %} class="btn btn-danger pull-right" data-target="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</button>
@@ -44,7 +47,7 @@ Not found
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutuo</span></button>
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
               <h3 id="myModalLabel" class="modal-header">Hapus Pembelian ID {{ general.0.id }}</h3>
             </div>
             <div class="modal-body">

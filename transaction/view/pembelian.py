@@ -64,11 +64,17 @@ def add(request):
 @transaction.atomic
 def edit(request, pembelian_id):
 	error_messages = []
+	pembelian = []
+	try:
+		with transaction.atomic():
+			pembelian = Pembelian.objects.get(id=pembelian_id)
+	except:
+		return HttpResponseRedirect(reverse('pembelian'))
+
 	if request.method == 'POST':
 		form = PembelianForm(request.POST)
 		is_valid_form = True
 		is_pembelian_clear = True
-			#code.interact(local=dict(globals(), **locals()))
 			
 		if not form.is_valid():
 			is_valid_form = False
@@ -84,7 +90,7 @@ def edit(request, pembelian_id):
 			# get existing pembelian
 			try:
 				with transaction.atomic():
-					p = Pembelian.objects.get(id=pembelian_id)
+					p = pembelian
 
 					# update pembelian info. clear all stocks
 					n = Nasabah.objects.get(id=data['nasabah'])
@@ -121,16 +127,37 @@ def edit(request, pembelian_id):
 			except:
 				error_messages.append("Invalid database operation")
 			else:
-				return HttpResponseRedirect(reverse('pembelian'))
+				# Successful edit operation
+				return HttpResponseRedirect(reverse('pembelian_detail', kwargs={'pembelian_id': pembelian_id}))
 	
-	form = PembelianForm()
+	# GET response or invalid POST edit pembelian operation	
+	form = PembelianForm(instance=pembelian)
+	pembelian = Pembelian.objects.get(id=pembelian_id)
 	kk = Kategori.objects.all().order_by('kode')
 	options = []
 
 	for k in kk:
 		options.append({'kode' : k.kode, 'nama': k.nama, 'id': k.id, 'stabil': str(k.stabil), 'satuan': k.satuan})
+	
 
-	context = {'form': form, 'options' : options, 'user': request.user, 'pembelian_id': pembelian_id, 'error_messages': error_messages}
+	pembelian_dict = {
+		'id' : pembelian.id,
+		'tanggal': str(pembelian.tanggal),
+		'nota' : pembelian.nota,
+		'stocks': [],
+		'nasabah_id' : pembelian.nasabah.id
+	}
+
+	for stok in pembelian.stocks.all() :
+		pembelian_dict['stocks'].append({
+			'id' : stok.id,
+			'tanggal' : str(stok.tanggal),
+			'harga': float(stok.harga),
+			'jumlah': float(stok.jumlah),
+			'kategori_id': float(stok.kategori.id)
+		})
+	# code.interact(local=dict(globals(), **locals()))
+	context = {'form': form, 'options' : options, 'user': request.user, 'pembelian': pembelian_dict, 'error_messages': error_messages}
 	return render(request, 'transaction/pembelian_edit.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

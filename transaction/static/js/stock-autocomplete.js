@@ -30,9 +30,13 @@ var StockAutocomplete = function(options, index){
 		});
 	}
 
-	var updateCallback = function(newStock){
+	var updateCallback = function(newStock, isUpdateStok){
 		stockHidden.val(newStock[options.key].toString());
 		stockCode.text(newStock.kode);
+
+		if(isUpdateStok){
+			stockInput.val(newStock.nama)
+		}
 		if(additionalElement){
 			options.additionalInfo.renderCallback(additionalElement, newStock[options.additionalInfo.key]);
 		}
@@ -90,5 +94,15 @@ var StockAutocomplete = function(options, index){
 		stockContainer.append(additionalElement);
 	}
 
-	return stockContainer;
+	this.forceUpdate = function(stock){
+		for(var i = 0; i < options.stockData.length; i++){
+			if(options.stockData[i]["id"] == stock["id"]){
+				updateCallback(options.stockData[i], true);
+			}
+		}
+	}
+
+	this.html = function(){
+		return stockContainer;
+	}
 }

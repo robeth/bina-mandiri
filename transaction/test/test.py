@@ -231,8 +231,34 @@ class PembelianTest(TestCase):
 		self.assertEqual(len(Stok.objects.all()), 2)
 		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
 
+	def test_edit_pembelian_should_give_pembelian_details(self):
+		kategori1 = KategoriFactory()
+		stok1 = StokFactory(kategori=kategori1)
+		pembelian1 = PembelianFactory(stocks=[stok1])
+		response = self.client.get("/trans/pembelian_edit/%s/" % pembelian1.id)
+
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.context['pembelian']["id"], pembelian1.id)
+		self.assertEqual(response.context['pembelian']["tanggal"], str(pembelian1.tanggal))
+		self.assertEqual(response.context['pembelian']["nota"], pembelian1.nota)
+		self.assertEqual(response.context['pembelian']["nasabah_id"], pembelian1.nasabah.id)
+		self.assertEqual(response.context['pembelian']["stocks"][0]["id"], pembelian1.stocks.all()[0].id)
+		self.assertEqual(response.context['pembelian']["stocks"][0]["kategori_id"], pembelian1.stocks.all()[0].kategori.id)
+		self.assertEqual(response.context['pembelian']["stocks"][0]["harga"], pembelian1.stocks.all()[0].harga)
+		self.assertEqual(response.context['pembelian']["stocks"][0]["jumlah"], pembelian1.stocks.all()[0].jumlah)
+		self.assertEqual(response.context['pembelian']["stocks"][0]["tanggal"], str(pembelian1.stocks.all()[0].tanggal))
+
+	def test_edit_pembelian_redirect_to_home_on_not_exist_id(self):
+		kategori1 = KategoriFactory()
+		stok1 = StokFactory(kategori=kategori1)
+		pembelian1 = PembelianFactory(stocks=[stok1])
+		response = self.client.get("/trans/pembelian_edit/%s/" % (pembelian1.id + 111))
+		# code.interact(local=dict(globals(), **locals()))
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(response._headers['location'][1], "http://testserver/trans/pembelian/")
+
 	def test_edit_pembelian_same_items(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		kategori2 = KategoriFactory(kode="goni")
 
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
@@ -254,7 +280,9 @@ class PembelianTest(TestCase):
 			}, follow=True)
 
 
-		#code.interact(local=dict(globals(), **locals()))
+		# code.interact(local=dict(globals(), **locals()))
+		# self.assertEqual(response.status_code, 200)
+		# self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian_detail/%s/" % pembelian)
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# All pembelian info should be the same (including id)
@@ -283,7 +311,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok2.tanggal, pembelian1.tanggal)
 
 	def test_edit_pembelian_change_general_info(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		kategori2 = KategoriFactory(kode="goni")
 
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
@@ -308,7 +336,9 @@ class PembelianTest(TestCase):
 				'jumlah2' : 20,
 				'harga2' : 1500
 			}, follow=True)
-
+		
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# Should have new info, but the same id
@@ -335,7 +365,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok2.tanggal, new_tanggal)
 
 	def test_edit_pembelian_minus_item(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		kategori2 = KategoriFactory(kode="goni")
 
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
@@ -353,6 +383,8 @@ class PembelianTest(TestCase):
 				'harga1' : 1000
 			}, follow=True)
 
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# All pembelian info should be the same (including id)
@@ -374,7 +406,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok1.tanggal, pembelian1.tanggal)
 
 	def test_edit_pembelian_plus_item(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		kategori2 = KategoriFactory(kode="goni")
 		kategori3 = KategoriFactory(kode="botol")
 
@@ -399,6 +431,8 @@ class PembelianTest(TestCase):
 				'harga3' : 3000
 			}, follow=True)
 
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# All pembelian info should be the same (including id)
@@ -432,7 +466,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok3.tanggal, pembelian1.tanggal)
 
 	def test_edit_pembelian_minus_previous_item_and_plus_new_item(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		kategori2 = KategoriFactory(kode="goni")
 		kategori3 = KategoriFactory(kode="botol")
 
@@ -454,6 +488,8 @@ class PembelianTest(TestCase):
 				'harga2' : 3000
 			}, follow=True)
 
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 
 		# All pembelian info should be the same (including id)
@@ -482,7 +518,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok3.tanggal, pembelian1.tanggal)
 
 	def test_cannot_edit_pembelian_not_exist_pembelian(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		kategori2 = KategoriFactory(kode="goni")
 
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
@@ -507,6 +543,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(len(Pembelian.objects.all()), 1)
 		# code.interact(local=dict(globals(), **locals()))
 		# Should raise exception (or simply redirected)
+		self.assertEqual(response.status_code, 200)
 		self.assertEqual(response.redirect_chain[0][0], "http://testserver/trans/pembelian/")
 
 		# Existing pembelian should still the same
@@ -535,7 +572,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok2.tanggal, pembelian1.tanggal)
 
 	def test_cannot_edit_processed_pembelian_in_konversi(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
 		stok2 = StokFactory()
 		pembelian1 = PembelianFactory(stocks=[stok1])
@@ -556,6 +593,8 @@ class PembelianTest(TestCase):
 		# code.interact(local=dict(globals(), **locals()))
 
 		# Should raise exception (or simply redirected)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(len(response.redirect_chain), 0)
 		self.assertIn("Some data still depend on this pembelian", response.context['error_messages'])
 
 		# Existing pembelian should still the same
@@ -578,7 +617,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok1.tanggal, pembelian1.tanggal)
 
 	def test_cannot_edit_processed_pembelian_in_penjualan(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
 		pembelian1 = PembelianFactory(stocks=[stok1])
 		
@@ -599,6 +638,8 @@ class PembelianTest(TestCase):
 		# code.interact(local=dict(globals(), **locals()))
 
 		# Should raise exception (or simply redirected)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(len(response.redirect_chain), 0)
 		self.assertIn("Some data still depend on this pembelian", response.context['error_messages'])
 
 		# Existing pembelian should still the same
@@ -621,7 +662,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok1.tanggal, pembelian1.tanggal)
 
 	def test_edit_pembelian_should_handle_invalid_tanggal(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
 		pembelian1 = PembelianFactory(stocks=[stok1])
 		
@@ -637,6 +678,8 @@ class PembelianTest(TestCase):
 		# code.interact(local=dict(globals(), **locals()))
 
 		# Should raise exception (or simply redirected)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(len(response.redirect_chain), 0)
 		self.assertIn("Invalid form submission", response.context['error_messages'])
 
 		# Existing pembelian should still the same
@@ -659,7 +702,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok1.tanggal, pembelian1.tanggal)
 
 	def test_edit_pembelian_should_handle_invalid_nota(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
 		pembelian1 = PembelianFactory(stocks=[stok1])
 		
@@ -680,6 +723,8 @@ class PembelianTest(TestCase):
 		# code.interact(local=dict(globals(), **locals()))
 
 		# Should raise exception (or simply redirected)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(len(response.redirect_chain), 0)
 		self.assertIn("Invalid form submission", response.context['error_messages'])
 
 		# Existing pembelian should still the same
@@ -702,7 +747,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok1.tanggal, pembelian1.tanggal)
 
 	def test_edit_pembelian_should_handle_invalid_nasabah(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
 		pembelian1 = PembelianFactory(stocks=[stok1])
 		
@@ -724,6 +769,8 @@ class PembelianTest(TestCase):
 		#code.interact(local=dict(globals(), **locals()))
 
 		# Should raise exception (or simply redirected)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(len(response.redirect_chain), 0)
 		self.assertIn("Invalid form submission", response.context['error_messages'])
 
 		# Existing pembelian should still the same
@@ -747,7 +794,7 @@ class PembelianTest(TestCase):
 		pass
 
 	def test_edit_pembelian_should_handle_not_exist_stok(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
 		pembelian1 = PembelianFactory(stocks=[stok1])
 		
@@ -768,6 +815,8 @@ class PembelianTest(TestCase):
 		# code.interact(local=dict(globals(), **locals()))
 
 		# Should raise exception (or simply redirected)
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(len(response.redirect_chain), 0)
 		self.assertIn("Invalid form submission", response.context['error_messages'])
 
 		# Existing pembelian should still the same
@@ -790,7 +839,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok1.tanggal, pembelian1.tanggal)
 
 	def test_edit_pembelian_should_handle_invalid_harga(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
 		pembelian1 = PembelianFactory(stocks=[stok1])
 
@@ -805,6 +854,8 @@ class PembelianTest(TestCase):
 			}, follow=True)
 		
 		# code.interact(local=dict(globals(), **locals()))
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(len(response.redirect_chain), 0)
 		self.assertIn("Invalid database operation", response.context['error_messages'])
 
 		# Existing pembelian should still the same
@@ -827,7 +878,7 @@ class PembelianTest(TestCase):
 		self.assertEqual(editted_stok1.tanggal, pembelian1.tanggal)
 
 	def test_edit_pembelian_should_handle_invalid_jumlah(self):
-		kategori1 = KategoriFactory(kode="karung")
+		kategori1 = KategoriFactory(kode="kar")
 		stok1 = StokFactory(jumlah=10, harga=1000, kategori=kategori1)
 		pembelian1 = PembelianFactory(stocks=[stok1])
 			
@@ -840,8 +891,10 @@ class PembelianTest(TestCase):
 				'jumlah1' : "aaa",
 				'harga1' : 500,
 			}, follow=True)
-		
+
 		# code.interact(local=dict(globals(), **locals()))
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(len(response.redirect_chain), 0)
 		self.assertIn("Invalid database operation", response.context['error_messages'])
 
 		# Existing pembelian should still the same
