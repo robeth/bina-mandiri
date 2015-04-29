@@ -1,4 +1,5 @@
 from views_routine import *
+from django.db import transaction
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
@@ -14,6 +15,7 @@ def index(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
+@transaction.atomic()
 def add(request):
 	if request.method == 'POST':
 		form = PembelianForm(request.POST)

@@ -120,7 +120,7 @@ var StockInput = function(container, options){
 			addNewRow(options.initial[j]);
 		}
 	} else {
-		addNewRow();
+		addNewRow(new Object());
 	}
 
 }
