@@ -6,8 +6,8 @@ class VendorFactory(factory.django.DjangoModelFactory):
 	class Meta:
 		model = Vendor
 
-	nama = "Juragan Kadir"
+	nama = factory.Sequence(lambda n: "Juragan %02d" % n)
 	alamat = "Tugu Pahlawan 99"
 	telepon = "999000111"
-	email = "juaragan@kadir.com"
+	email = (lambda n: "juragan%02d@example.com" % n)
 	tanggal_daftar = datetime.date.today()
