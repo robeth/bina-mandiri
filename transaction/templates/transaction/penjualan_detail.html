@@ -36,8 +36,11 @@ Not found
         </div>
       </form>
     </div>
-    <div class="col-md-1 col-md-offset-6">
+    <div class="col-md-1 col-md-offset-5">
       <button class="btn btn-success pull-right" onclick="location.href='{% url  'penjualan_print' general.0.id %}'"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+    </div>
+    <div class="col-md-1">
+      <button class="btn btn-info pull-right" onclick="location.href='{% url 'penjualan_edit' general.0.id %}'"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
     </div>
     <div class="col-md-1">
       <button class="btn btn-danger pull-right" href="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</button>

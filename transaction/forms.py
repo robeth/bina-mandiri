@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from transaction.models import Nasabah, Vendor, Pembelian, Kategori, Penjualan, Konversi, Penarikan
-from transaction.db import q_remaining_dict, q_nasabah_detail_only
+from transaction.db import q_remaining_dict, q_nasabah_detail_only, q_reclaimed_stocks
 
 class NasabahForm(ModelForm):
 	class Meta:
@@ -62,6 +62,12 @@ class PenjualanForm(ModelForm):
 		data = self.data
 		remaining = q_remaining_dict()
 
+		if 'penjualan_id' in data:
+			reclaimed_stocks = q_reclaimed_stocks(data['penjualan_id'])
+			for k,v in reclaimed_stocks.iteritems():
+				remaining[k]['jumlah_penjualan'] -= v
+				remaining[k]['sisa'] += v
+				
 		if 'total' in data:
 			limit = int(data['total'])
 			i = 1
@@ -72,6 +78,8 @@ class PenjualanForm(ModelForm):
 						raise forms.ValidationError('Kategori '+ data['stok'+str(i)]+ ' Insufficient. Stok:' + str(float(remaining[data['stok'+str(i)]]['sisa'])))
 				except Kategori.DoesNotExist :
 					raise forms.ValidationError('Kategori '+ str(i)+ ' Does Not Exist')
+				except Exception as e:
+					raise forms.ValidationError(str(e))
 				i += 1
 
 			return cleaned_data

@@ -1,4 +1,5 @@
 from views_routine import *
+from django.db import transaction
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
@@ -14,6 +15,7 @@ def index(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
+@transaction.atomic()
 def add(request):
 	if request.method == 'POST':
 		form = PenjualanForm(request.POST)
@@ -38,6 +40,85 @@ def add(request):
 
 	context = { 'remaining':  q_remaining(), 'form':form, 'user': request.user}
 	return render(request, 'transaction/penjualan_add.html', context)
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required()
+@transaction.atomic()
+def edit(request, penjualan_id):
+	error_messages = []
+	penjualan = None
+
+	try:
+		penjualan = Penjualan.objects.get(id=penjualan_id)
+	except:
+		return HttpResponseRedirect(reverse('penjualan'))
+
+	if request.method == 'POST':
+		form = PenjualanForm(request.POST)
+		if form.is_valid():
+			try:
+				with transaction.atomic():
+					data = form.data
+					cleaned_data = form.cleaned_data
+
+					v = Vendor.objects.get(id=data['vendor'])
+					p = penjualan
+					p.tanggal= cleaned_data['tanggal'] 
+					p.vendor = v 
+					p.nota = cleaned_data['nota']
+					p.detailpenjualan_set.all().delete()
+
+					p.save()
+
+					limit = int(data['total'])
+					i = 1
+					while i <= limit:
+
+						# Validate each stock
+						
+						stocks = q_get_last_stock(data['stok'+str(i)], data['jumlah'+str(i)])
+						for s in stocks:
+							st = Stok.objects.get(id=s['id'])
+							dp = DetailPenjualan(stok=st, penjualan=p, jumlah=s['jumlah'], harga=data['harga'+str(i)])
+							dp.save()
+						i += 1
+			except Exception, e:
+				error_messages.append("Invalid database operation:" + str(e))
+			else:
+				# Successful edit operation
+				return HttpResponseRedirect(reverse('penjualan_detail', kwargs={'penjualan_id': penjualan_id}))
+
+		else:
+			error_messages.append("Invalid form submission")
+	else:
+		# Get Response or invalid edit operation
+		form = PenjualanForm(instance=penjualan)
+
+	penjualan_data = {
+		'id' : penjualan.id,
+		'tanggal': str(penjualan.tanggal),
+		'nota': penjualan.nota,
+		'detailPenjualanList': [],
+		'vendor_id': penjualan.vendor.id
+	}
+
+	for detailPenjualan in penjualan.detailpenjualan_set.all():
+		penjualan_data['detailPenjualanList'].append({
+				'kode': detailPenjualan.stok.kategori.kode,
+				'kategori_id' : detailPenjualan.stok.kategori.id,
+				'stok_id' : detailPenjualan.stok.id,
+				'jumlah' : float(detailPenjualan.jumlah),
+				'harga' : float(detailPenjualan.harga)
+			})
+
+	context = { 
+		'remaining':  q_remaining(), 
+		'form':form, 
+		'user': request.user, 
+		'penjualan': penjualan_data,
+		'error_messages': error_messages
+	 }
+	return render(request, 'transaction/penjualan_edit.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()

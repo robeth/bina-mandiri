@@ -3,20 +3,21 @@
 {% load transaction_util %}
 {% load staticfiles %}
 {% block judul %}
-Tambah Penjualan
+Edit Penjualan {{ penjualan.id }}
 {% endblock judul%}
 {% block nav_penjualan %}active{% endblock nav_penjualan %}
 {% block content %}
 <div class="container">
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1 well">
-			<form class="form-horizontal" action="{% url 'penjualan_add' %}" method="post">
+			<form class="form-horizontal" action="{% url 'penjualan_edit' penjualan.id %}" method="post">
+				<input type="hidden" name="penjualan_id" value="{{ penjualan.id }}" />
 				{% csrf_token %}
-				<h3>Tambah Penjualan</h3>
+				<h3>Edit Penjualan</h3>
 				{% if form.errors %}
 				<div class="alert">
 					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>Error:</strong> {{ form.errors}}
+					<strong>Error:</strong> {{ form.errors }}
 				</div>
 				{% endif %}
 				<div class="form-group">
@@ -56,7 +57,7 @@ Tambah Penjualan
 				</div>
 				<div class="row">
 					<div class="col-md-2 col-md-offset-10">
-						<button class="btn btn-primary" type="submit">Tambah</button>
+						<button class="btn btn-primary" type="submit">Selesai</button>
 					</div>
 				</div>
 			</form>
@@ -68,6 +69,7 @@ Tambah Penjualan
 {{ block.super }}
 <script type="text/javascript">
 var options = jQuery.parseJSON('{{ remaining|jsonify_simple|safe }}');
+var penjualan = jQuery.parseJSON('{{ penjualan|jsonify_simple|safe }}');
 
 $(document).ready(function() {
     $("#id_{{ form.tanggal.html_name}}").datepicker({
@@ -106,7 +108,8 @@ $(document).ready(function() {
 	        		ui.text(value + " tersisa");
 	        	}
 	        }
-    	}
+    	},
+    	initial: penjualan.detailPenjualanList
     });
 });
 </script>

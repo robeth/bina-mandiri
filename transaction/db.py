@@ -1,5 +1,5 @@
 from django.db import connection
-from transaction.models import Stok, Pembelian, Konversi
+from transaction.models import Stok, Pembelian, Konversi, Penjualan
 from datetime import datetime
 def to_dict(c):
 	return [ dict(zip([col[0] for col in c.description], row)) for row in c.fetchall()]
@@ -454,6 +454,19 @@ def q_remaining_dict():
 		res[t['kode']] = t
 
 	return res
+
+def q_reclaimed_stocks(penjualan_id):
+	res = {}
+	detailPenjualanList = Penjualan.objects.get(id=penjualan_id).detailpenjualan_set.all()
+	
+	for detailPenjualan in detailPenjualanList:
+		kodeKategori = detailPenjualan.stok.kategori.kode
+		if not kodeKategori in res:
+			res[kodeKategori] = 0
+		res[kodeKategori] += float(detailPenjualan.jumlah)
+
+	return res
+
 
 def q_last_stock(kode):
 	c = connection.cursor()
