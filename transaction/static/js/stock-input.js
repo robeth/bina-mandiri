@@ -81,7 +81,7 @@ var StockInput = function(container, options){
 			rowField.append(priceFieldFactory(index, data['harga']));
 		
 		// Init autocomplete field after all other components are loaded
-		if(data){
+		if(!$.isEmptyObject(data)){
 			stockAutocompleteInstance.stockAutocomplete.forceUpdate(data);
 		}
 

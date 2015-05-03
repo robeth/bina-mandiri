@@ -96,7 +96,7 @@ var StockAutocomplete = function(options, index){
 
 	this.forceUpdate = function(stock){
 		for(var i = 0; i < options.stockData.length; i++){
-			if(options.stockData[i]["id"] == stock["id"]){
+			if(options.stockData[i][options.key] == stock[options.key]){
 				updateCallback(options.stockData[i], true);
 			}
 		}

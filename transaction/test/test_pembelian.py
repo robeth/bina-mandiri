@@ -99,8 +99,8 @@ class PembelianTest(TestCase):
 
 		# code.interact(local=dict(globals(), **locals()))
 		self.assertEqual(len(Pembelian.objects.all()), 0)
-		self.assertEqual(response.context['form'].errors, 
-					{'nasabah': [u'Select a valid choice. That choice is not one of the available choices.']}
+		self.assertEqual(response.context['form'].errors['nasabah'], 
+					[u'Select a valid choice. That choice is not one of the available choices.']
 				)		
 
 	def test_add_pembelian_invalid_kategori(self):
