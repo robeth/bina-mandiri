@@ -49,8 +49,13 @@ class Pembelian(models.Model):
 	stocks = models.ManyToManyField(Stok)
 	tanggal = models.DateField()
 	nota = models.CharField(max_length=20, null=True, blank=True)
+	penarikan = models.ForeignKey('Penarikan', null=True, blank=True)
 	def __unicode__(self):
 		return self.nasabah.nama + '-' + str(self.tanggal)
+	def total_value(self):
+		return sum([stock.harga * stock.jumlah for stock in self.stocks.all()])
+	def total_unit(self):
+		return sum([stock.jumlah for stock in self.stocks.all()])
 
 class Penjualan(models.Model):
 	vendor = models.ForeignKey('Vendor')
@@ -85,3 +90,6 @@ class Penarikan(models.Model):
 	tanggal = models.DateField()
 	total = models.DecimalField(max_digits=15, decimal_places=2)
 	nota = models.CharField(max_length=20, null=True, blank=True)
+
+	def total_value(self):
+		return sum([p.total_value() for p in self.pembelian_set.all()])

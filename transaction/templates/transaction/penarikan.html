@@ -8,29 +8,6 @@ Penarikan
 {% block nav_activity %}active{% endblock nav_activity %}
 {% block content %}
 <div class="container">
-	
-	<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
-					<h3 id="myModalLabel" class="modal-header">Hapus Penarikan ID </h3>
-				</div>
-				<div class="modal-body">
-					<p>Apakah anda yakin?</p>
-				</div>
-				<div class="modal-footer">
-					<button class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
-					<button id="gotobutton" class="btn btn-danger">Ya</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-1 col-md-offset-11">
-			<a class="btn btn-primary pull-right" href="{% url 'penarikan_add' %}" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Penarikan</a>
-		</div>
-	</div>
 	<div id="content" class="row">
 		<div class="col-md-12">
 			<table id="table-penarikan" class="table table-hover table-condensed table-bordered">
@@ -43,7 +20,7 @@ Penarikan
 						<th>KodeN</th>
 						<th>Nama</th>
 						<th>Total</th>
-						<th>Menu</th>
+						<th>Total Pembelian</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -56,7 +33,7 @@ Penarikan
 						<td class="center">{% nasabah_url p.nasabah.id %}</td>
 						<td>{{ p.nasabah.nama }}</td>
 						<td class="right">{{ p.total|floatformat:2|intcomma }}</td>
-						<td><button class="btn btn-xs btn-danger" onclick="popout({{ p.id }})"><span class="glyphicon glyphicon-remove"></span></button></td>
+						<td class="right">{{ p.total_value|floatformat:2|intcomma }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>

@@ -251,7 +251,7 @@ def q_nasabah_detail(nasabah_id):
 		res['general'] = temp[0]
 		temp[0]['saldo'] = temp[0]['In'] - temp[0]['Out']
 	
-	c.execute("select p.id, r.sid, r.kode, r.nama as snama, n.nama as vnama, r.tanggal, r.jumlah, r.harga, r.harga*r.jumlah as total from transaction_pembelian p left outer join (  select ps.pembelian_id as id, s.id as sid, s.kode, s.nama, s.tanggal, s.jumlah, s.harga  from transaction_pembelian_stocks ps join  (   select s.id, k.kode, k.nama, s.tanggal, s.jumlah, s.harga   from transaction_kategori k join transaction_stok s on k.id = s.kategori_id  ) s on  ps.stok_id=s.id ) r on p.id = r.id join transaction_nasabah n on n.id = p.nasabah_id where n.id=%s order by p.id asc", [nasabah_id])
+	c.execute("select p.id, p.penarikan_id, r.sid, r.kode, r.nama as snama, n.nama as vnama, r.tanggal, r.jumlah, r.harga, r.harga*r.jumlah as total from transaction_pembelian p left outer join (  select ps.pembelian_id as id, s.id as sid, s.kode, s.nama, s.tanggal, s.jumlah, s.harga  from transaction_pembelian_stocks ps join  (   select s.id, k.kode, k.nama, s.tanggal, s.jumlah, s.harga   from transaction_kategori k join transaction_stok s on k.id = s.kategori_id  ) s on  ps.stok_id=s.id ) r on p.id = r.id join transaction_nasabah n on n.id = p.nasabah_id where n.id=%s order by p.id asc", [nasabah_id])
 	pembelian = to_dict(c)
 	res2 = {}
 
@@ -361,6 +361,8 @@ def q_is_pembelian_clear(pembelian_id):
 	if p:
 		p = p[0]
 		stocks = p.stocks.all()
+		if p.penarikan:
+			return False
 		for stock in stocks:
 			if stock.penjualan_set.all() or stock.detailin_set.all():
 				return False

@@ -32,12 +32,6 @@ Edit Pembelian {{ pembelian.id }}
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_cash" >Cash</label>	
-					<div class="col-md-10">
-						<input type="checkbox" name="cash" value="yes"/><input type="text" id="id_nota_cash" name="nota_cash" maxlength="20" placeholder="nota cash (opsional)" class="form-control"/>
-					</div>
-				</div>
-				<div class="form-group">
 					<label class="control-label col-md-2" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>	
 					<div class="col-md-10">
 						{{ form.nasabah|add_class:"form-control" }}
