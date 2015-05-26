@@ -25,6 +25,7 @@ Kategori
 						<th>#</th>
 						<th>Kode</th>
 						<th>Nama</th>
+						<th>Jenis</th>
 						<th>Harga Normal</th>
 						<th>Harga Fluktuatif</th>
 						<th>Satuan</th>
@@ -36,6 +37,7 @@ Kategori
 						<td class="center">{{ forloop.counter }}</td>
 						<td class="center"><code>{{ k.kode }}</code><a href="{% url 'kategori_edit' k.id %}"><span class="glyphicon glyphicon-pencil"></span></a></td>
 						<td>{{ k.nama }}</td>
+						<td>{{ k.report_kategori.nama }}</td>
 						<td class="right">{{ k.stabil|floatformat:2|intcomma }}</td>
 						<td class="right">{{ k.fluktuatif|floatformat:2|intcomma }}</td>
 						<td class="center">{{ k.satuan }}</td>
