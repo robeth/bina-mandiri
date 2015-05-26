@@ -42,4 +42,6 @@ urlpatterns = patterns('',
 		url(r'^penarikan_edit/(?P<penarikan_id>\d+)/$', penarikan.edit, name='penarikan_edit'),
 		url(r'^laba_rugi/$', report.laba_rugi, name='laba_rugi'),
 		url(r'^arus_barang/$', report.arus_barang, name='arus_barang'),
+		url(r'^utang_nasabah/$', report.utang_nasabah, name='utang_nasabah'),
+		url(r'^tonase_nasabah/$', report.tonase_nasabah, name='tonase_nasabah'),
 	)
