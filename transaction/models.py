@@ -25,6 +25,12 @@ class Vendor(models.Model):
 	def __unicode__(self):
 		return str(self.id) + '-' + self.nama
 
+class ReportKategori(models.Model):
+	nama = models.CharField(max_length=50)
+	satuan = models.CharField(max_length=20)
+	def __unicode__(self):
+		return self.nama
+
 class Kategori(models.Model):
 	kode = models.CharField(max_length=5)
 	nama = models.CharField(max_length=50)
@@ -33,6 +39,7 @@ class Kategori(models.Model):
 	foto = models.ImageField(null=True, blank=True, upload_to='kategori')
 	stabil = models.DecimalField(max_digits=15, decimal_places=2)
 	fluktuatif = models.DecimalField(max_digits=15, decimal_places=2)
+	report_kategori = models.ForeignKey('ReportKategori',default=1)
 	def __unicode__(self):
 		return self.kode + '-' + self.nama + ' (' + self.satuan + ')'
 
