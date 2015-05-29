@@ -145,7 +145,7 @@ var StockInput = function(container, options){
 
 
     $(options.form).submit(function(e){
-    	var tableRow = $(this).find('tr.single-field');
+    	var tableRow = $(container).find('tr.single-field');
     	stockCounter.val(tableRow.length);
 
     	$(tableRow).each(function(index, element){
