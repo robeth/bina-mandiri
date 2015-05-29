@@ -8,7 +8,7 @@ Tambah Konversi
 {% block nav_konversi %}active{% endblock nav_konversi %}
 {% block content %}
 <div class="container">
-	<form class="form-horizontal" action="{% url 'konversi_add' %}" method="post">
+	<form id="form-konversi" class="form-horizontal" action="{% url 'konversi_add' %}" method="post">
 		{% csrf_token %}
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3 well">
@@ -38,25 +38,38 @@ Tambah Konversi
 
 		</div>
 		<div class="row">
-			<div class="col-md-6 well">
-				<h4>Daftar Input Konversi</h4>
-				<div id="inputs" class="row">
-					{#  #}
-
+			<div class="col-md-6">
+				<div class="row">
+					<h3>Daftar Input Konversi</h3>
+					<div class="col-md-12">
+						<table id="inputs" class="table table-hover table-condensed">
+							{#  #}
+						</table>
+					</div>
 				</div>
 				<div class="row">
-					<button type=button class="add-input btn" >+</button>
-					<button type=button class="remove-input btn" >-</button>
+					<div class="col-md-4">
+						<div class="toolbar">
+							<button type=button id="add-input" class="btn" >+</button>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="col-md-5 col-md-offset-1 well">
-				<h4>Daftar Output Konversi</h4>
-				<div id="inputs2" class="row">
-					{#  #}
+			<div class="col-md-5 col-md-offset-1">
+				<div class="row">
+					<h3>Daftar Output Konversi</h3>
+					<div class="col-md-12">
+						<table id="inputs2" class="table table-hover table-condensed">
+							{#  #}
+						</table>
+					</div>
 				</div>
 				<div class="row">
-					<button type=button class="add-input2 btn" >+</button>
-					<button type=button class="remove-input2 btn" >-</button>
+					<div class="col-md-4">
+						<div class="toolbar">
+							<button type=button id="add-input2" class="btn" >+</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -69,24 +82,19 @@ Tambah Konversi
 	var options_in = jQuery.parseJSON('{{ remaining|jsonify_simple|safe }}');
 	var options_out = jQuery.parseJSON('{{ category|jsonify_simple|safe }}');
 
-    StockInput($("div#inputs"), {
+    StockInput($("table#inputs"), {
+    	form: $("#form-konversi"),
     	counterName: "total",
 		fields: {
-			autocomplete: {
-				len: 8
-			},
 			amount: {
-				len: 4,
 				name: "jumlah_in"
 			}
 		},
-        addButton: $("button.add-input"),
-        removeButton: $("button.remove-input"),
+        addButton: $("#add-input"),
         autoComplete: {
         	stockData: options_in,
-        	idLabel: "stok_in",
+        	fieldName: "stok_in",
         	key: "kode",
-			codeLabel: "kode",
 			additionalInfo: {
 	        	key: "sisa",
 	        	htmlTag: "<code/>",
@@ -97,24 +105,19 @@ Tambah Konversi
     	}
     });
 
-    StockInput($("div#inputs2"), {
+    StockInput($("table#inputs2"), {
+    	form: $("#form-konversi"),
     	counterName: "total2",
 		fields: {
-			autocomplete: {
-				len: 8
-			},
 			amount: {
-				len: 4,
 				name: "jumlah_out"
 			}
 		},
-        addButton: $("button.add-input2"),
-        removeButton: $("button.remove-input2"),
+        addButton: $("#add-input2"),
         autoComplete: {
         	stockData: options_out,
-        	idLabel: "stok_out",
+        	fieldName: "stok_out",
         	key: "kode",
-			codeLabel: "kode"
     	}
     });
 
