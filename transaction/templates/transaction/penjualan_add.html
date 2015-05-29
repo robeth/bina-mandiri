@@ -8,9 +8,9 @@ Tambah Penjualan
 {% block nav_penjualan %}active{% endblock nav_penjualan %}
 {% block content %}
 <div class="container">
-	<div class="row">
-		<div class="col-md-10 col-md-offset-1 well">
-			<form class="form-horizontal" action="{% url 'penjualan_add' %}" method="post">
+	<form id="form-penjualan" class="form-horizontal" action="{% url 'penjualan_add' %}" method="post">
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1 well">
 				{% csrf_token %}
 				<h3>Tambah Penjualan</h3>
 				{% if form.errors %}
@@ -37,31 +37,27 @@ Tambah Penjualan
 						{{ form.vendor|add_class:"form-control" }}
 					</div>
 				</div>
-
-				<h3>Daftar Barang Penjualan</h3>
-				<div class="row">
-					<div class="col-md-12">
-						<div id="inputs">
-							{#  #}
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-4">
-						<div class="toolbar">
-							<button type=button class="add-input btn" >+</button>
-							<button type=button class="remove-input btn" >-</button>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-2 col-md-offset-10">
-						<button class="btn btn-primary" type="submit">Tambah</button>
-					</div>
-				</div>
-			</form>
+			</div>
 		</div>
-	</div>
+		<div class="row">
+			<h3>Daftar Barang Penjualan</h3>
+			<div class="col-md-12">
+				<table id="inputs" class="table table-hover table-condensed">
+					{#  #}
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<div class="toolbar">
+					<button type=button class="add-input btn" >+</button>
+				</div>
+			</div>
+			<div class="col-md-2 col-md-offset-6">
+				<button class="btn btn-primary" type="submit">Selesai</button>
+			</div>
+		</div>
+	</form>
 </div>
 {% endblock content %}
 {% block js_extra %}
@@ -77,28 +73,22 @@ $(document).ready(function() {
         "changeYear": true
     });
 
-    StockInput($("div#inputs"), {
+    StockInput($("table#inputs"), {
+    	form: $("#form-penjualan"),
     	counterName: "total",
 		fields: {
-			autocomplete: {
-				len: 6
-			},
 			amount: {
-				len: 3,
 				name: "jumlah"
 			},
 			price: {
-				len: 3,
 				name: "harga"
 			}
 		},
         addButton: $("button.add-input"),
-        removeButton: $("button.remove-input"),
         autoComplete: {
         	stockData: options,
-        	idLabel: "stok",
+        	fieldName: "stok",
         	key: "kode",
-			codeLabel: "kode",
 			additionalInfo: {
 	        	key: "sisa",
 	        	htmlTag: "<code/>",
