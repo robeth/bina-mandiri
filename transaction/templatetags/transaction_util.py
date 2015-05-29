@@ -43,7 +43,7 @@ def penjualan_url(penjualan_id):
 
 @register.simple_tag
 def konversi_url(konversi_id):
-  return url_generator(reverse('konversi_detail', args=[konversi_id]), konversi_id, 'K', 'label-danger')
+  return url_generator(reverse('konversi_detail', args=[konversi_id]), konversi_id, 'K', 'label-primary')
 
 @register.simple_tag
 def nasabah_url(nasabah_id):
