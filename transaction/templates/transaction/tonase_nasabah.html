@@ -8,26 +8,29 @@ Tonase Nasabah
 {% block content %}
 {% load transaction_util %}
 <div class="container">
-
-	<form action="{% url 'tonase_nasabah'%}" method="get">
-	{% csrf_token %}
-	Bulan
-		<select name="month">
-			{% for i in 12|get_range %}
-			<option value="{{ i }}" {% if bulan == i %}selected="selected"{% endif %}>{{ i }}</option>
-			{% endfor%}
-		</select>
-	Tahun
-		<select name="year">
-			{% for i in year_range %}
-			<option value="{{ i }}" {% if tahun == i %}selected="selected"{% endif%}>{{ i }}</option>
-			{% endfor %}
-		</select>
-		<button class="btn btn-primary" type="submit">Pilih</button>
-	</form>
+	<div class="row">
+		<div class="col-md-6">
+			<form action="{% url 'tonase_nasabah'%}" method="get" class="form-inline">
+			{% csrf_token %}
+			Bulan
+				<select name="month" class="form-control">
+					{% for i in 12|get_range %}
+					<option value="{{ i }}" {% if bulan == i %}selected="selected"{% endif %}>{{ i }}</option>
+					{% endfor%}
+				</select>
+			Tahun
+				<select name="year" class="form-control">
+					{% for i in year_range %}
+					<option value="{{ i }}" {% if tahun == i %}selected="selected"{% endif%}>{{ i }}</option>
+					{% endfor %}
+				</select>
+				<button class="btn btn-primary" type="submit">Pilih</button>
+			</form>
+		</div>
+	</div>
 	
 	<div id="content" class="row">
-		<div class="span12">
+		<div class="col-md-12">
 			<table id="table-tonase" class="table table-hover table-condensed table-bordered display">
 				<thead>
 					<tr class="center-head">
@@ -48,7 +51,7 @@ Tonase Nasabah
 					<tr>
 							{% if forloop.first %}
 						<td class="center" rowspan="{{data.pembelian_list|length}}">{{forloop.parentloop.counter}}</td>
-						<td class="center" rowspan="{{data.pembelian_list|length}}">{% nasabah_url nasabah_id %} {{data.nama}}</td>
+						<td rowspan="{{data.pembelian_list|length}}">{% nasabah_url nasabah_id %} {{data.nama}}</td>
 							{% endif %}
 						<td class="center">{% pembelian_url pembelian.id%}</td>
 						<td class="center">{{pembelian.tanggal|date:"Y-m-d"}}</td>
