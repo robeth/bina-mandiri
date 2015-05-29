@@ -8,7 +8,7 @@ Tambah Pembelian
 {% block nav_pembelian %}active{% endblock nav_pembelian %}
 {% block content %}
 <div class="container">
-	<form class="form-horizontal" action="{% url 'pembelian_add' %}" method="post" enctype="multipart/form-data">
+	<form id="form-pembelian" class="form-horizontal" action="{% url 'pembelian_add' %}" method="post" enctype="multipart/form-data">
 		<div class="row">
 			<div class="col-md-10 col-md-offset-1 well">
 				<h3>Tambah Pembelian</h3>
@@ -43,26 +43,24 @@ Tambah Pembelian
 						{{ form.nasabah|add_class:"form-control" }}
 					</div>
 				</div>
-
-				<h3>Daftar Barang Pembelian</h3>
-				<div class="row">
-					<div class="col-md-12">
-						<div id="inputs">
-							{#  #}
-						</div>
-					</div>
+			</div>
+		</div>
+		<div class="row">
+			<h3>Daftar Barang Pembelian</h3>
+			<div class="col-md-12">
+				<table id="inputs" class="table table-hover table-condensed">
+					{#  #}
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<div class="toolbar">
+					<button type=button class="add-input btn" >+</button>
 				</div>
-				<div class="row">
-					<div class="col-md-4">
-						<div class="toolbar">
-							<button type=button class="add-input btn" >+</button>
-							<button type=button class="remove-input btn" >-</button>
-						</div>
-					</div>
-					<div class="col-md-2 col-md-offset-6">
-						<button class="btn btn-primary" type="submit">Tambah</button>
-					</div>
-				</div>
+			</div>
+			<div class="col-md-2 col-md-offset-6">
+				<button class="btn btn-primary" type="submit">Selesai</button>
 			</div>
 		</div>
 	</form>
@@ -81,28 +79,22 @@ $(document).ready(function() {
         "changeYear": true
     });
 
-    StockInput($("div#inputs"), {
+    StockInput($("table#inputs"), {
+    	form: $("#form-pembelian"),
     	counterName: "total",
 		fields: {
-			autocomplete: {
-				len: 4
-			},
 			amount: {
-				len: 3,
 				name: "jumlah"
 			},
 			price: {
-				len: 3,
 				name: "harga"
 			}
 		},
     	addButton: $("button.add-input"),
-    	removeButton: $("button.remove-input"),
     	autoComplete: {
     		stockData: options,
-        	idLabel: "stok",
-        	key: "id",
-			codeLabel: "kode"
+        	fieldName: "stok",
+        	key: "id"
     	}
     });
 });

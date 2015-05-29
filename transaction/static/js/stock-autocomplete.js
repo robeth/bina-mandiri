@@ -1,25 +1,15 @@
 var StockAutocomplete = function(options, index){
-	var stockContainer = $('<div>/', {
-		"class": "form-group"
-	});
+	var stockContainer = $('<div>/');
 
 	var stockInput = $('<input/>', {
-		id: options.idLabel + "-autocomplete-" + index,
 		type: "text",
 		"class": "form-control"
 	});
 
 	var stockHidden = $('<input/>', {
-		id: options.idLabel + index,
-		name: options.idLabel + index,
+		name: options.fieldName,
 		type: "hidden",
 		value: "-"
-	});
-
-	var stockCode = $('<code/>', {
-		id: options.codeLabel + index,
-		text: "-",
-		"class": "code-stock"
 	});
 
 	var additionalElement = null;
@@ -32,7 +22,6 @@ var StockAutocomplete = function(options, index){
 
 	var updateCallback = function(newStock, isUpdateStok){
 		stockHidden.val(newStock[options.key].toString());
-		stockCode.text(newStock.kode);
 
 		if(isUpdateStok){
 			stockInput.val(newStock.nama)
@@ -86,7 +75,7 @@ var StockAutocomplete = function(options, index){
 			.appendTo(ul);
 	};
 
-	stockContainer.append(stockCode)
+	stockContainer
 		.append(stockHidden)
 		.append(stockInput);
 

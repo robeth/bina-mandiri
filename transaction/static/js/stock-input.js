@@ -9,39 +9,55 @@ var StockInput = function(container, options){
 		name: options.counterName
 	});
 
+	var tableHeaderFactory = function(){
+		var tableHeader = $('<thead/>');
+		var headerRow = $('<tr/>');
 
-	var autocompleteFactory = function(index){
-		var stockAutocomplete = new StockAutocomplete(options.autoComplete, index);
+		function createHeaderCell(text){
+			return $('<td/>', { 'text': text, 'class' : 'center'});
+		}
+		
+		var headerCells = jQuery.map(['Kode', 'Kategori', 'Unit', 'Harga', ''], createHeaderCell);
+
+		for(var i = 0; i < headerCells.length; i++){
+			headerRow.append(headerCells[i]);
+		}
+		tableHeader.append(headerRow);
+		return tableHeader;
+	};
+
+	var stockCodeFactory =  function(){
+		return $('<code/>', {
+				text: "-"
+			});
+	}
+
+	var autocompleteFactory = function(){
+		var stockAutocomplete = new StockAutocomplete(options.autoComplete);
 		var result = { 
-			'html': $('<div/>', { "class": "col-md-"+ options.fields.autocomplete.len})
-				.append(stockAutocomplete.html()),
+			'html': $(stockAutocomplete.html()),
 			'stockAutocomplete' : stockAutocomplete
 		}; 
 		return result; 
 	};
 
-	var priceFieldFactory = function(index, initialPrice){
+	var priceFieldFactory = function(initialPrice){
 		initialPrice = typeof initialPrice !== 'undefined' ? initialPrice : "";
-		return $('<div/>', { "class": "form-group col-md-"+ options.fields.price.len})
-			.append(
-				($('<input/>', {
+		return ($('<input/>', {
 					type: "text",
-					name: options.fields.price["name"] + index,
+					name: options.fields.price["name"],
 					placeholder: "harga satuan",
 					"class": "form-control",
 					value: initialPrice
-				}))
-			);
+				}));
 	};
 
-	var amountFieldFactory = function(index, initialAmount){
+	var amountFieldFactory = function(initialAmount){
 		initialAmount = typeof initialAmount !== 'undefined' ? initialAmount : "";
-		return $('<div/>', { "class": "form-group col-md-" + options.fields.amount.len})
-			.append(
-				$('<div/>', { "class": "input-group"})
+		return $('<div/>', { "class": "input-group"})
 					.append($('<input/>', {
 						type: "text",
-						name: options.fields.amount["name"] + index,
+						name: options.fields.amount["name"],
 						placeholder: "jumlah",
 						"class": "form-control",
 						value: initialAmount
@@ -49,71 +65,75 @@ var StockInput = function(container, options){
 					.append($('<div/>', {
 						"class": "input-group-addon",
 						text: "-"
-					}))
-			);
+					}));
 	};
+
+	function removeButtonFactory(target){
+		var component = $('<button/>', {
+			"class" : "btn btn-danger",
+			click: function(){ $(target).remove(); }
+		}).append($('<span/>', { "class" : "glyphicon glyphicon-remove"}));
+
+		return component;
+	}
 
 	container.append(stockCounter);
+	container.append(tableHeaderFactory());
 
 	options.autoComplete.onStockUpdate = function(autoCompleteUi, newStock){
-		var singleFieldContainer = autoCompleteUi.closest("div.single-field")
-		if(options.fields.price)
-			singleFieldContainer.find("input[name*='"+options.fields.price["name"]+"']").attr("placeholder", "stabil: " + newStock.stabil);
+		var singleFieldContainer = autoCompleteUi.closest("tr.single-field")
+		$(singleFieldContainer).find("code").first().text(newStock.kode);
+		
+		if(options.fields.price){
+			$(singleFieldContainer).find("input[name*='"+options.fields.price["name"]+"']").attr("placeholder", "stabil: " + newStock.stabil);
+		}
 		
 		if(options.fields.amount)
-			singleFieldContainer.find("input[name*='"+options.fields.amount["name"]+"']").next().text(newStock.satuan);
+			$(singleFieldContainer).find("input[name*='"+options.fields.amount["name"]+"']").next().text(newStock.satuan);
 	};
 
-	function getInputDiv(index, data) {
-		var rowField = $('<div/>', {
-			"class": "single-field form-inline",
+	function getInputDiv(data) {
+		var rowField = $('<tr/>', {
+			"class": "single-field",
 		});
 
-		if(options.fields.autocomplete){
-			stockAutocompleteInstance = autocompleteFactory(index); 
-			rowField.append(stockAutocompleteInstance.html);
+		function wrapCell(element){
+			return $('<td/>').append(element);
 		}
 
+		var rowElements = []
+
+		rowElements.push(stockCodeFactory());
+
+		stockAutocompleteInstance = autocompleteFactory(); 
+		rowElements.push(stockAutocompleteInstance.html);
+
 		if(options.fields.amount)
-			rowField.append(amountFieldFactory(index, data['jumlah']));
+			rowElements.push(amountFieldFactory(data['jumlah']));
 
 		if(options.fields.price)
-			rowField.append(priceFieldFactory(index, data['harga']));
+			rowElements.push(priceFieldFactory(data['harga']));
 		
 		// Init autocomplete field after all other components are loaded
 		if(!$.isEmptyObject(data)){
 			stockAutocompleteInstance.stockAutocomplete.forceUpdate(data);
 		}
 
+		rowElements.push(removeButtonFactory(rowField))
+
+		var rowCells = jQuery.map(rowElements, wrapCell);
+		for(var i = 0; i < rowCells.length; i++){
+			rowField.append(rowCells[i]);
+		}
+
 		return rowField;
 	}
 
-	var i = 0;
-
-	/**
-	 * Add remove field functions
-	 */
-	function updateCounter(count){
-		stockCounter.val(count);
-	}
-
 	function addNewRow(data){
-		i++;
-		$(getInputDiv(i, data)).fadeIn('slow').appendTo(container);
-		updateCounter(i);
-	}
-
-	function removeLastRow(initialData){
-		if(i > 1){
-			container.find('.single-field:last').remove();
-			i--;
-			updateCounter(i);
-		}
+		$(getInputDiv(data)).fadeIn('slow').appendTo(container);
 	}
 
 	$(options.addButton).click(addNewRow);
-
-	$(options.removeButton).click(removeLastRow);
 
 	if(options.initial){
 		for(var j = 0; j < options.initial.length; j++){
@@ -122,5 +142,21 @@ var StockInput = function(container, options){
 	} else {
 		addNewRow(new Object());
 	}
+
+
+    $(options.form).submit(function(e){
+    	var tableRow = $(this).find('tr.single-field');
+    	stockCounter.val(tableRow.length);
+
+    	$(tableRow).each(function(index, element){
+    		$(element).find('input').each(function(i, e){
+    			var name = e.name.replace(/\d+$/i, "");
+    			if(name && name.length > 0){
+    				$(e).attr('name', name+(index+1));
+    			}
+    		});
+    	});
+    	return true;
+    });
 
 }
