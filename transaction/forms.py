@@ -116,17 +116,46 @@ class KonversiForm(ModelForm):
 class PenarikanForm(ModelForm):
 	class Meta:
 		model = Penarikan
-	def clean(self):
-		
-		cleaned_data = super(PenarikanForm, self).clean()
-		data = self.data
 
-		nasabah_id = data.get('nasabah')
-		total = float(data.get('total'))
+	pembelians = forms.ModelMultipleChoiceField(queryset=None)
+	
+	def __init__(self, nasabah_id, *args, **kw):
+		instance = kw.get('instance', None)
+		
+		# Set existing pembelians selected 
+		if instance:
+			kw.update(initial={
+					'pembelians': [unicode(p.id) for p in instance.pembelian_set.all()]
+				})
+		super(PenarikanForm, self).__init__(*args, **kw)
+		
+		# Choice based on unpaid pembelians and existing pembelians(if any)
+		queryset_pembelians = Nasabah.objects.get(id=nasabah_id).pembelian_set.filter(penarikan_id__isnull=True)
+		if instance:
+			current_pembelians = kw['instance'].pembelian_set.all()
+			queryset_pembelians = queryset_pembelians | current_pembelians
+
+		# import code
+		# code.interact(local=dict(globals(), **locals()))
+		self.fields['nasabah'] = forms.ModelChoiceField(queryset=Nasabah.objects.filter(id=nasabah_id), initial=0)
+		self.fields['pembelians'] = forms.ModelMultipleChoiceField(
+			queryset=queryset_pembelians,
+			widget=forms.CheckboxSelectMultiple)
+
+
+	def clean(self):
+		cleaned_data = super(PenarikanForm, self).clean()
+		if cleaned_data.get('pembelians'):
+			cleaned_data['total'] = sum([p.total_value() for p in cleaned_data.get('pembelians')])
+		
+		nasabah_id = cleaned_data.get('nasabah')
+		total = float(cleaned_data.get('total'))
 
 		res = q_nasabah_detail_only(nasabah_id)
 
 		if res['general']:
 			if float(res['general']['saldo']) < total:
-				raise forms.ValidationError('Saldo Tidak mencukupi')
+				self._errors['total'] = self.error_class([u'Saldo tidak mencukupi'])
+				del cleaned_data['total']
+
 		return cleaned_data

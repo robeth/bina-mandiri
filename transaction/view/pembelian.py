@@ -47,6 +47,8 @@ def add(request):
 				if 'nota_cash' in data:
 					p_cash.nota = data['nota_cash']
 				p_cash.save()
+				p.penarikan = p_cash
+				p.save()
 
 			return HttpResponseRedirect(reverse('pembelian'))
 	else:
@@ -120,12 +122,6 @@ def edit(request, pembelian_id):
 						i += 1
 
 					p.save()
-					#FIX ME: previous cash withdrawal won't be updated
-					if 'cash' in data:
-						p_cash = Penarikan(tanggal=data['tanggal'], nasabah=n, total=temp_total)
-						if 'nota_cash' in data:
-							p_cash.nota = data['nota_cash']
-						p_cash.save()
 			except:
 				error_messages.append("Invalid database operation")
 			else:

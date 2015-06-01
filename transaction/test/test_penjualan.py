@@ -756,7 +756,7 @@ class PenjualanTest(TestCase):
 					'harga2' : 300125
 				}
 			)
-		code.interact(local=dict(globals(), **locals()))
+		# code.interact(local=dict(globals(), **locals()))
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response._headers['location'][1], 'http://testserver/trans/penjualan_detail/%s/' % penjualan1.id)
 		self.assertEqual(len(Penjualan.objects.all()), 1)

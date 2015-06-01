@@ -1,0 +1,95 @@
+{% extends "transaction/base-ui.html" %}
+{% block nav_report %}active{% endblock nav_report %}
+{% load staticfiles %}
+{% load humanize %}
+{% block judul %}
+Utang
+{% endblock judul%}
+{% block content %}
+{% load transaction_util %}
+<div class="container">
+	<h3>Daftar Utang</h3>
+	<div id="content" class="row">
+		<div class="col-md-12">
+			<table id="table-pembelian" class="table table-hover table-condensed table-bordered display">
+				<thead>
+					<tr class="center-head">
+						<th>#</th>
+						<th>Kode</th>
+						<th>Nota</th>
+						<th>Nasabah</th>
+						<th>Tanggal</th>
+						<th>Jatuh Tempo</th>
+						<th>Total Transaksi</th>
+						<th>Total Unit</th>
+						<th>Barang</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for p in pembelian %}
+					<tr>
+						<td class="center">{{forloop.counter}}</td>
+						<td class="center">{% pembelian_url p.id %}</td>
+						<td class="center">{% if p.nota %}{{p.nota}}{% endif %}</td>
+						<td>{{p.nasabah.nama}}</td>
+						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
+						<td class="center"></td>
+						<td class="right">{% calculate_gross p %}</td>
+						<td class="right">{% calculate_total_unit_pembelian p %}</td>
+						<td>
+							{% for stock_code in p.stocks.all|unique_item %}
+							<code>{{ stock_code }}</code>
+							{% endfor %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<ul class="pagination">
+				<li><a href="{% url 'utang_nasabah' %}">&laquo; Pertama</a></li>
+				{% for i in pages %}
+					{% if forloop.last %}
+						<li><a href="{% url 'utang_nasabah' %}?page={{ i }}">Terakhir &raquo;</a></li>
+					{% else %}
+						<li {% if pembelian.number == i %}class="active"{% endif %}><a href="{% url 'utang_nasabah' %}?page={{i}}">{{i}}</a></li>
+					{% endif%}
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+</div>
+
+
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+<script type="text/javascript">
+	function twoDigit(input){
+		return ("0" + input).slice(-2);
+	}
+	$(document).ready(function() {
+		$('#table-pembelian tr td:nth-child(5)').each(function(){
+			startDate = new Date($(this).text());
+			
+			endDate = new Date(startDate);
+			endDate.setDate(endDate.getDate() + 14);
+			$(this).next().text(endDate.getFullYear() + "-" + twoDigit(endDate.getMonth() + 1) + "-" + twoDigit(endDate.getDate()));
+		});
+
+		$('#table-pembelian').dataTable( {
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false,
+		} );
+	} );
+</script>
+{% include "transaction/advanced_window_script.html" %}
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+{% endblock js_extra %}

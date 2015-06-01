@@ -30,33 +30,36 @@ def jsonify_simple(object):
 	return simplejson.dumps(object)
 jsonify.is_safe = True
 
+def url_generator(url_name, url_id, prefix,label_class):
+  return '<a href="%s"><span class="label %s">%s%s</span></a>' % (url_name, label_class, prefix, url_id) 
+
 @register.simple_tag
 def pembelian_url(pembelian_id):
-  return '<span class="badge badge-info" onmouseover="" style="cursor: pointer;" onclick=\'window.open("'+ reverse('pembelian_detail', args=[pembelian_id]) + '", "_blank");\'' + '>B' + str(pembelian_id)+"</span>"
+  return url_generator(reverse('pembelian_detail', args=[pembelian_id]), pembelian_id, "B", "label-primary")
 
 @register.simple_tag
 def penjualan_url(penjualan_id):
-  return '<span class="badge badge-success" onmouseover="" style="cursor: pointer;" onclick=\'window.open("'+ reverse('penjualan_detail', args=[penjualan_id])  + '", "_blank");\'' + '>J' + str(penjualan_id)+"</span>"
+  return url_generator(reverse('penjualan_detail', args=[penjualan_id]), penjualan_id, "J", 'label-success')
 
 @register.simple_tag
 def konversi_url(konversi_id):
-  return '<span class="badge badge-important" onmouseover="" style="cursor: pointer;" onclick=\'window.open("'+ reverse('konversi_detail', args=[konversi_id])  + '", "_blank");\'' + '>K' + str(konversi_id)+"</span>"
+  return url_generator(reverse('konversi_detail', args=[konversi_id]), konversi_id, 'K', 'label-primary')
 
 @register.simple_tag
 def nasabah_url(nasabah_id):
-  return '<span class="badge bad" onmouseover="" style="cursor: pointer;" onclick=\'window.open("'+ reverse('nasabah_detail', args=[nasabah_id])  + '", "_blank");\'' + '>N' + str(nasabah_id)+"</span>"
+  return url_generator(reverse('nasabah_detail', args=[nasabah_id]), nasabah_id, 'N', 'label-info')
 
 @register.simple_tag
 def vendor_url(vendor_id):
-  return '<span class="badge badge-warning" onmouseover="" style="cursor: pointer;" onclick=\'window.open("'+ reverse('vendor_detail', args=[vendor_id])  + '", "_blank");\'' + '>V' + str(vendor_id)+"</span>"
+  return url_generator(reverse('vendor_detail', args=[vendor_id]), vendor_id, 'V', 'label-warning')
 
 @register.simple_tag
 def stok_url(stok_id):
-  return '<span class="badge" onmouseover="" style="cursor: pointer;" onclick=\'window.open("'+ reverse('stok_detail', args=[stok_id])  + '", "_blank");\'' + '>S' + str(stok_id)+"</span>"
+  return url_generator(reverse('stok_detail', args=[stok_id]), stok_id, 'S', 'label-default')
 
 @register.simple_tag
 def penarikan_url(penarikan_id):
-  return '<span class="badge" onmouseover="" style="cursor: pointer;"' + '>T' + str(penarikan_id)+"</span>"
+  return url_generator(reverse('penarikan_detail', args=[penarikan_id]), penarikan_id, 'T', 'label-default')
 
 @register.filter
 def get_range( value ):

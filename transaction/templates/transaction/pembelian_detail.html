@@ -11,6 +11,23 @@ Detail Pembelian {{ general.0.id }}
 Not found
 {% else %}
 <div class="container">
+  <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
+          <h3 id="myModalLabel" class="modal-header">Hapus Pembelian ID {{ general.0.id }}</h3>
+        </div>
+        <div class="modal-body">
+          <p>Apakah anda yakin?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
+          <button type="button" class="btn btn-danger" onclick="location.href='{% url 'pembelian_del'  general.0.id %}'">Ya</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-4 well">
       <h3>Pembelian ID {{ general.0.id }}</h3>
@@ -33,32 +50,20 @@ Not found
               <input class="form-control" disabled id="tanggal" placeholder="Tanggal Pembelian" type="text" value="{{general.0.tanggal|date:"Y-m-d"}}">
           </div>
         </div>
+        <div class="form-group">
+            {% if general.0.penarikan %}
+            <p>Terhubung dengan {% penarikan_url general.0.penarikan.id %}</p>
+            {% else %}
+            <p><a href="{% url 'penarikan_add' general.0.nasabah.id %}" class="btn"><span class="glyphicon glyphicon-link"></span> Penarikan</a></p>
+            {% endif %} 
+        </div>
       </form>
     </div>
-    <div class="col-md-1 col-md-offset-5">
-      <button class="btn btn-success pull-right" onclick="location.href='{% url 'pembelian_print'  general.0.id %}'"><span class="glyphicon glyphicon-print"></span> Cetak</button>
-    </div>
-    <div class="col-md-1">
-      <button {% if not can_delete %}disabled{% endif %} class="btn btn-info pull-right" onclick="location.href='{% url 'pembelian_edit' general.0.id %}'"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
-    </div>
-    <div class="col-md-1">
-      <button {% if not can_delete %}disabled{% endif %} class="btn btn-danger pull-right" data-target="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</button>
-      <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
-              <h3 id="myModalLabel" class="modal-header">Hapus Pembelian ID {{ general.0.id }}</h3>
-            </div>
-            <div class="modal-body">
-              <p>Apakah anda yakin?</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
-              <button type="button" class="btn btn-danger" onclick="location.href='{% url 'pembelian_del'  general.0.id %}'">Ya</button>
-            </div>
-          </div>
-        </div>
+    <div class="col-md-8">
+      <div class="form-inline pull-right">
+        <a class="btn btn-success" href="{% url 'pembelian_print'  general.0.id %}"><span class="glyphicon glyphicon-print"></span> Cetak</a>
+        <a {% if not can_delete %}disabled{% endif %} class="btn btn-info" href="{% url 'pembelian_edit' general.0.id %}"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+        <a {% if not can_delete %}disabled{% endif %} class="btn btn-danger" data-target="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</a>    
       </div>
     </div>
   </div>

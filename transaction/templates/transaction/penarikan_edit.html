@@ -3,13 +3,13 @@
 {% load transaction_util %}
 {% load staticfiles %}
 {% block judul %}
-+ Penarikan
+Edit Penarikan {{penarikan.id}}
 {% endblock judul%}
 {% block nav_penarikan %}active{% endblock nav_penarikan %}
 {% block content %}
 <div class="container">
-	<form action="{% url 'penarikan_add' nasabah_id %}" method="POST">
-		<h3>Tambah Penarikan</h3>
+	<form action="{% url 'penarikan_edit' penarikan.id %}" method="POST">
+		<h3>Edit Penarikan {{penarikan.id}}</h3>
 		{% csrf_token %}
 		{% if form.errors %}
 		<div class="row">

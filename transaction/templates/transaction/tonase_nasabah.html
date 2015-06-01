@@ -1,0 +1,83 @@
+{% extends "transaction/base-ui.html" %}
+{% block nav_report %}active{% endblock nav_report%}
+{% load staticfiles %}
+{% load humanize %}
+{% block judul %}
+Tonase Nasabah
+{% endblock judul%}
+{% block content %}
+{% load transaction_util %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-6">
+			<form action="{% url 'tonase_nasabah'%}" method="get" class="form-inline">
+			{% csrf_token %}
+			Bulan
+				<select name="month" class="form-control">
+					{% for i in 12|get_range %}
+					<option value="{{ i }}" {% if bulan == i %}selected="selected"{% endif %}>{{ i }}</option>
+					{% endfor%}
+				</select>
+			Tahun
+				<select name="year" class="form-control">
+					{% for i in year_range %}
+					<option value="{{ i }}" {% if tahun == i %}selected="selected"{% endif%}>{{ i }}</option>
+					{% endfor %}
+				</select>
+				<button class="btn btn-primary" type="submit">Pilih</button>
+			</form>
+		</div>
+	</div>
+	
+	<div id="content" class="row">
+		<div class="col-md-12">
+			<table id="table-tonase" class="table table-hover table-condensed table-bordered display">
+				<thead>
+					<tr class="center-head">
+						<th class="center">#</th>
+						<th class="center">Nasabah</th>
+						<th class="center">Pembelian</th>
+						<th class="center">Tanggal</th>
+						<th class="center">Nilai</th>
+						<th class="center">Tonase</th>
+						<th class="center">Total Nilai</th>
+						<th class="center">Total Tonase</th>
+						<th class="center">Rangkuman</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for nasabah_id, data in report.items %}
+						{% for pembelian in data.pembelian_list	%}
+					<tr>
+							{% if forloop.first %}
+						<td class="center" rowspan="{{data.pembelian_list|length}}">{{forloop.parentloop.counter}}</td>
+						<td rowspan="{{data.pembelian_list|length}}">{% nasabah_url nasabah_id %} {{data.nama}}</td>
+							{% endif %}
+						<td class="center">{% pembelian_url pembelian.id%}</td>
+						<td class="center">{{pembelian.tanggal|date:"Y-m-d"}}</td>
+						<td class="right">{{pembelian.total_value|floatformat:2|intcomma}}</td>
+						<td class="right">{{pembelian.total_unit|floatformat:2|intcomma }}</td>
+							{% if forloop.first %}
+						<td class="right" rowspan="{{data.pembelian_list|length}}">{{data.total_value|floatformat:2|intcomma }}</td>
+						<td class="right" rowspan="{{data.pembelian_list|length}}">{{data.total_unit|floatformat:2|intcomma }}</td>
+						<td rowspan="{{data.pembelian_list|length}}">
+							<ul>
+								{% for k, v in data.summary.items %}
+								<li>{{k}} {{v.jumlah}} {{v.satuan}}</li>
+								{% endfor %}
+							</ul>
+						</td>
+							{% endif %}
+					</tr>
+						{% endfor %}
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+<script src="{% static "js/other.js" %}"></script>
+{% endblock js_extra %}

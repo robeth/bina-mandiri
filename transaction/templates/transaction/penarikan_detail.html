@@ -1,0 +1,127 @@
+{% extends "transaction/base-ui.html" %}
+{% load humanize %}
+{% load transaction_util %}
+{% load staticfiles %}
+{% block judul %}
+Penarikan {{ penarikan.id }}
+{% endblock judul%}
+{% block nav_penarikan %}active{% endblock nav_penarikan %}
+{% block content %}
+<div class="container">
+	<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
+					<h3 id="myModalLabel" class="modal-header">Hapus Penarikan {{ penarikan.id }} </h3>
+				</div>
+				<div class="modal-body">
+					<p>Semua link pembelian yang terkait akan ikut terhapus.</p>
+					<p>Apakah anda yakin?</p>
+				</div>
+				<div class="modal-footer">
+					<form action="{% url 'penarikan_del' penarikan.id %}" method="POST">
+						{% csrf_token %}
+						<button class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
+						<button type="submit" class="btn btn-danger">Ya</button>
+						<input type="hidden" name="penarikan_id" value="{{ penarikan.id }}"/>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<h3>Penarikan {{ penarikan.id }}</h3>
+		<div class="form-inline pull-right">
+			<a href="" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Hapus</a>
+			<a href="{% url 'penarikan_edit' penarikan.id %}" class="btn btn-success">Edit</a>
+		</div>
+		<div class="row">
+			<div class="col-md-6 well">
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label class="control-label col-md-2">Nasabah</label>	
+						<div class="col-md-10">
+							<p class="form-control-static">{% nasabah_url penarikan.nasabah.id %} {{ penarikan.nasabah.nama }}</p>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label col-md-2">Nota</label>	
+						<div class="col-md-10">
+							<p class="form-control-static">{{ penarikan.nota }}</p>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label col-md-2" for="id_total">Total</label>	
+						<div class="col-md-10">
+							<div class="input-group">
+								<div class="input-group-addon">Rp</div>
+								<input id="id_total" type="number" class="form-control" value="{{ penarikan.total }}" readonly>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="control-label col-md-2" for="id_total_pembelian">Total Pembelian</label>	
+						<div class="col-md-10">
+							<div class="input-group">
+								<div class="input-group-addon">Rp</div>
+								<input id="id_total_pembelian" type="number" class="form-control" value="{{ penarikan.total_value }}" readonly>
+							</div>
+						</div>
+					</div>					
+
+					<div class="form-group">
+						<label class="control-label col-md-2">Tanggal</label>	
+						<div class="col-md-10">
+							<p class="form-control-static">{{ penarikan.tanggal|date:"Y-m-d" }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<h3>Daftar Pembelian</h3>
+				<table class="table table-striped table-bordered table-hover table-condensed" id="pembelian-list">
+					<thead>
+						<tr>
+							<td>Kode</td>
+							<td>Tanggal</td>
+							<td>Nilai</td>
+							<td>Tonase</td>
+						</tr>
+					</thead>
+					<tbody>
+					{% for p in penarikan.pembelian_set.all %}
+						<tr>
+							<td>{%pembelian_url p.id%}</td>
+							<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
+							<td class="right">{{p.total_value|floatformat:2|intcomma}}</td>
+							<td class="right">{{p.total_unit|floatformat:2|intcomma}}</td>
+						</tr>	
+					{% endfor%}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block js_extra %}
+{{ block.super }}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#pembelian-list").dataTable({
+			"bPaginate": false,
+			"bLengthChange": false,
+			"bFilter": true,
+			"bSort": true,
+			"bInfo": false,
+			"bAutoWidth": false
+		});
+	});
+</script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+{% endblock js_extra %}

@@ -12,21 +12,14 @@ Konversi
     <div class="col-md-12">
       <div class="navbar">
         <div class="navbar-inner">
-          <form class="navbar-search pull-left form-inline">
-
-            <button id="adv-button" class="btn btn-small" type="button"><i class="icon-wrench"></i>Advanced</button>
-          </form>
-
           <a class="btn btn-primary pull-right" href="{% url 'konversi_add' %}" data-toggle="modal"><span class="glyphicon glyphicon-plus"></span> Konversi</a>
           <form action="{% url 'konversi'%}" method="post" >
-
           </form>
         </div>
       </div>
     </div>
   </div>
 
-  {% include "transaction/advanced_window.html" %}
   <div id="content" class="row">
     <div class="span12">
       <table id="table-konversi" class="table table-hover table-condensed table-bordered">
