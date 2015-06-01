@@ -55,6 +55,8 @@ Contributions is really appreciated :)
 
 6. Database migration
 
+        python manage.py syncdb
+
         python manage.py migrate transaction
 
 7. Run server
