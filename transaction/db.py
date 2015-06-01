@@ -656,7 +656,7 @@ def q_home():
 	#Total Saldo
 	c.execute("select sum(coalesce(inning.total,0)) as 'In', sum(coalesce(outting.total,0)) as 'Out' from transaction_nasabah n left outer join  (select p.nasabah_id as id, sum(s.jumlah*s.harga) as total from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok s on s.id = ps.stok_id group by p.nasabah_id) as inning on n.id = inning.id left outer join (select n.id as id, sum(p.total) as total from transaction_nasabah n join transaction_penarikan p on n.id = p.nasabah_id group by n.id) as outting on n.id = outting.id")
 	res['saldo'] = to_dict(c)
-	res['saldo'][0]['saldo'] = res['saldo'][0]['In'] - res['saldo'][0]['Out']
+	res['saldo'][0]['saldo'] = (res['saldo'][0]['In'] or 0) - (res['saldo'][0]['Out'] or 0)
 
 	#Total aset tertahan 
 	c.execute("select sr.*, k.stabil, k.fluktuatif from stok_remain sr join transaction_kategori k on k.kode=sr.kode where sisa > 0")
