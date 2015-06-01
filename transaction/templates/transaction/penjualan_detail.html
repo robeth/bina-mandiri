@@ -36,27 +36,25 @@ Not found
         </div>
       </form>
     </div>
-    <div class="col-md-1 col-md-offset-5">
-      <button class="btn btn-success pull-right" onclick="location.href='{% url  'penjualan_print' general.0.id %}'"><span class="glyphicon glyphicon-print"></span> Cetak</button>
-    </div>
-    <div class="col-md-1">
-      <button class="btn btn-info pull-right" onclick="location.href='{% url 'penjualan_edit' general.0.id %}'"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
-    </div>
-    <div class="col-md-1">
-      <button class="btn btn-danger pull-right" href="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</button>
-      <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
-              <h3 id="myModalLabel" class="modal-header">Hapus Penjualan ID {{ general.0.id }}</h3>
-            </div>
-            <div class="modal-body">
-              <p>Apakah anda yakin?</p>
-            </div>
-            <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
-              <button class="btn btn-danger" onclick="location.href='{% url 'penjualan_del'  general.0.id %}'">Ya</button>
+    <div class="col-md-8">
+      <div class="form-inline pull-right">
+        <a class="btn btn-success" href="{% url  'penjualan_print' general.0.id %}"><span class="glyphicon glyphicon-print"></span> Cetak</a>
+        <a class="btn btn-info" href="{% url 'penjualan_edit' general.0.id %}"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+        <a class="btn btn-danger" href="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</a>
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
+                <h3 id="myModalLabel" class="modal-header">Hapus Penjualan ID {{ general.0.id }}</h3>
+              </div>
+              <div class="modal-body">
+                <p>Apakah anda yakin?</p>
+              </div>
+              <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
+                <button class="btn btn-danger" onclick="location.href='{% url 'penjualan_del'  general.0.id %}'">Ya</button>
+              </div>
             </div>
           </div>
         </div>
