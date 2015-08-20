@@ -1,6 +1,7 @@
 *.pyc
 */settings.py
 env/
+ENV/
 *~
 bsm.sql
 bsm.sublime-project
