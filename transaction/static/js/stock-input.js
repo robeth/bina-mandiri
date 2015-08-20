@@ -1,5 +1,5 @@
 var StockInput = function(container, options){
-	
+
 	/**
 	 * Stock counter (number of row)
 	 */
@@ -14,10 +14,11 @@ var StockInput = function(container, options){
 		var headerRow = $('<tr/>');
 
 		function createHeaderCell(text){
-			return $('<td/>', { 'text': text, 'class' : 'center'});
+			return $('<td/>', { 'text': text[0], 'class' : ('center col-md-' + text[1]) });
 		}
-		
-		var headerCells = jQuery.map(['Kode', 'Kategori', 'Unit', 'Harga', ''], createHeaderCell);
+
+		var headerCells = jQuery.map([
+			['Kode', 1], ['Kategori', 3], ['Unit', 3], ['Harga', 3], ['',1]], createHeaderCell);
 
 		for(var i = 0; i < headerCells.length; i++){
 			headerRow.append(headerCells[i]);
@@ -34,11 +35,11 @@ var StockInput = function(container, options){
 
 	var autocompleteFactory = function(){
 		var stockAutocomplete = new StockAutocomplete(options.autoComplete);
-		var result = { 
+		var result = {
 			'html': $(stockAutocomplete.html()),
 			'stockAutocomplete' : stockAutocomplete
-		}; 
-		return result; 
+		};
+		return result;
 	};
 
 	var priceFieldFactory = function(initialPrice){
@@ -83,11 +84,11 @@ var StockInput = function(container, options){
 	options.autoComplete.onStockUpdate = function(autoCompleteUi, newStock){
 		var singleFieldContainer = autoCompleteUi.closest("tr.single-field")
 		$(singleFieldContainer).find("code").first().text(newStock.kode);
-		
+
 		if(options.fields.price){
 			$(singleFieldContainer).find("input[name*='"+options.fields.price["name"]+"']").attr("placeholder", "stabil: " + newStock.stabil);
 		}
-		
+
 		if(options.fields.amount)
 			$(singleFieldContainer).find("input[name*='"+options.fields.amount["name"]+"']").next().text(newStock.satuan);
 	};
@@ -105,7 +106,7 @@ var StockInput = function(container, options){
 
 		rowElements.push(stockCodeFactory());
 
-		stockAutocompleteInstance = autocompleteFactory(); 
+		stockAutocompleteInstance = autocompleteFactory();
 		rowElements.push(stockAutocompleteInstance.html);
 
 		if(options.fields.amount)
@@ -113,7 +114,7 @@ var StockInput = function(container, options){
 
 		if(options.fields.price)
 			rowElements.push(priceFieldFactory(data['harga']));
-		
+
 		// Init autocomplete field after all other components are loaded
 		if(!$.isEmptyObject(data)){
 			stockAutocompleteInstance.stockAutocomplete.forceUpdate(data);
