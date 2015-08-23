@@ -25,8 +25,9 @@ def add(request):
 	if request.method == 'POST':
 		form = NasabahForm(request.POST, request.FILES)
 		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse('nasabah'))
+			new_nasabah = form.save()
+			next_page_alias = 'nasabah' if new_nasabah.jenis == 'individu' else 'nasabah_kolektif'
+			return HttpResponseRedirect(reverse(next_page_alias))
 	else:
 		form = NasabahForm()
 
@@ -44,7 +45,7 @@ def edit(request, nasabah_id):
 		form = NasabahForm(request.POST, request.FILES, instance=nn[0])
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect(reverse('nasabah'))
+			return HttpResponseRedirect(reverse('nasabah_detail', kwargs={'nasabah_id': nasabah_id}))
 	else:
 		form = NasabahForm(instance=nn[0])
 
