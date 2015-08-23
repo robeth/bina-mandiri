@@ -6,7 +6,7 @@ class Nasabah(models.Model):
 	ktp = models.CharField(null=True, blank=True, max_length=30)
 	nama = models.CharField(max_length=50)
 	alamat = models.TextField()
-	telepon = models.CharField(null=True, blank=True,max_length=20)
+	telepon = models.CharField(null=True, blank=True,max_length=255)
 	email = models.EmailField(null=True, blank=True)
 	tanggal_lahir = models.DateField(null=True, blank=True)
 	tanggal_daftar = models.DateField(default=datetime.date.today)
