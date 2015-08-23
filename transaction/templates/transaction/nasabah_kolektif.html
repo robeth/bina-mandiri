@@ -30,7 +30,9 @@ Nasabah Kolektif
 					<tr>
 						<th>#</th>
 						<th>Kode</th>
+						<th>No Induk</th>
 						<th>Nama</th>
+						<th>Nama PJ</th>
 						<th>Alamat</th>
 						<th>Telepon</th>
 						<th>Total In</th>
@@ -43,7 +45,9 @@ Nasabah Kolektif
 					<tr>
 						<td class="center">{{ forloop.counter }}</td>
 						<td>{% nasabah_url n.id %}</td>
+						<td>{{ n.no_induk|default:'-' }}</td>
 						<td>{{ n.nama }}</td>
+						<td>{{ n.nama_pj|default:'-' }}</td>
 						<td>{{ n.alamat }}</td>
 						<td>{{ n.telepon }}</td>
 						<td class="right">{{ n.In|floatformat:2|intcomma }}</td>

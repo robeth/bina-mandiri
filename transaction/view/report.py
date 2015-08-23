@@ -22,7 +22,7 @@ def laba_rugi(request):
 		res['total_bruto'] += float(p['bruto'])
 		res['total_hpp'] += float(p['hpp'])
 	res['total_netto'] = res['total_bruto'] - res['total_hpp']
-	
+
 	res['bulan'] = month
 	res['tahun'] = year
 	res['year_range'] = range(2013, current.year+1)
@@ -44,7 +44,7 @@ def arus_barang(request):
 	res['user'] = request.user
 
 	res['arus'] = q_arus_barang(month, year)
-	
+
 	res['bulan'] = month
 	res['tahun'] = year
 	res['year_range'] = range(2013, current.year+1)
@@ -58,7 +58,7 @@ def utang_nasabah(request):
 			penarikan_id__isnull=True).order_by('-tanggal'),
 			request.GET.get('page',1),
 			100)
-	context = { 'pembelian': pembelian_entries, 'user': request.user, 
+	context = { 'pembelian': pembelian_entries, 'user': request.user,
 		"pages": customize_pages(pembelian_entries.number, pembelian_entries.paginator.num_pages)}
 	return render(request, 'transaction/utang_nasabah.html', context)
 
@@ -76,7 +76,7 @@ def tonase_nasabah(request):
 
 	for pembelian in pembelian_list:
 		pembelian_json = {
-					'id': pembelian.id, 
+					'id': pembelian.id,
 					'tanggal': pembelian.tanggal,
 					'total_value': pembelian.total_value(),
 					'total_unit' : pembelian.total_unit()
@@ -88,6 +88,8 @@ def tonase_nasabah(request):
 		else:
 			res[pembelian.nasabah.id] = {
 				'nama' : pembelian.nasabah.nama,
+				'nama_pj' : pembelian.nasabah.nama_pj,
+				'no_induk' : pembelian.nasabah.no_induk,
 				'pembelian_list' : [ pembelian_json ],
 				'total_value' : pembelian_json['total_value'],
 				'total_unit' : pembelian_json['total_unit'],
@@ -101,7 +103,7 @@ def tonase_nasabah(request):
 			else:
 				res[pembelian.nasabah.id]['summary'][report_kategori] = {
 					'jumlah' : stock.jumlah,
-					'satuan' : report_kategori.satuan	
+					'satuan' : report_kategori.satuan
 				}
 
 	context = { 'report': res, 'user': request.user, 'bulan': int(month), 'tahun': int(year), 'year_range': range(2013, today.year + 1)}

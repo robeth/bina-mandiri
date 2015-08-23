@@ -38,6 +38,20 @@ Not found
                     <input class="form-control" disabled id="id" placeholder="Jenis" type="text" value="{{detail.general.jenis}}">
                   </div>
                 </div>
+                {% ifequal detail.general.jenis "kolektif" %}
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+                    <input class="form-control" disabled id="nama_pj" placeholder="Nama PJ" type="text" value="{{ detail.general.nama_pj|default:'- (Nama PJ)' }}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-asterisk"></span></div>
+                    <input class="form-control" disabled id="no_induk" placeholder="No Induk" type="text" value="{{ detail.general.no_induk|default:'- (No Induk)' }}">
+                  </div>
+                </div>
+                {% endifequal %}
                 <div class="form-group">
                   <div class="input-group">
                     <div class="input-group-addon">@</div>
@@ -94,7 +108,7 @@ Not found
                 <td class="right">{{p.sum_weight|floatformat:2|intcomma}}</td>
                 <td class="right">
                   {% if p.penarikan_id %}
-                  {% penarikan_url p.penarikan_id %}  
+                  {% penarikan_url p.penarikan_id %}
                   {% endif %}
                 </td>
                 <td>
@@ -133,7 +147,7 @@ Not found
               {% endif %}
             </tbody>
           </table>
-        </div>    
+        </div>
       </div>
 
       <div id="content" class="row">
@@ -161,11 +175,11 @@ Not found
               </tr>
               {% endfor %}
               {% endif %}
-              
+
             </tbody>
           </table>
         </div>
-      </div>  
+      </div>
 {% endif %}
 {% endblock content %}
 {% block js_extra %}

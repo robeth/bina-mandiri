@@ -14,6 +14,8 @@ def q_nasabah(kind):
 		       n.nama,
 		       n.alamat,
 		       n.telepon,
+			   n.nama_pj,
+			   n.no_induk,
 		       coalesce(inning.total,0) AS 'In',
 		       coalesce(outting.total,0) AS 'Out'
 		FROM transaction_nasabah n
@@ -34,7 +36,7 @@ def q_nasabah(kind):
 		"""), [kind])
 	res = to_dict(c)
 	for t in res:
-		t['saldo'] = t['In'] - t['Out'] 
+		t['saldo'] = t['In'] - t['Out']
 	return res
 
 def q_nasabah_all():
@@ -42,7 +44,7 @@ def q_nasabah_all():
 	c.execute("select n.id, n.nama, n.alamat, n.telepon, coalesce(inning.total,0) as 'In', coalesce(outting.total,0) as 'Out' from transaction_nasabah n left outer join (select p.nasabah_id as id, sum(s.jumlah*s.harga) as total from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok s on s.id = ps.stok_id group by p.nasabah_id) as inning on n.id = inning.id left outer join (select n.id as id, sum(p.total) as total from transaction_nasabah n join transaction_penarikan p on n.id = p.nasabah_id group by n.id) as outting on n.id = outting.id")
 	res = to_dict(c)
 	for t in res:
-		t['saldo'] = t['In'] - t['Out'] 
+		t['saldo'] = t['In'] - t['Out']
 	return res
 
 def q_vendor():
@@ -119,7 +121,7 @@ def q_pembelian(limit=-1):
 			t['sum'] = t['total']
 			t['kategori'] = { t['kode'] : {'nama':t['snama'], 'nilai':t['total']}}
 	return res2
- 
+
 def q_penjualan(vendor_id=None, limit=-1):
 	c = connection.cursor()
 	if vendor_id==None:
@@ -153,7 +155,7 @@ def q_konversi(limit=-1):
 		c.execute("select * from ( (select 1 as is_out, k.id, k.tanggal, k.kode as kodenota, sd.tanggal as stanggal, sd.id as stok_id, sd.kode, sd.nama, sd.deskripsi, sd.jumlah, sd.harga, sd.jumlah as jumlah2 from transaction_konversi k join transaction_konversi_outs ko on k.id = ko.konversi_id join transaction_stok_det sd on ko.stok_id = sd.id) UNION (select 0 as is_out, k.id, k.tanggal, k.kode as kodenota, sd.tanggal as stanggal, sd.id as stok_id, sd.kode, sd.nama, sd.deskripsi, sd.jumlah, sd.harga, di.jumlah as jumlah2 from transaction_konversi k join transaction_detailin di on k.id = di.konversi_id join transaction_stok_det sd on di.stok_id = sd.id)) a order by a.id, is_out LIMIT %s", [limit])
 	else:
 		c.execute("select * from ( (select 1 as is_out, k.id, k.tanggal, k.kode as kodenota, sd.tanggal as stanggal, sd.id as stok_id, sd.kode, sd.nama, sd.deskripsi, sd.jumlah, sd.harga, sd.jumlah as jumlah2 from transaction_konversi k join transaction_konversi_outs ko on k.id = ko.konversi_id join transaction_stok_det sd on ko.stok_id = sd.id) UNION (select 0 as is_out, k.id, k.tanggal, k.kode as kodenota, sd.tanggal as stanggal, sd.id as stok_id, sd.kode, sd.nama, sd.deskripsi, sd.jumlah, sd.harga, di.jumlah as jumlah2 from transaction_konversi k join transaction_detailin di on k.id = di.konversi_id join transaction_stok_det sd on di.stok_id = sd.id)) a order by a.id, is_out")
-	
+
 	res = to_dict(c)
 
 	res2 = {}
@@ -182,7 +184,7 @@ def q_konversi(limit=-1):
 def q_konversi2(konversi_id):
 	c = connection.cursor()
 	c.execute("select * from ( (select 1 as is_out, k.id, k.tanggal, sd.tanggal as stanggal, sd.id as stok_id, sd.kode, sd.nama, sd.deskripsi, sd.jumlah, sd.harga, sd.jumlah as jumlah2 from transaction_konversi k join transaction_konversi_outs ko on k.id = ko.konversi_id join transaction_stok_det sd on ko.stok_id = sd.id where k.id=%s) UNION (select 0 as is_out, k.id, k.tanggal, sd.tanggal as stanggal, sd.id as stok_id, sd.kode, sd.nama, sd.deskripsi, sd.jumlah, sd.harga, di.jumlah as jumlah2 from transaction_konversi k join transaction_detailin di on k.id = di.konversi_id join transaction_stok_det sd on di.stok_id = sd.id where k.id=%s)) a order by a.id, is_out", [konversi_id, konversi_id])
-	
+
 	res = to_dict(c)
 
 	res2 = {}
@@ -216,7 +218,7 @@ def q_konversi2(konversi_id):
 
 def q_nasabah_detail(nasabah_id):
 	res = {}
-	
+
 	c = connection.cursor()
 	c.execute(strip(
 		"""SELECT n.id,
@@ -228,6 +230,8 @@ def q_nasabah_detail(nasabah_id):
 			       n.tanggal_daftar,
 			       n.tanggal_lahir,
 			       n.foto,
+				   n.nama_pj,
+				   n.no_induk,
 			       coalesce(inning.total,0) AS 'In',
 			       coalesce(outting.total,0) AS 'Out'
 			FROM transaction_nasabah n
@@ -250,7 +254,7 @@ def q_nasabah_detail(nasabah_id):
 	if len(temp) > 0:
 		res['general'] = temp[0]
 		temp[0]['saldo'] = temp[0]['In'] - temp[0]['Out']
-	
+
 	c.execute("select p.id, p.penarikan_id, r.sid, r.kode, r.nama as snama, n.nama as vnama, r.tanggal, r.jumlah, r.harga, r.harga*r.jumlah as total from transaction_pembelian p left outer join (  select ps.pembelian_id as id, s.id as sid, s.kode, s.nama, s.tanggal, s.jumlah, s.harga  from transaction_pembelian_stocks ps join  (   select s.id, k.kode, k.nama, s.tanggal, s.jumlah, s.harga   from transaction_kategori k join transaction_stok s on k.id = s.kategori_id  ) s on  ps.stok_id=s.id ) r on p.id = r.id join transaction_nasabah n on n.id = p.nasabah_id where n.id=%s order by p.id asc", [nasabah_id])
 	pembelian = to_dict(c)
 	res2 = {}
@@ -294,7 +298,7 @@ def q_vendor_detail(vendor_id):
 
 	return res;
 
-def q_penjualan_detail(penjualan_id): 
+def q_penjualan_detail(penjualan_id):
 	res = {}
 	c = connection.cursor()
 	c.execute("select s.id as sid, s.nama as snama, s.kode as kode, s.tanggal as tanggal, s.harga as sharga, dp.harga as pharga, dp.jumlah as jumlah, s.jumlah as sjumlah, dp.jumlah*dp.harga as bruto, dp.jumlah*s.harga as invest, dp.jumlah*(dp.harga-s.harga) as netto from transaction_detailpenjualan dp join transaction_stok_det s on s.id = dp.stok_id where dp.penjualan_id=%s order by dp.id", [penjualan_id])
@@ -311,7 +315,7 @@ def q_penjualan_detail(penjualan_id):
 
 	return res
 
-def q_pembelian_detail(pembelian_id): 
+def q_pembelian_detail(pembelian_id):
 	res = {}
 	res2 = {}
 
@@ -319,13 +323,13 @@ def q_pembelian_detail(pembelian_id):
 	c.execute("select * from (( select if(dp.jumlah is null, 0,1) as status, s.*, s.jumlah*s.harga as nilai_beli, dp.jumlah as jumlah_keluar, dp.harga as harga_keluar, dp.jumlah*dp.harga as nilai_keluar, dp.jumlah*(dp.harga-s.harga) as netto, dp.penjualan_id as kode_status from ( select s.* from transaction_pembelian_stocks p join transaction_stok_det s on p.stok_id = s.id where p.pembelian_id = %s ) s left outer join transaction_detailpenjualan dp on s.id = dp.stok_id) Union (select if(di.jumlah is null, 0,2) as status,s.*, s.jumlah*s.harga as nilai_beli, di.jumlah as jumlah_keluar, s.harga as harga_keluar, di.jumlah*s.harga as nilai_keluar , 0 as netto, di.konversi_id as kode_status from ( select s.* from transaction_pembelian_stocks p join transaction_stok_det s on p.stok_id = s.id where p.pembelian_id = %s ) s left outer join transaction_detailin di on s.id = di.stok_id)) a order by a.id", [pembelian_id, pembelian_id])
 	res['pembelian_detail'] = res2
 	temp = to_dict(c)
-	
+
 	res['total_penjualan']=0
 	res['total_pembelian']=0
 	res['total_profit'] =0
 	res['total_unit_pembelian']=0
 	res['total_unit_penjualan']=0
-	
+
 	for t in temp:
 		if t['id'] in res2:
 			if t['status'] != 0:
@@ -399,13 +403,13 @@ def q_konversi_detail(konversi_id):
 	resTracking = {}
 	res['tracking'] = resTracking
 	temp = to_dict(c)
-	
+
 	res['total_penjualan']=0
 	res['total_pembelian']=0
 	res['total_profit'] =0
 	res['total_unit_penjualan']=0
 	res['total_unit_pembelian']=0
-	
+
 	for t in temp:
 		if t['id'] in resTracking:
 			if t['status'] != 0:
@@ -460,7 +464,7 @@ def q_remaining_dict():
 def q_reclaimed_stocks(penjualan_id):
 	res = {}
 	detailPenjualanList = Penjualan.objects.get(id=penjualan_id).detailpenjualan_set.all()
-	
+
 	for detailPenjualan in detailPenjualanList:
 		kodeKategori = detailPenjualan.stok.kategori.kode
 		if not kodeKategori in res:
@@ -500,7 +504,7 @@ def q_last_stock(kode):
 		r['jumlah_konversi'] = float(r['jumlah_konversi'])
 		r['jumlah_in'] = float(r['jumlah_in'])
 		r['jumlah_penjualan'] = float(r['jumlah_penjualan'])
-		
+
 	res = [ r for r in res if r['sisa'] > 0]
 
 	return res
@@ -515,14 +519,14 @@ def q_get_last_stock(kode, jumlah):
 	while counter < len(temp) and need > 0:
 		take = min(need, temp[counter]['sisa'])
 		need -= float(take)
-		res.append({'id': temp[counter]['id'], 'jumlah': take}) 
+		res.append({'id': temp[counter]['id'], 'jumlah': take})
 		counter += 1
 
 	return res
 
 def q_nasabah_detail_only(nasabah_id):
 	res = {}
-	
+
 	c = connection.cursor()
 	c.execute("select n.id, n.ktp, n.nama, n.alamat, n.telepon, n.tanggal_daftar, n.tanggal_lahir, coalesce(inning.total,0) as 'In', coalesce(outting.total,0) as 'Out' from transaction_nasabah n left outer join (select p.nasabah_id as id, sum(s.jumlah*s.harga) as total from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok s on s.id = ps.stok_id group by p.nasabah_id) as inning on n.id = inning.id left outer join (select n.id as id, sum(p.total) as total from transaction_nasabah n join transaction_penarikan p on n.id = p.nasabah_id group by n.id) as outting on n.id = outting.id where n.id=%s",[nasabah_id])
 	temp = to_dict(c)
@@ -535,7 +539,7 @@ def q_nasabah_detail_only(nasabah_id):
 
 def q_stok_stats(mode="MONTH"):
 	res = {}
-	
+
 	c = connection.cursor()
 	c.execute("select n.id, n.ktp, n.nama, n.alamat, n.telepon, n.tanggal_daftar, n.tanggal_lahir, coalesce(inning.total,0) as 'In', coalesce(outting.total,0) as 'Out' from transaction_nasabah n left outer join (select p.nasabah_id as id, sum(s.jumlah*s.harga) as total from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok s on s.id = ps.stok_id group by p.nasabah_id) as inning on n.id = inning.id left outer join (select n.id as id, sum(p.total) as total from transaction_nasabah n join transaction_penarikan p on n.id = p.nasabah_id group by n.id) as outting on n.id = outting.id where n.id=%s",[nasabah_id])
 	temp = to_dict(c)
@@ -565,7 +569,7 @@ def q_arus_barang(month, year):
 	penjualan = to_dict(c)
 	for p in penjualan:
 		res[p['kode']]['penjualan'] = float(p['jumlah'])
-	
+
 	c.execute("select sd.kode as kode, sum(sd.jumlah) as jumlah from transaction_pembelian p, transaction_pembelian_stocks ps, transaction_stok_det sd, transaction_nasabah n where p.id = ps.pembelian_id and ps.stok_id = sd.id and p.nasabah_id = n.id and n.jenis = 'individu' and year(p.tanggal) = %s and month(p.tanggal) = %s group by sd.kode", [year, month])
 	pembelian_individu = to_dict(c)
 	for p in pembelian_individu:
@@ -584,11 +588,11 @@ def q_arus_barang(month, year):
 	c.execute("select sd.kode as kode, sum(sd.jumlah) as jumlah from transaction_konversi k, transaction_konversi_outs ko, transaction_stok_det sd where k.id = ko.konversi_id and ko.stok_id = sd.id and year(k.tanggal) = %s and month(k.tanggal) = %s group by sd.kode", [year, month])
 	out_konversi = to_dict(c)
 	for p in out_konversi:
-		res[p['kode']]['out_konversi'] = float(p['jumlah'])	
+		res[p['kode']]['out_konversi'] = float(p['jumlah'])
 	return res
 
 def q_home():
-	
+
 	res = {}
 	c = connection.cursor()
 
@@ -658,7 +662,7 @@ def q_home():
 	res['saldo'] = to_dict(c)
 	res['saldo'][0]['saldo'] = (res['saldo'][0]['In'] or 0) - (res['saldo'][0]['Out'] or 0)
 
-	#Total aset tertahan 
+	#Total aset tertahan
 	c.execute("select sr.*, k.stabil, k.fluktuatif from stok_remain sr join transaction_kategori k on k.kode=sr.kode where sisa > 0")
 	res['aset'] = to_dict(c)
 

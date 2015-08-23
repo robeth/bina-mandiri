@@ -12,6 +12,8 @@ class Nasabah(models.Model):
 	tanggal_daftar = models.DateField(default=datetime.date.today)
 	foto = models.ImageField(null=True, blank=True, upload_to='nasabah')
 	jenis = models.CharField(max_length=20, default="individu")
+	nama_pj = models.CharField(null=True, blank=True, max_length=50)
+	no_induk = models.CharField(null=True, blank=True, unique=True, max_length=50)
 	def __unicode__(self):
 		return self.nama + '-' + self.ktp
 
@@ -67,7 +69,7 @@ class Pembelian(models.Model):
 class Penjualan(models.Model):
 	vendor = models.ForeignKey('Vendor')
 	stocks = models.ManyToManyField('Stok', through='DetailPenjualan')
-	tanggal = models.DateField()	
+	tanggal = models.DateField()
 	nota = models.CharField(max_length=20, null=True, blank=True)
 	def __unicode__(self):
 		return self.vendor.nama + '-' + str(self.tanggal)
