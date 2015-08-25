@@ -3,8 +3,8 @@
 <head>
   {% load staticfiles %}
   <meta charset="utf-8">
-  <link rel="icon" 
-      type="image/png" 
+  <link rel="icon"
+      type="image/png"
       href="{% static "img/favicon.ico" %}">
   <title>
     {% block judul %}
@@ -14,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="">
   <meta name="author" content="">
-  
+
   <!-- Le styles -->
   {% block css_main %}
   <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
@@ -72,8 +72,10 @@
             <ul class="dropdown-menu" role="menu" aria-labelledby="report-label">
               <li><a tabindex="-1" href="{% url 'laba_rugi' %}">Laba Rugi</a></li>
               <li><a tabindex="-1" href="{% url 'arus_barang' %}">Arus Barang</a></li>
-              <li><a tabindex="-1" href="{% url 'utang_nasabah' %}">Utang Nasabah</a></li>
-              <li><a tabindex="-1" href="{% url 'tonase_nasabah' %}">Tonase Nasabah</a></li>
+              <li><a tabindex="-1" href="{% url 'utang_nasabah_kolektif' %}">Utang Nasabah Kolektif</a></li>
+              <li><a tabindex="-1" href="{% url 'utang_nasabah_individu' %}">Utang Nasabah Individu</a></li>
+              <li><a tabindex="-1" href="{% url 'tonase_nasabah_kolektif' %}">Tonase Nasabah Kolektif</a></li>
+              <li><a tabindex="-1" href="{% url 'tonase_nasabah_individu' %}">Tonase Nasabah Individu</a></li>
             </ul>
           </li>
         </ul>

@@ -52,25 +52,51 @@ def arus_barang(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
-def utang_nasabah(request):
+def utang_nasabah_kolektif(request):
+	return utang_nasabah(request, 'kolektif')
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required()
+def utang_nasabah_individu(request):
+	return utang_nasabah(request, 'individu')
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required()
+def utang_nasabah(request, nasabah_kind):
 	pembelian_entries = paginate_data(
-		Pembelian.objects.filter(
-			penarikan_id__isnull=True).order_by('-tanggal'),
+		Pembelian.objects.filter(penarikan_id__isnull=True, nasabah__jenis=nasabah_kind).
+			order_by('-tanggal'),
 			request.GET.get('page',1),
 			100)
+	total_value = 0
+	for pembelian_entry in pembelian_entries:
+		total_value += pembelian_entry.total_value()
+
 	context = { 'pembelian': pembelian_entries, 'user': request.user,
-		"pages": customize_pages(pembelian_entries.number, pembelian_entries.paginator.num_pages)}
+		"kind": nasabah_kind,
+		"pages": customize_pages(pembelian_entries.number, pembelian_entries.paginator.num_pages),
+		"total_value": total_value}
 	return render(request, 'transaction/utang_nasabah.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
-def tonase_nasabah(request):
+def tonase_nasabah_kolektif(request):
+	return tonase_nasabah(request, 'kolektif')
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required()
+def tonase_nasabah_individu(request):
+	return tonase_nasabah(request, 'individu')
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required()
+def tonase_nasabah(request, nasabah_kind):
 	from datetime import date
 	today = date.today()
 	month = request.GET.get('month', today.month)
 	year = request.GET.get('year', today.year)
 
-	pembelian_list = Pembelian.objects.filter(tanggal__year=year, tanggal__month=month)
+	pembelian_list = Pembelian.objects.filter(tanggal__year=year, tanggal__month=month, nasabah__jenis=nasabah_kind)
 
 	res = {}
 
@@ -108,7 +134,12 @@ def tonase_nasabah(request):
 					'satuan' : report_kategori.satuan
 				}
 
-	context = { 'report': res, 'user': request.user, 'bulan': int(month), 'tahun': int(year), 'year_range': range(2013, today.year + 1)}
+	context = { 'report': res,
+		'user': request.user,
+		'bulan': int(month),
+		'tahun': int(year),
+		'year_range': range(2013, today.year + 1),
+		'kind': nasabah_kind}
 	return render(request, 'transaction/tonase_nasabah.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

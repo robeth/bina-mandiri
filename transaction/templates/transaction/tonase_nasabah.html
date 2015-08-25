@@ -3,14 +3,14 @@
 {% load staticfiles %}
 {% load humanize %}
 {% block judul %}
-Tonase Nasabah
+Tonase Nasabah {{ kind|capfirst }}
 {% endblock judul%}
 {% block content %}
 {% load transaction_util %}
 <div class="container">
 	<div class="row">
 		<div class="col-md-6">
-			<form action="{% url 'tonase_nasabah'%}" method="get" class="form-inline">
+			<form action="{% url 'tonase_nasabah_'|add:kind %}" method="get" class="form-inline">
 			{% csrf_token %}
 			Bulan
 				<select name="month" class="form-control">

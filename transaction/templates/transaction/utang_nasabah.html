@@ -3,12 +3,20 @@
 {% load staticfiles %}
 {% load humanize %}
 {% block judul %}
-Utang
+Utang Nasabah {{ kind|capfirst }}
 {% endblock judul%}
 {% block content %}
 {% load transaction_util %}
 <div class="container">
-	<h3>Daftar Utang</h3>
+	<div class="row">
+		<div class="col-md-6">
+			<h3>Daftar Utang Nasabah {{ kind|capfirst }}</h3>
+		</div>
+		<div class="col-md-3 pull-right">
+			<b>Total : </b>
+			<input readonly="" class="form-control input-sm" style="text-align:right" value="{{ total_value|floatformat:2|intcomma }}" type="text">
+		</div>
+	</div>
 	<div id="content" class="row">
 		<div class="col-md-12">
 			<table id="table-pembelian" class="table table-hover table-condensed table-bordered display">
@@ -50,12 +58,12 @@ Utang
 	<div class="row">
 		<div class="col-md-12">
 			<ul class="pagination">
-				<li><a href="{% url 'utang_nasabah' %}">&laquo; Pertama</a></li>
+				<li><a href="{% url 'utang_nasabah_'|add:kind %}">&laquo; Pertama</a></li>
 				{% for i in pages %}
 					{% if forloop.last %}
-						<li><a href="{% url 'utang_nasabah' %}?page={{ i }}">Terakhir &raquo;</a></li>
+						<li><a href="{% url 'utang_nasabah_'|add:kind %}?page={{ i }}">Terakhir &raquo;</a></li>
 					{% else %}
-						<li {% if pembelian.number == i %}class="active"{% endif %}><a href="{% url 'utang_nasabah' %}?page={{i}}">{{i}}</a></li>
+						<li {% if pembelian.number == i %}class="active"{% endif %}><a href="{% url 'utang_nasabah_'|add:kind %}?page={{i}}">{{i}}</a></li>
 					{% endif%}
 				{% endfor %}
 			</ul>
@@ -74,7 +82,7 @@ Utang
 	$(document).ready(function() {
 		$('#table-pembelian tr td:nth-child(5)').each(function(){
 			startDate = new Date($(this).text());
-			
+
 			endDate = new Date(startDate);
 			endDate.setDate(endDate.getDate() + 14);
 			$(this).next().text(endDate.getFullYear() + "-" + twoDigit(endDate.getMonth() + 1) + "-" + twoDigit(endDate.getDate()));
