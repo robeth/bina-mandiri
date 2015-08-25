@@ -90,6 +90,8 @@ def tonase_nasabah(request):
 				'nama' : pembelian.nasabah.nama,
 				'nama_pj' : pembelian.nasabah.nama_pj,
 				'no_induk' : pembelian.nasabah.no_induk,
+				'alamat' : pembelian.nasabah.alamat,
+				'telepon' : pembelian.nasabah.telepon,
 				'pembelian_list' : [ pembelian_json ],
 				'total_value' : pembelian_json['total_value'],
 				'total_unit' : pembelian_json['total_unit'],

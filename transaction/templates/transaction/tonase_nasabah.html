@@ -38,6 +38,8 @@ Tonase Nasabah
 						<th class="center">No Induk</th>
 						<th class="center">Nasabah</th>
 						<th class="center">Nama PJ</th>
+						<th class="center">Alamat</th>
+						<th class="center">Telepon</th>
 						<th class="center">Pembelian</th>
 						<th class="center">Tanggal</th>
 						<th class="center">Nilai</th>
@@ -56,6 +58,8 @@ Tonase Nasabah
 						<td rowspan="{{data.pembelian_list|length}}">{{ data.no_induk|default:'-' }}</td>
 						<td rowspan="{{data.pembelian_list|length}}">{% nasabah_url nasabah_id %} {{data.nama}}</td>
 						<td rowspan="{{data.pembelian_list|length}}">{{data.nama_pj|default:'-' }}</td>
+						<td rowspan="{{data.pembelian_list|length}}">{{data.alamat|default:'-' }}</td>
+						<td rowspan="{{data.pembelian_list|length}}">{{data.telepon|default:'-' }}</td>
 							{% endif %}
 						<td class="center">{% pembelian_url pembelian.id%}</td>
 						<td class="center">{{pembelian.tanggal|date:"Y-m-d"}}</td>
