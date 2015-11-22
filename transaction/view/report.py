@@ -63,18 +63,27 @@ def utang_nasabah_individu(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
 def utang_nasabah(request, nasabah_kind):
-	pembelian_entries = paginate_data(
-		Pembelian.objects.filter(penarikan_id__isnull=True, nasabah__jenis=nasabah_kind).
-			order_by('-tanggal'),
-			request.GET.get('page',1),
-			100)
-	total_value = 0
-	for pembelian_entry in pembelian_entries:
-		total_value += pembelian_entry.total_value()
+	pembelian_entries = Pembelian.objects.filter(nasabah__jenis=nasabah_kind).order_by('-tanggal')
+	unsettled_pembelians = [p for p in pembelian_entries if p.unsettled_value() > 0]
 
-	context = { 'pembelian': pembelian_entries, 'user': request.user,
+	total_value = 0
+	unsettled_entries = {}
+
+	for unsettled_pembelian in unsettled_pembelians:
+		nasabah_id = unsettled_pembelian.nasabah.id
+		if nasabah_id not in unsettled_entries:
+			unsettled_entries[nasabah_id] = {
+					'nasabah': unsettled_pembelian.nasabah,
+					'total': 0,
+					'pembelians': []
+				}
+
+		unsettled_entries[nasabah_id]['pembelians'].append(unsettled_pembelian)
+		unsettled_entries[nasabah_id]['total'] += unsettled_pembelian.unsettled_value()
+		total_value += unsettled_pembelian.unsettled_value()
+
+	context = { 'unsettled_entries': unsettled_entries, 'user': request.user,
 		"kind": nasabah_kind,
-		"pages": customize_pages(pembelian_entries.number, pembelian_entries.paginator.num_pages),
 		"total_value": total_value}
 	return render(request, 'transaction/utang_nasabah.html', context)
 

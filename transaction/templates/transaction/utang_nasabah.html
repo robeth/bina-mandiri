@@ -29,44 +29,40 @@ Utang Nasabah {{ kind|capfirst }}
 						<th>Tanggal</th>
 						<th>Jatuh Tempo</th>
 						<th>Total Transaksi</th>
-						<th>Total Unit</th>
-						<th>Barang</th>
+						<th>Belum Lunas</th>
+						<th>Total Utang</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
-					{% for p in pembelian %}
+					{% for nasabah_id, unsettled_entry in unsettled_entries.items %}
+					{% for pembelian in unsettled_entry.pembelians %}
 					<tr>
-						<td class="center">{{forloop.counter}}</td>
-						<td class="center">{% pembelian_url p.id %}</td>
-						<td class="center">{% if p.nota %}{{p.nota}}{% endif %}</td>
-						<td>{{p.nasabah.nama}}</td>
-						<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
-						<td class="center"></td>
-						<td class="right">{% calculate_gross p %}</td>
-						<td class="right">{% calculate_total_unit_pembelian p %}</td>
-						<td>
-							{% for stock_code in p.stocks.all|unique_item %}
-							<code>{{ stock_code }}</code>
-							{% endfor %}
+						{% if forloop.counter == 1 %}
+						<td class="center" rowspan="{{unsettled_entry.pembelians|length}}">{{forloop.parentloop.counter}}</td>
+						{% endif %}
+						<td class="center">{% pembelian_url pembelian.id %}</td>
+						<td class="center">{% if pembelian.nota %}{{pembelian.nota}}{% endif %}</td>
+						{% if forloop.counter == 1 %}
+						<td class="center" rowspan="{{unsettled_entry.pembelians|length}}">
+							{% nasabah_url unsettled_entry.nasabah.id %}{{unsettled_entry.nasabah.nama}}
 						</td>
+						{% endif %}
+						<td class="center">{{pembelian.tanggal|date:"Y-m-d"}}</td>
+						<td class="center">{% deadline pembelian.tanggal %}</td>
+						<td class="right">{{ pembelian.total_value|floatformat:2|intcomma }}</td>
+						<td class="right">{{ pembelian.unsettled_value|floatformat:2|intcomma }}</td>
+						{% if forloop.counter == 1 %}
+						<td class="right" rowspan="{{unsettled_entry.pembelians|length}}">{{ unsettled_entry.total|floatformat:2|intcomma }}</td>
+						<td class="center" rowspan="{{unsettled_entry.pembelians|length}}">
+							<a href="{% url 'penarikan_add' unsettled_entry.nasabah.id %}"> Penarikan <span class="glyphicon glyphicon-tag"></a>
+						</td>
+						{% endif %}
 					</tr>
+					{% endfor %}
 					{% endfor %}
 				</tbody>
 			</table>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<ul class="pagination">
-				<li><a href="{% url 'utang_nasabah_'|add:kind %}">&laquo; Pertama</a></li>
-				{% for i in pages %}
-					{% if forloop.last %}
-						<li><a href="{% url 'utang_nasabah_'|add:kind %}?page={{ i }}">Terakhir &raquo;</a></li>
-					{% else %}
-						<li {% if pembelian.number == i %}class="active"{% endif %}><a href="{% url 'utang_nasabah_'|add:kind %}?page={{i}}">{{i}}</a></li>
-					{% endif%}
-				{% endfor %}
-			</ul>
 		</div>
 	</div>
 </div>
@@ -75,29 +71,6 @@ Utang Nasabah {{ kind|capfirst }}
 {% endblock content %}
 {% block js_extra %}
 {{ block.super }}
-<script type="text/javascript">
-	function twoDigit(input){
-		return ("0" + input).slice(-2);
-	}
-	$(document).ready(function() {
-		$('#table-pembelian tr td:nth-child(5)').each(function(){
-			startDate = new Date($(this).text());
-
-			endDate = new Date(startDate);
-			endDate.setDate(endDate.getDate() + 14);
-			$(this).next().text(endDate.getFullYear() + "-" + twoDigit(endDate.getMonth() + 1) + "-" + twoDigit(endDate.getDate()));
-		});
-
-		$('#table-pembelian').dataTable( {
-			"bPaginate": false,
-			"bLengthChange": false,
-			"bFilter": true,
-			"bSort": true,
-			"bInfo": false,
-			"bAutoWidth": false,
-		} );
-	} );
-</script>
 {% include "transaction/advanced_window_script.html" %}
 <script src="{% static "js/jquery.dataTables.js" %}"></script>
 {% endblock js_extra %}

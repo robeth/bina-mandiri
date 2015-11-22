@@ -5,13 +5,14 @@ from django.utils import simplejson
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
 import re
+from datetime import timedelta
 from django.utils.safestring import mark_safe
 
 register = Library()
 
 @register.filter
 def get_range( value ):
- 
+
   return range( value )
 
 @register.simple_tag
@@ -31,7 +32,7 @@ def jsonify_simple(object):
 jsonify.is_safe = True
 
 def url_generator(url_name, url_id, prefix,label_class):
-  return '<a href="%s"><span class="label %s">%s%s</span></a>' % (url_name, label_class, prefix, url_id) 
+  return '<a href="%s"><span class="label %s">%s%s</span></a>' % (url_name, label_class, prefix, url_id)
 
 @register.simple_tag
 def pembelian_url(pembelian_id):
@@ -152,12 +153,17 @@ def add_class(value, css_class):
     string = unicode(value)
     match = class_re.search(string)
     if match:
-        m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class, 
-                                                    css_class, css_class), 
+        m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class,
+                                                    css_class, css_class),
                                                     match.group(1))
         if not m:
-            return mark_safe(class_re.sub(match.group(1) + " " + css_class, 
+            return mark_safe(class_re.sub(match.group(1) + " " + css_class,
                                           string))
     else:
         return mark_safe(string.replace('>', ' class="%s">' % css_class))
     return value
+
+@register.simple_tag
+def deadline(initial_date):
+    deadline = initial_date + timedelta(days=14)
+    return deadline.strftime('%Y-%m-%d')
