@@ -94,7 +94,6 @@ Not found
                 <th>Tanggal</th>
                 <th>Total Transaksi</th>
                 <th>Total Unit</th>
-                <th>Link</th>
                 <th>Barang</th>
               </tr>
             </thead>
@@ -106,11 +105,6 @@ Not found
                 <td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
                 <td class="right">{{p.sum|floatformat:2|intcomma}}</td>
                 <td class="right">{{p.sum_weight|floatformat:2|intcomma}}</td>
-                <td class="right">
-                  {% if p.penarikan_id %}
-                  {% penarikan_url p.penarikan_id %}
-                  {% endif %}
-                </td>
                 <td>
                   {% for kkey, k in p.kategori.items %}
                     <code><a href="#" data-toggle="tooltip" title="{{k.nama}}-{{k.nilai|floatformat:2|intcomma}}">{{kkey}}</a></code>
@@ -133,10 +127,10 @@ Not found
               </tr>
             </thead>
             <tbody>
-              {% if detail.penarikan|length < 1 %}
+              {% if detail.penarikans|length < 1 %}
               <tr><td colspan="4">Tidak ada penarikan</td></tr>
               {% else %}
-              {% for p in  detail.penarikan%}
+              {% for p in  detail.penarikans%}
               <tr>
                 <td class="center">{{forloop.counter}}</td>
                 <td class="center">{% penarikan_url p.id%}</td>

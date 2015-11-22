@@ -59,12 +59,17 @@ class Pembelian(models.Model):
 	tanggal = models.DateField()
 	nota = models.CharField(max_length=20, null=True, blank=True)
 	penarikan = models.ForeignKey('Penarikan', null=True, blank=True)
+	penarikans = models.ManyToManyField('Penarikan', through='DetailPenarikan', related_name='penarikan_new', blank=True)
 	def __unicode__(self):
 		return self.nasabah.nama + '-' + str(self.tanggal)
 	def total_value(self):
 		return sum([stock.harga * stock.jumlah for stock in self.stocks.all()])
 	def total_unit(self):
 		return sum([stock.jumlah for stock in self.stocks.all()])
+	def settled_value(self):
+		return sum([detail_penarikan.jumlah for detail_penarikan in self.detailpenarikan_set.all()])
+	def unsettled_value(self):
+		return self.total_value() - self.settled_value();
 
 class Penjualan(models.Model):
 	vendor = models.ForeignKey('Vendor')
@@ -100,5 +105,7 @@ class Penarikan(models.Model):
 	total = models.DecimalField(max_digits=15, decimal_places=2)
 	nota = models.CharField(max_length=20, null=True, blank=True)
 
-	def total_value(self):
-		return sum([p.total_value() for p in self.pembelian_set.all()])
+class DetailPenarikan(models.Model):
+	penarikan = models.ForeignKey('Penarikan')
+	pembelian = models.ForeignKey('Pembelian')
+	jumlah = models.DecimalField(max_digits=15, decimal_places=2)

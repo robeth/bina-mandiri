@@ -1,5 +1,5 @@
 from django.db import connection
-from transaction.models import Stok, Pembelian, Konversi, Penjualan
+from transaction.models import Stok, Pembelian, Konversi, Penjualan, Nasabah
 from datetime import datetime
 def to_dict(c):
 	return [ dict(zip([col[0] for col in c.description], row)) for row in c.fetchall()]
@@ -255,7 +255,7 @@ def q_nasabah_detail(nasabah_id):
 		res['general'] = temp[0]
 		temp[0]['saldo'] = temp[0]['In'] - temp[0]['Out']
 
-	c.execute("select p.id, p.penarikan_id, r.sid, r.kode, r.nama as snama, n.nama as vnama, r.tanggal, r.jumlah, r.harga, r.harga*r.jumlah as total from transaction_pembelian p left outer join (  select ps.pembelian_id as id, s.id as sid, s.kode, s.nama, s.tanggal, s.jumlah, s.harga  from transaction_pembelian_stocks ps join  (   select s.id, k.kode, k.nama, s.tanggal, s.jumlah, s.harga   from transaction_kategori k join transaction_stok s on k.id = s.kategori_id  ) s on  ps.stok_id=s.id ) r on p.id = r.id join transaction_nasabah n on n.id = p.nasabah_id where n.id=%s order by p.id asc", [nasabah_id])
+	c.execute("select p.id, r.sid, r.kode, r.nama as snama, n.nama as vnama, r.tanggal, r.jumlah, r.harga, r.harga*r.jumlah as total from transaction_pembelian p left outer join (  select ps.pembelian_id as id, s.id as sid, s.kode, s.nama, s.tanggal, s.jumlah, s.harga  from transaction_pembelian_stocks ps join  (   select s.id, k.kode, k.nama, s.tanggal, s.jumlah, s.harga   from transaction_kategori k join transaction_stok s on k.id = s.kategori_id  ) s on  ps.stok_id=s.id ) r on p.id = r.id join transaction_nasabah n on n.id = p.nasabah_id where n.id=%s order by p.id asc", [nasabah_id])
 	pembelian = to_dict(c)
 	res2 = {}
 
@@ -275,8 +275,7 @@ def q_nasabah_detail(nasabah_id):
 	res['pembelian'] = res2
 
 	c.execute("select p.* from transaction_nasabah n join transaction_penarikan p on n.id = p.nasabah_id where n.id = %s", [nasabah_id])
-	res['penarikan'] = to_dict(c)
-
+	res['penarikans'] = Nasabah.objects.filter(id=nasabah_id)[0].penarikan_set.all()
 
 	c.execute("select s.kode, s.nama, sum(s.jumlah) as jumlah, sum(s.jumlah*s.harga) as nilai from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok_det s on ps.stok_id = s.id where p.nasabah_id = %s group by s.kode", [nasabah_id])
 	res['stok'] = to_dict(c)
@@ -365,7 +364,7 @@ def q_is_pembelian_clear(pembelian_id):
 	if p:
 		p = p[0]
 		stocks = p.stocks.all()
-		if p.penarikan:
+		if p.detailpenarikan_set.all():
 			return False
 		for stock in stocks:
 			if stock.penjualan_set.all() or stock.detailin_set.all():
@@ -671,3 +670,15 @@ def q_home():
 		res['aset_total'] += r['stabil']
 
 	return res
+
+def q_retrieve_pembelian_candidates(nasabah_id):
+	all_pembelians = Pembelian.objects.filter(nasabah__id=nasabah_id)
+	candidates_pembelians = []
+	# import code
+	# code.interact(local=dict(globals(), **locals()))
+
+	for pembelian in all_pembelians:
+		if pembelian.unsettled_value() > 0:
+			candidates_pembelians.append(pembelian)
+
+	return candidates_pembelians

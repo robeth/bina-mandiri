@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from transaction.models import Nasabah, Vendor, Pembelian, Kategori, Penjualan, Konversi, Penarikan
-from transaction.db import q_remaining_dict, q_nasabah_detail_only, q_reclaimed_stocks
+from transaction.db import q_remaining_dict, q_nasabah_detail_only, q_reclaimed_stocks, q_retrieve_pembelian_candidates
 
 class NasabahForm(ModelForm):
 	class Meta:
@@ -67,7 +67,7 @@ class PenjualanForm(ModelForm):
 			for k,v in reclaimed_stocks.iteritems():
 				remaining[k]['jumlah_penjualan'] -= v
 				remaining[k]['sisa'] += v
-				
+
 		if 'total' in data:
 			limit = int(data['total'])
 			i = 1
@@ -117,45 +117,17 @@ class PenarikanForm(ModelForm):
 	class Meta:
 		model = Penarikan
 
-	pembelians = forms.ModelMultipleChoiceField(queryset=None)
-	
-	def __init__(self, nasabah_id, *args, **kw):
-		instance = kw.get('instance', None)
-		
-		# Set existing pembelians selected 
-		if instance:
-			kw.update(initial={
-					'pembelians': [unicode(p.id) for p in instance.pembelian_set.all()]
-				})
-		super(PenarikanForm, self).__init__(*args, **kw)
-		
-		# Choice based on unpaid pembelians and existing pembelians(if any)
-		queryset_pembelians = Nasabah.objects.get(id=nasabah_id).pembelian_set.filter(penarikan_id__isnull=True)
-		if instance:
-			current_pembelians = kw['instance'].pembelian_set.all()
-			queryset_pembelians = queryset_pembelians | current_pembelians
-
-		# import code
-		# code.interact(local=dict(globals(), **locals()))
-		self.fields['nasabah'] = forms.ModelChoiceField(queryset=Nasabah.objects.filter(id=nasabah_id), initial=0)
-		self.fields['pembelians'] = forms.ModelMultipleChoiceField(
-			queryset=queryset_pembelians,
-			widget=forms.CheckboxSelectMultiple)
-
-
 	def clean(self):
 		cleaned_data = super(PenarikanForm, self).clean()
-		if cleaned_data.get('pembelians'):
-			cleaned_data['total'] = sum([p.total_value() for p in cleaned_data.get('pembelians')])
-		
-		nasabah_id = cleaned_data.get('nasabah')
-		total = float(cleaned_data.get('total'))
+		data = self.data
 
-		res = q_nasabah_detail_only(nasabah_id)
+		if self.errors:
+			return cleaned_data
 
-		if res['general']:
-			if float(res['general']['saldo']) < total:
-				self._errors['total'] = self.error_class([u'Saldo tidak mencukupi'])
-				del cleaned_data['total']
+		pembelians = q_retrieve_pembelian_candidates(data['nasabah'])
+		pembelians_amount = sum([pembelian.total_value() for pembelian in pembelians])
 
-		return cleaned_data
+		if pembelians_amount < float(data['total']):
+			raise forms.ValidationError('Total penarikan (' + data['total'] +') > nilai pembelian (' + str(pembelians_amount) + ')')
+		else:
+			return cleaned_data

@@ -50,20 +50,13 @@ Not found
               <input class="form-control" disabled id="tanggal" placeholder="Tanggal Pembelian" type="text" value="{{general.0.tanggal|date:"Y-m-d"}}">
           </div>
         </div>
-        <div class="form-group">
-            {% if general.0.penarikan %}
-            <p>Terhubung dengan {% penarikan_url general.0.penarikan.id %}</p>
-            {% else %}
-            <p><a href="{% url 'penarikan_add' general.0.nasabah.id %}" class="btn"><span class="glyphicon glyphicon-link"></span> Penarikan</a></p>
-            {% endif %} 
-        </div>
       </form>
     </div>
     <div class="col-md-8">
       <div class="form-inline pull-right">
         <a class="btn btn-success" href="{% url 'pembelian_print'  general.0.id %}"><span class="glyphicon glyphicon-print"></span> Cetak</a>
         <a {% if not can_delete %}disabled{% endif %} class="btn btn-info" href="{% url 'pembelian_edit' general.0.id %}"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-        <a {% if not can_delete %}disabled{% endif %} class="btn btn-danger" data-target="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</a>    
+        <a {% if not can_delete %}disabled{% endif %} class="btn btn-danger" data-target="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</a>
       </div>
     </div>
   </div>
@@ -148,6 +141,31 @@ Not found
       </table>
     </div>
   </div>
-</div>  
+
+  {% if general.0.detailpenarikan_set.all %}
+  <div id="content" class="row">
+    <div class="col-md-4">
+      <table class="table table-hover table-condensed table-bordered">
+        <thead class="center">
+          <tr>
+            <th>#</th>
+            <th>Penarikan</th>
+            <th>Lunas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for detail_penarikan in general.0.detailpenarikan_set.all %}
+          <tr>
+            <td class="center">{{forloop.counter}}</td>
+            <td class="center">{% penarikan_url detail_penarikan.penarikan.id %}</td>
+            <td class="right">{{ detail_penarikan.jumlah|floatformat:2|intcomma}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
 {% endif %}
 {% endblock content %}

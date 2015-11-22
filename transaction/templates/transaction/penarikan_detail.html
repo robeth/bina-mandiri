@@ -35,27 +35,26 @@ Penarikan {{ penarikan.id }}
 		<h3>Penarikan {{ penarikan.id }}</h3>
 		<div class="form-inline pull-right">
 			<a href="" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Hapus</a>
-			<a href="{% url 'penarikan_edit' penarikan.id %}" class="btn btn-success">Edit</a>
 		</div>
 		<div class="row">
 			<div class="col-md-6 well">
 				<div class="form-horizontal">
 					<div class="form-group">
-						<label class="control-label col-md-2">Nasabah</label>	
+						<label class="control-label col-md-2">Nasabah</label>
 						<div class="col-md-10">
 							<p class="form-control-static">{% nasabah_url penarikan.nasabah.id %} {{ penarikan.nasabah.nama }}</p>
 						</div>
 					</div>
-					
+
 					<div class="form-group">
-						<label class="control-label col-md-2">Nota</label>	
+						<label class="control-label col-md-2">Nota</label>
 						<div class="col-md-10">
 							<p class="form-control-static">{{ penarikan.nota }}</p>
 						</div>
 					</div>
-					
+
 					<div class="form-group">
-						<label class="control-label col-md-2" for="id_total">Total</label>	
+						<label class="control-label col-md-2" for="id_total">Total</label>
 						<div class="col-md-10">
 							<div class="input-group">
 								<div class="input-group-addon">Rp</div>
@@ -65,17 +64,7 @@ Penarikan {{ penarikan.id }}
 					</div>
 
 					<div class="form-group">
-						<label class="control-label col-md-2" for="id_total_pembelian">Total Pembelian</label>	
-						<div class="col-md-10">
-							<div class="input-group">
-								<div class="input-group-addon">Rp</div>
-								<input id="id_total_pembelian" type="number" class="form-control" value="{{ penarikan.total_value }}" readonly>
-							</div>
-						</div>
-					</div>					
-
-					<div class="form-group">
-						<label class="control-label col-md-2">Tanggal</label>	
+						<label class="control-label col-md-2">Tanggal</label>
 						<div class="col-md-10">
 							<p class="form-control-static">{{ penarikan.tanggal|date:"Y-m-d" }}</p>
 						</div>
@@ -87,20 +76,20 @@ Penarikan {{ penarikan.id }}
 				<table class="table table-striped table-bordered table-hover table-condensed" id="pembelian-list">
 					<thead>
 						<tr>
-							<td>Kode</td>
-							<td>Tanggal</td>
-							<td>Nilai</td>
-							<td>Tonase</td>
+							<td class="center">Kode</td>
+							<td class="center">Tanggal</td>
+							<td class="center">Lunas</td>
+							<td class="center">Total</td>
 						</tr>
 					</thead>
 					<tbody>
-					{% for p in penarikan.pembelian_set.all %}
+					{% for detail_penarikan in penarikan.detailpenarikan_set.all %}
 						<tr>
-							<td>{%pembelian_url p.id%}</td>
-							<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
-							<td class="right">{{p.total_value|floatformat:2|intcomma}}</td>
-							<td class="right">{{p.total_unit|floatformat:2|intcomma}}</td>
-						</tr>	
+							<td>{%pembelian_url detail_penarikan.pembelian.id%}</td>
+							<td class="center">{{detail_penarikan.pembelian.tanggal|date:"Y-m-d"}}</td>
+							<td class="right">{{detail_penarikan.jumlah|floatformat:2|intcomma}}</td>
+							<td class="right">{{detail_penarikan.pembelian.total_value|floatformat:2|intcomma}}</td>
+						</tr>
 					{% endfor%}
 					</tbody>
 				</table>

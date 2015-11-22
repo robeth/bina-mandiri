@@ -8,8 +8,8 @@ def index(request):
 		Pembelian.objects.all().order_by('-tanggal'),
 		request.GET.get('page'),
 		100)
-		
-	context = { 'pembelian': pembelian_entries, 'user': request.user, 
+
+	context = { 'pembelian': pembelian_entries, 'user': request.user,
 		"pages": customize_pages(pembelian_entries.number, pembelian_entries.paginator.num_pages)}
 	return render(request, 'transaction/pembelian.html', context)
 
@@ -79,7 +79,7 @@ def edit(request, pembelian_id):
 		form = PembelianForm(request.POST)
 		is_valid_form = True
 		is_pembelian_clear = True
-			
+
 		if not form.is_valid():
 			is_valid_form = False
 			error_messages.append("Invalid form submission")
@@ -127,8 +127,8 @@ def edit(request, pembelian_id):
 			else:
 				# Successful edit operation
 				return HttpResponseRedirect(reverse('pembelian_detail', kwargs={'pembelian_id': pembelian_id}))
-	
-	# GET response or invalid POST edit pembelian operation	
+
+	# GET response or invalid POST edit pembelian operation
 	form = PembelianForm(instance=pembelian)
 	pembelian = Pembelian.objects.get(id=pembelian_id)
 	kk = Kategori.objects.all().order_by('kode')
@@ -136,7 +136,7 @@ def edit(request, pembelian_id):
 
 	for k in kk:
 		options.append({'kode' : k.kode, 'nama': k.nama, 'id': k.id, 'stabil': str(k.stabil), 'satuan': k.satuan})
-	
+
 
 	pembelian_dict = {
 		'id' : pembelian.id,

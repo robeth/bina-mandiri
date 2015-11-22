@@ -20,7 +20,6 @@ Penarikan
 						<th>KodeN</th>
 						<th>Nama</th>
 						<th>Total</th>
-						<th>Total Pembelian</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -33,7 +32,6 @@ Penarikan
 						<td class="center">{% nasabah_url p.nasabah.id %}</td>
 						<td>{{ p.nasabah.nama }}</td>
 						<td class="right">{{ p.total|floatformat:2|intcomma }}</td>
-						<td class="right">{{ p.total_value|floatformat:2|intcomma }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>

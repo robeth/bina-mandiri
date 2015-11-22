@@ -25,35 +25,35 @@
 			<div class="col-md-6 well">
 				<div class="form-horizontal">
 					<div class="form-group">
-						<label class="control-label col-md-2" for="{{ form.nasabah.id_for_label }}" >{{ form.nasabah.label }}</label>	
+						<label class="control-label col-md-2" for="{{ form.nasabah.id_for_label }}" >{{ form.nasabah.label }}</label>
 						<div class="col-md-10">
 							<select class="easyui-combobox form-control" name="nasabah" id="{{form.nasabah.id_for_label}}">
-								{% for n in form.nasabah.field.queryset %}
+								{% for n in nasabah %}
 								<option value="{{ n.id  }}">{{n.nama}}</option>
 								{% endfor %}
 							</select>
 						</div>
 					</div>
-					
+
 					<div class="form-group">
-						<label class="control-label col-md-2" for="{{ form.nota.id_for_label}}" >{{ form.nota.label }}</label>	
+						<label class="control-label col-md-2" for="{{ form.nota.id_for_label}}" >{{ form.nota.label }}</label>
 						<div class="col-md-10">
 							{{ form.nota|add_class:"form-control" }}
 						</div>
 					</div>
-					
+
 					<div class="form-group">
-						<label class="control-label col-md-2" for="{{ form.total.id_for_label}}" >{{ form.total.label }}</label>	
+						<label class="control-label col-md-2" for="{{ form.total.id_for_label}}" >{{ form.total.label }}</label>
 						<div class="col-md-10">
 							<div class="input-group">
 								<div class="input-group-addon">Rp</div>
-								<input id="id_total" type="number" class="form-control"  name="total" value="{{ form.total.value }}" readonly>
+								<input id="id_total" type="number" class="form-control"  name="total" value="{{ form.total.value }}" onchange="showSettledPembelians()">
 							</div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label class="control-label col-md-2" for="{{ form.tanggal.id_for_label}}" >{{ form.tanggal.label }}</label>	
+						<label class="control-label col-md-2" for="{{ form.tanggal.id_for_label}}" >{{ form.tanggal.label }}</label>
 						<div class="col-md-10">
 							{{ form.tanggal|add_class:"form-control" }}
 						</div>
@@ -65,24 +65,22 @@
 				<table class="table table-striped table-bordered table-hover table-condensed" id="pembelian-list">
 					<thead>
 						<tr>
-							<td></td>
-							<td>Kode</td>
-							<td>Tanggal</td>
-							<td>Nilai</td>
-							<td>Tonase</td>
+							<td class="center">Kode</td>
+							<td class="center">Tanggal</td>
+							<td class="center">Belum Lunas</td>
+							<td class="center">Total Nilai</td>
+							<td class="center">Akan Lunas</td>
 						</tr>
 					</thead>
 					<tbody>
-					{% for p in form.pembelians.field.queryset %}
+					{% for p in candidate_pembelians %}
 						<tr>
-							<td><input type="checkbox" name="pembelians" value="{{p.id}}"{% if  p.id|slugify in form.pembelians.value%}
-								checked
-							{% endif %}/></td>
-							<td>{%pembelian_url p.id%}</td>
+							<td class="center">{%pembelian_url p.id%}</td>
 							<td class="center">{{p.tanggal|date:"Y-m-d"}}</td>
+							<td class="right">{{p.unsettled_value|floatformat:2|intcomma}}</td>
 							<td class="right">{{p.total_value|floatformat:2|intcomma}}</td>
-							<td class="right">{{p.total_unit|floatformat:2|intcomma}}</td>
-						</tr>	
+							<td class="right"></td>
+						</tr>
 					{% endfor%}
 					</tbody>
 				</table>
@@ -94,35 +92,79 @@
 {% block js_extra %}
 {{ block.super }}
 <script type="text/javascript">
+	var candidatePembelians = [];
+
+	function showSettledPembelians(){
+		for(var i = 0; i < candidatePembelians.length; i++){
+				candidatePembelians[i].settledAmountColumn.html('');
+		}
+
+		var amount = $('input[name="total"]').val();
+
+		if(!isValidAmount(amount)) return;
+
+		for(var i = 0; i < candidatePembelians.length; i++){
+			var settledAmount = Math.min(amount, candidatePembelians[i].unsettledAmount);
+			candidatePembelians[i].settledAmountColumn.html(settledAmount);
+
+			amount -= settledAmount;
+			if(amount <= 0){
+				break;
+			}
+		}
+	}
+
+	function isValidAmount(amount){
+		// Check if it is number
+		var parsedAmount = parseInt(amount);
+
+		if(isNaN(parsedAmount)) {
+			return false;
+		}
+
+		return calculateAllPembelians() >= amount;
+	}
+
+	function calculateAllPembelians(){
+		return candidatePembelians.reduce(function(previousValue, currentValue){
+			return previousValue + currentValue.amount;
+		}, 0);
+	}
+
 	$(document).ready(function(){
+		candidatePembelians = scanTable();
+
+		function scanTable(){
+				var pembelians = [];
+				var rows = $('#pembelian-list tr');
+				for(var i = 1; i < rows.length; i++){
+					var pembelian = {};
+					var columns = $(rows[i]).find('td');
+					pembelian.kode = $(columns[0]).html();
+					pembelian.tanggal = $(columns[1]).html();
+					pembelian.unsettledAmount = parseFloat($(columns[2]).html().replace(',', ''));
+					pembelian.amount = parseFloat($(columns[3]).html().replace(',', ''));
+					pembelian.settledAmountColumn = $(columns[4]);
+					pembelians.push(pembelian);
+				}
+				return pembelians.sort(function(a,b){return new Date(a.tanggal) - new Date(b.tanggal);});
+		}
+
+
 		$( "#id_{{ form.tanggal.html_name}}" ).datepicker({ dateFormat: "yy-mm-dd",
 			"showAnim" : "slideDown",
 			"changeMonth" : true,
 			"changeYear" : true});
 
-		$("#pembelian-list input[type='checkbox']").click(function(index){
-			 	updateTotal();
-		});
-
 		$("#pembelian-list").dataTable({
 			"bPaginate": false,
 			"bLengthChange": false,
-			"bFilter": true,
+			"bFilter": false,
 			"bSort": true,
 			"bInfo": false,
 			"bAutoWidth": false
 		});
 
-		function updateTotal(){
-			var total = 0;
-
-			$("#pembelian-list input:checked").each(function(index, element){
-				total += parseFloat($(this).parent().next().next().next().text().replace(/[^0-9\.]+/g,""));
-			});
-
-			$('input[name="total"]').val(total);
-		}
-		updateTotal();
 	});
 </script>
 <script src="{% static "js/jquery.dataTables.js" %}"></script>
