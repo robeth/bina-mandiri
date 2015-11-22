@@ -3,7 +3,7 @@ from django.db import transaction
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required()
-def index(request): 
+def index(request):
 	penjualan_entries = paginate_data(
 		Penjualan.objects.all().order_by('-tanggal'),
 		request.GET.get('page'),
@@ -38,7 +38,12 @@ def add(request):
 	else:
 		form = PenjualanForm()
 
-	context = { 'remaining':  q_remaining(), 'form':form, 'user': request.user}
+	processed_vendor = [ {'id': n.id, 'nama':n.nama.replace("'", "")} for n in Vendor.objects.all()]
+
+	context = { 'remaining':  q_remaining(),
+		'form':form,
+		'user': request.user,
+		'vendor_dictionary': processed_vendor}
 	return render(request, 'transaction/penjualan_add.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -63,8 +68,8 @@ def edit(request, penjualan_id):
 
 					v = Vendor.objects.get(id=data['vendor'])
 					p = penjualan
-					p.tanggal= cleaned_data['tanggal'] 
-					p.vendor = v 
+					p.tanggal= cleaned_data['tanggal']
+					p.vendor = v
 					p.nota = cleaned_data['nota']
 					p.detailpenjualan_set.all().delete()
 
@@ -75,7 +80,7 @@ def edit(request, penjualan_id):
 					while i <= limit:
 
 						# Validate each stock
-						
+
 						stocks = q_get_last_stock(data['stok'+str(i)], data['jumlah'+str(i)])
 						for s in stocks:
 							st = Stok.objects.get(id=s['id'])
@@ -111,12 +116,16 @@ def edit(request, penjualan_id):
 				'harga' : float(detailPenjualan.harga)
 			})
 
-	context = { 
-		'remaining':  q_remaining(), 
-		'form':form, 
-		'user': request.user, 
+	processed_vendor = [ {'id': n.id, 'nama':n.nama.replace("'", "")} for n in Vendor.objects.all()]
+	initial_vendor = { 'id': penjualan.vendor.id, 'nama': penjualan.vendor.nama }
+	context = {
+		'remaining':  q_remaining(),
+		'form':form,
+		'user': request.user,
 		'penjualan': penjualan_data,
-		'error_messages': error_messages
+		'error_messages': error_messages,
+		'initial_vendor': initial_vendor,
+		'vendor_dictionary': processed_vendor
 	 }
 	return render(request, 'transaction/penjualan_edit.html', context)
 

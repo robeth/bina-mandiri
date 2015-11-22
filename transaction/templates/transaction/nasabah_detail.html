@@ -10,6 +10,28 @@ Nasabah {{ detail.general.nama }}
 Not found
 {% else %}
 <div class="container">
+  <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Tutup</span></button>
+          <h3 id="myModalLabel" class="modal-header">Hapus Nasabah ID {{ detail.general.id }}</h3>
+        </div>
+        <div class="modal-body">
+          <p>Apakah anda yakin?</p>
+        </div>
+        <div class="modal-footer">
+          <form action="{% url 'nasabah_delete' %}" method="post">
+            <button type="button" class="btn" data-dismiss="modal" aria-hidden="true" >Batal</button>
+            {% csrf_token %}
+            <input type="hidden" name="nasabah_id" value="{{ detail.general.id }}">
+            <input type="submit" class="btn btn-danger" value="Ya"/>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
       <div class="row">
         <div class="col-md-8 well">
           <div class="row">
@@ -76,9 +98,18 @@ Not found
                     <input class="form-control" disabled id="tanggal" placeholder="Tanggal Lahir" type="text" value="{{detail.general.tanggal_lahir}}">
                   </div>
                 </div>
-                <a class="btn btn-primary" href="{% url 'nasabah_edit' detail.general.id%}">Ubah</a>
               </form>
             </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-inline pull-right">
+            <a class="btn btn-primary" href="{% url 'nasabah_edit' detail.general.id%}"><span class="glyphicon glyphicon-pencil">Edit</a>
+            {% if detail.safe_delete %}
+            <a class="btn btn-danger" data-target="#myModal" data-toggle="modal"><span class="glyphicon glyphicon-remove"></span> Hapus</a>
+            {% else %}
+            <a class="btn btn-danger" href="#" disabled >Hapus</a>
+            {% endif %}
           </div>
         </div>
       </div>

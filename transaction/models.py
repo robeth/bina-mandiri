@@ -17,6 +17,9 @@ class Nasabah(models.Model):
 	def __unicode__(self):
 		return self.nama + '-' + self.ktp
 
+	def is_safe_to_be_deleted(self):
+		return self.pembelian_set.count() + self.penarikan_set.count() == 0
+
 class Vendor(models.Model):
 	nama = models.CharField(max_length=50)
 	alamat = models.TextField()

@@ -51,3 +51,25 @@ def edit(request, nasabah_id):
 
 	context = {'form':form, 'id': nasabah_id, 'user': request.user}
 	return render(request, 'transaction/nasabah_edit.html', context)
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required()
+def delete(request):
+	if request.method == 'POST' and 'nasabah_id' in request.POST and is_integer(request.POST['nasabah_id']):
+
+		nasabah_id = request.POST['nasabah_id']
+		nasabah_result = Nasabah.objects.filter(id=nasabah_id)
+		if len(nasabah_result) > 0:
+			nasabah = nasabah_result[0]
+			if nasabah.is_safe_to_be_deleted():
+				nasabah.delete()
+
+	return HttpResponseRedirect(reverse('nasabah'))
+
+
+def is_integer(text):
+	try:
+		int(text)
+		return True
+	except ValueError:
+		return False

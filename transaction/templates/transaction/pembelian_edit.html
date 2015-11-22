@@ -20,21 +20,22 @@ Edit Pembelian {{ pembelian.id }}
 				{% endif %}
 				{% csrf_token %}
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
+					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>
 					<div class="col-md-10">
 						{{ form.tanggal|add_class:"form-control" }}
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
+					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>
 					<div class="col-md-10">
 						{{ form.nota|add_class:"form-control" }}
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>	
+					<label class="control-label col-md-2" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>
 					<div class="col-md-10">
-						{{ form.nasabah|add_class:"form-control" }}
+						<input type="text" id="nasabah-ui" class="form-control" />
+						<input type="hidden" id="id_nasabah" name="nasabah" />
 					</div>
 				</div>
 			</div>
@@ -65,10 +66,13 @@ Edit Pembelian {{ pembelian.id }}
 <script type="text/javascript">
 var options = jQuery.parseJSON('{{ options|jsonify|safe }}');
 var pembelian = jQuery.parseJSON('{{ pembelian|jsonify|safe }}');
+var accounts = jQuery.parseJSON('{{ nasabah_dictionary|jsonify|safe }}');
+var initialData = jQuery.parseJSON('{{ initial_nasabah|jsonify|safe }}');
 
-//Map pembelian stock kategori_id to StokAutoComplete's id 
+
+//Map pembelian stock kategori_id to StokAutoComplete's id
 for(var i = 0; i < pembelian['stocks'].length; i++){
-	pembelian['stocks'][i]['id'] = pembelian['stocks'][i]['kategori_id'] 
+	pembelian['stocks'][i]['id'] = pembelian['stocks'][i]['kategori_id']
 }
 
 $(document).ready(function() {
@@ -98,6 +102,8 @@ $(document).ready(function() {
     	},
     	initial: pembelian['stocks']
     });
+
+		NasabahAutocomplete($('#nasabah-ui'), $('#id_nasabah'), accounts, initialData);
 });
 </script>
 {% endblock js_extra %}

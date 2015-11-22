@@ -21,21 +21,22 @@ Edit Penjualan {{ penjualan.id }}
 				</div>
 				{% endif %}
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
+					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>
 					<div class="col-md-10">
 						{{ form.tanggal|add_class:"form-control" }}
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
+					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>
 					<div class="col-md-10">
 						{{ form.nota|add_class:"form-control" }}
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.vendor.html_name}}" >{{ form.vendor.label }}</label>	
+					<label class="control-label col-md-2" for="id_{{ form.vendor.html_name}}" >{{ form.vendor.label }}</label>
 					<div class="col-md-10">
-						{{ form.vendor|add_class:"form-control" }}
+						<input type="text" id="vendor-ui" class="form-control" />
+						<input type="hidden" id="id_vendor" name="vendor" />
 					</div>
 				</div>
 			</div>
@@ -66,6 +67,8 @@ Edit Penjualan {{ penjualan.id }}
 <script type="text/javascript">
 var options = jQuery.parseJSON('{{ remaining|jsonify_simple|safe }}');
 var penjualan = jQuery.parseJSON('{{ penjualan|jsonify_simple|safe }}');
+var accounts = jQuery.parseJSON('{{ vendor_dictionary|jsonify|safe }}');
+var initialData = jQuery.parseJSON('{{ initial_vendor|jsonify|safe }}');
 
 $(document).ready(function() {
     $("#id_{{ form.tanggal.html_name}}").datepicker({
@@ -101,6 +104,8 @@ $(document).ready(function() {
     	},
     	initial: penjualan.detailPenjualanList
     });
+
+		NasabahAutocomplete($('#vendor-ui'), $('#id_vendor'), accounts, initialData);
 });
 </script>
 {% endblock js_extra %}

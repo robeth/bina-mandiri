@@ -42,13 +42,6 @@ def add(request):
 				i += 1
 
 			p.save()
-			if 'cash' in data:
-				p_cash = Penarikan(tanggal=data['tanggal'], nasabah=n, total=temp_total)
-				if 'nota_cash' in data:
-					p_cash.nota = data['nota_cash']
-				p_cash.save()
-				p.penarikan = p_cash
-				p.save()
 
 			return HttpResponseRedirect(reverse('pembelian'))
 	else:
@@ -60,7 +53,9 @@ def add(request):
 	for k in kk:
 		options.append({'kode' : k.kode, 'nama': k.nama, 'id': k.id, 'stabil': str(k.stabil), 'satuan': k.satuan})
 
-	context = {'form': form, 'options' : options, 'user': request.user}
+	processed_nasabah = [ {'id': n.id, 'nama':n.nama.replace("'", "")} for n in Nasabah.objects.all()]
+
+	context = {'form': form, 'options' : options, 'user': request.user, 'nasabah_dictionary': processed_nasabah}
 	return render(request, 'transaction/pembelian_add.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -155,7 +150,17 @@ def edit(request, pembelian_id):
 			'kategori_id': float(stok.kategori.id)
 		})
 	# code.interact(local=dict(globals(), **locals()))
-	context = {'form': form, 'options' : options, 'user': request.user, 'pembelian': pembelian_dict, 'error_messages': error_messages}
+	processed_nasabah = [ {'id': n.id, 'nama':n.nama.replace("'", "")} for n in Nasabah.objects.all()]
+	initial_nasabah = {'id': pembelian.nasabah.id, 'nama': pembelian.nasabah.nama }
+
+	context = {'form': form,
+		'options' : options,
+		'user': request.user,
+		'pembelian': pembelian_dict,
+		'error_messages': error_messages,
+		'initial_nasabah': initial_nasabah,
+		'nasabah_dictionary': processed_nasabah}
+
 	return render(request, 'transaction/pembelian_edit.html', context)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

@@ -20,27 +20,22 @@ Tambah Pembelian
 				{% endif %}
 				{% csrf_token %}
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>	
+					<label class="control-label col-md-2" for="id_{{ form.tanggal.html_name}}" >{{ form.tanggal.label }}</label>
 					<div class="col-md-10">
 						{{ form.tanggal|add_class:"form-control" }}
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>	
+					<label class="control-label col-md-2" for="id_{{ form.nota.html_name}}" >{{ form.nota.label }}</label>
 					<div class="col-md-10">
 						{{ form.nota|add_class:"form-control" }}
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-md-2" for="id_cash" >Cash</label>	
+					<label class="control-label col-md-2" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>
 					<div class="col-md-10">
-						<input type="checkbox" name="cash" value="yes"/><input type="text" id="id_nota_cash" name="nota_cash" maxlength="20" placeholder="nota cash (opsional)" class="form-control"/>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="control-label col-md-2" for="id_{{ form.nasabah.html_name}}" >{{ form.nasabah.label }}</label>	
-					<div class="col-md-10">
-						{{ form.nasabah|add_class:"form-control" }}
+						<input type="text" id="nasabah-ui" class="form-control" />
+						<input type="hidden" id="id_nasabah" name="nasabah" />
 					</div>
 				</div>
 			</div>
@@ -69,6 +64,7 @@ Tambah Pembelian
 {% block js_extra %}
 {{ block.super }}
 <script type="text/javascript">
+var accounts = jQuery.parseJSON('{{ nasabah_dictionary|jsonify|safe }}')
 var options = jQuery.parseJSON('{{ options|jsonify|safe }}');
 
 $(document).ready(function() {
@@ -97,6 +93,8 @@ $(document).ready(function() {
         	key: "id"
     	}
     });
+
+		NasabahAutocomplete($('#nasabah-ui'), $('#id_nasabah'), accounts);
 });
 </script>
 {% endblock js_extra %}

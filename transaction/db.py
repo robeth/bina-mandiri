@@ -280,6 +280,8 @@ def q_nasabah_detail(nasabah_id):
 	c.execute("select s.kode, s.nama, sum(s.jumlah) as jumlah, sum(s.jumlah*s.harga) as nilai from transaction_pembelian p join transaction_pembelian_stocks ps on p.id = ps.pembelian_id join transaction_stok_det s on ps.stok_id = s.id where p.nasabah_id = %s group by s.kode", [nasabah_id])
 	res['stok'] = to_dict(c)
 
+	res['safe_delete'] = Nasabah.objects.get(id=nasabah_id).is_safe_to_be_deleted()
+
 	return res
 
 def q_vendor_detail(vendor_id):
