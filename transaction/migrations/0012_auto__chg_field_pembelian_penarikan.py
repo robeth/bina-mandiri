@@ -1,54 +1,21 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        # Note: Don't use "from appname.models import ModelName".
-        # Use orm.ModelName to refer to models in this application,
-        # and orm['appname.ModelName'] for models in other applications.
-        paid_pembelians = orm.Pembelian.objects.exclude(penarikan__isnull=True)
-        for paid_pembelian in paid_pembelians:
-            paid_amount = sum([stock.harga * stock.jumlah for stock in paid_pembelian.stocks.all()])
-            paid_amount = round(paid_amount, 2)
-            detail_penarikan = orm.DetailPenarikan(penarikan=paid_pembelian.penarikan, pembelian=paid_pembelian, jumlah=paid_amount)
-            detail_penarikan.save()
 
-        pembelian_pool = orm.Pembelian.objects.filter(penarikan__isnull=True).order_by('tanggal')
-        penarikan_pool = orm.Penarikan.objects.annotate(num_penarikan=models.Count('penarikan_new')).filter(num_penarikan__lt=1).order_by('tanggal')
-
-        penarikan_index = 0
-        pembelian_index = 0
-
-        while penarikan_index < len(penarikan_pool):
-            current_penarikan = penarikan_pool[penarikan_index]
-            amount = current_penarikan.total
-
-            while amount > 0:
-                current_pembelian = pembelian_pool[pembelian_index]
-                current_pembelian_total_value = sum([stock.harga * stock.jumlah for stock in current_pembelian.stocks.all()])
-                current_pembelian_settled_value = sum([detail_penarikan.jumlah for detail_penarikan in current_pembelian.detailpenarikan_set.all()])
-                current_pembelian_unsettled_value = current_pembelian_total_value - current_pembelian_settled_value
-
-                settled_amount = min(amount, current_pembelian_unsettled_value)
-                detail_penarikan = orm.DetailPenarikan(penarikan=current_penarikan, pembelian=current_pembelian, jumlah=settled_amount)
-                detail_penarikan.save()
-
-                amount -= settled_amount
-                current_pembelian_unsettled_value -= settled_amount
-
-                if current_pembelian_unsettled_value <= 0:
-                    pembelian_index += 1
-
-            penarikan_index += 1
+        # Changing field 'Pembelian.penarikan'
+        db.alter_column(u'transaction_pembelian', 'penarikan_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['transaction.Penarikan'], null=True, on_delete=models.SET_NULL))
 
     def backwards(self, orm):
-        "Write your backwards methods here."
-        orm.DetailPenarikan.objects.all().delete()
+
+        # Changing field 'Pembelian.penarikan'
+        db.alter_column(u'transaction_pembelian', 'penarikan_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['transaction.Penarikan'], null=True))
 
     models = {
         u'transaction.detailin': {
@@ -113,8 +80,8 @@ class Migration(DataMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'nasabah': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['transaction.Nasabah']"}),
             'nota': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True', 'blank': 'True'}),
-            'penarikan': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['transaction.Penarikan']", 'null': 'True', 'blank': 'True'}),
-            'penarikans': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'penarikan_new'", 'symmetrical': 'False', 'through': u"orm['transaction.DetailPenarikan']", 'to': u"orm['transaction.Penarikan']"}),
+            'penarikan': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['transaction.Penarikan']", 'null': 'True', 'on_delete': 'models.SET_NULL', 'blank': 'True'}),
+            'penarikans': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'penarikan_new'", 'blank': 'True', 'through': u"orm['transaction.DetailPenarikan']", 'to': u"orm['transaction.Penarikan']"}),
             'stocks': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['transaction.Stok']", 'symmetrical': 'False'}),
             'tanggal': ('django.db.models.fields.DateField', [], {})
         },
@@ -161,4 +128,3 @@ class Migration(DataMigration):
     }
 
     complete_apps = ['transaction']
-    symmetrical = True

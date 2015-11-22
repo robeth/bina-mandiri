@@ -61,7 +61,7 @@ class Pembelian(models.Model):
 	stocks = models.ManyToManyField(Stok)
 	tanggal = models.DateField()
 	nota = models.CharField(max_length=20, null=True, blank=True)
-	penarikan = models.ForeignKey('Penarikan', null=True, blank=True)
+	penarikan = models.ForeignKey('Penarikan', null=True, blank=True, on_delete=models.SET_NULL)
 	penarikans = models.ManyToManyField('Penarikan', through='DetailPenarikan', related_name='penarikan_new', blank=True)
 	def __unicode__(self):
 		return self.nasabah.nama + '-' + str(self.tanggal)
