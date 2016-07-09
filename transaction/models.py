@@ -15,7 +15,7 @@ class Nasabah(models.Model):
 	nama_pj = models.CharField(null=True, blank=True, max_length=50)
 	no_induk = models.CharField(null=True, blank=True, unique=True, max_length=50)
 	def __unicode__(self):
-		return self.nama + '-' + self.ktp
+		return str(self.id) + '-' + self.nama
 
 	def is_safe_to_be_deleted(self):
 		return self.pembelian_set.count() + self.penarikan_set.count() == 0
