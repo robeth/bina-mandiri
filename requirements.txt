@@ -6,3 +6,4 @@ factory-boy==2.5.1
 six==1.5.2
 pillow==2.8.1
 django-extensions==1.6.7
+openpyxl==2.3.5
