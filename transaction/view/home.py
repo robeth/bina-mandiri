@@ -27,4 +27,4 @@ def index(request):
 	res['aset_total'] = 0
 
 	context = { 'nasabah': q_nasabah, 'data': res, 'user': request.user}
-	return render(request, 'transaction/home.html', context)s
+	return render(request, 'transaction/home.html', context)
